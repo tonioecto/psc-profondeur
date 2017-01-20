@@ -1,0 +1,101 @@
+require 'nn'
+require 'image'
+require 'paths'
+require 'os'
+require 'math'
+require 'xlua'
+require 'cudnn'
+require 'cutorch'
+require 'cunn'
+
+function Relerror(predicted, groundtruth)
+    local err = 0
+    local Tsize = predicted:size(1)*predicted:size(2)
+    Tsize:mul(predicted:size(3))
+    for i =1,predicted:size(1) do
+        local dis = torch.abs(predicted(i)-groundtruth(i))
+        dis:cdiv(groundtruth(i))
+        err:add(torch.sum(dis))
+    end
+    err:div(Tsize)
+    return err
+end
+
+function Rmserror(predicted,groudtruth)
+    local err = 0
+    local Tsize = predicted:size(1)*predicted:size(2)
+    Tsize:mul(predicted:size(3))
+    --local size = predicted:size(1)*predicted:size(2)
+    --size:mul(predicted:size(3))
+    for i=1,predicted:size(1) do
+        local dis = torch.dist(predisted(i),groundtruth(i))
+        dis:mul(dis)
+        err:add(dis)
+    end
+    err:div(Tsize)
+    err = math.sqrt(err)
+    return err
+end
+
+function Rmslogerr(predicted,groudtruth)
+    local err = 0
+    local Tsize = predicted:size(1)*predicted:size(2)
+    Tsize:mul(predicted:size(3))
+    local term = math.log(10)
+    for i=1,predicted:size(1) do
+        local pre = torch.log(predicted(i))
+        pre:div(term)
+        local truth = torch.log(groudtruth(i))
+        truth:div(term)
+        local dis = torch.dist(pre,truth)
+        dis:mul(dis)
+        err:add(dis)
+    end
+    err:div(Tsize)
+    err = math.sqrt(err)
+    return err
+end
+
+function Logerr(predicted,groundtruth)
+    local err = 0
+    local Tsize = predicted:size(1)*predicted:size(2)
+    Tsize:mul(predicted:size(3))
+    local term = math.log(10)
+    for i=1,predicted:size(1) do
+        local pre = torch.log(predicted(i))
+        pre:div(term)
+        local truth = torch.log(groudtruth(i))
+        truth:div(term)
+        local dis = torch.abs(pre-truth)
+        err = err + torch.sum(dis)
+    end
+    err:div(Tsize)
+    return err
+end
+
+function Thresherr(predicted,groundtruth,i)
+    local Thresh = math.pow(1.25,i)
+    local Tsize = predicted:size(1)*predicted:size(2)
+    Tsize:mul(predicted:size(3))
+    local err = 0
+    for i=1,predicted:size(1) do
+        local a = torch.cdiv(predicted(i),groundtruth(i))
+        local b = torch.cdiv(groundtruth(i),predicted(i))
+        local c = torch.div(torch.abs(a-b),2)
+        c:add((a+b)/2)
+        c = Thresh - c
+        c:sign()
+        c:add(1)
+        err = err + torch.sum(c)/2
+    end
+    err = err/Tsize
+    return err*100
+end
+
+function errTest(net,testSet)
+    local predicted = torch.Tensor(testSet.depth:size())
+    for i = 1,predicted:size(1) do
+        predicted[i] = net:forward(testSet.image[i])
+    end
+    return Rmserror(predicted,testSet.depth)
+end

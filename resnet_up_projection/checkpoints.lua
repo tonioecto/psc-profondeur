@@ -5,14 +5,33 @@ require 'image'
 require 'paths'
 require 'os'
 require 'math'
---require 'matio'
 require 'xlua'
-
-net = nn.Sequential()
+require 'cudnn'
+require 'cutorch'
+require 'cunn'
 
 ----------------------------------------------
 --1,Load dataset and prepare our traindata and testdata
 ----------------------------------------------
+function loadImage(imageSet)
+    local imagename = {}
+    for file in paths.files(imageSet) do
+        if file:find(".*(jpg)$") then
+            table.insert(imagename, paths.concat(imageSet,file))
+        end
+    end
+    
+    print(#imagename)
+    print(imagename[1])
+    local imagest = torch.Tensor(#imagename,3,228,304)
+    for i,file in ipairs(imagename) do
+        local m = image.load(file)
+        m = image.scale(m,304,228,'bicubic')
+        imagest[i] = m
+    end
+    
+    return imagest
+end
 
 function loadDataset(imageSet,depthSet)       --Load the images and depthMap, and generate dataset for trainning
     local imagename = {}
@@ -33,7 +52,9 @@ function loadDataset(imageSet,depthSet)       --Load the images and depthMap, an
 
     local indexFakefile = {}
     for i,file in ipairs(imagename) do
-        local name = file:match(".+/img(.*).jpg$")
+        print(file)
+        local name = file:match('.+/.+img(.*).jpg$')
+        print(name)
         local index = 'depth'..name
         local fullname = index..'.mat'
         local matname = paths.concat(depthSet,fullname)
@@ -57,11 +78,14 @@ function loadDataset(imageSet,depthSet)       --Load the images and depthMap, an
     end
 
     local imageSet = torch.Tensor(#imagename,3,228,304)
-    local depthSet = torch.Tensor(#depthname,160,128)
+    --local depthSet = torch.Tensor(#depthname,160,128)
+    local depthSet = torch.Tensor(#depthname,128,160)
     local mat = require 'matio'
 
     for i,file in ipairs(imagename) do
-        local m = image.loadJPG(file)
+        --local m = image.loadJPG(file)
+        --print(file)
+        local m = image.load(file)
         m = image.scale(m,304,228,'bicubic')
         imageSet[i] = m
     end
@@ -69,6 +93,10 @@ function loadDataset(imageSet,depthSet)       --Load the images and depthMap, an
     for i,file in ipairs(depthname) do
         local m = mat.load(file,'depthMap')
         m = image.scale(m,128,160,'bicubic')
+        
+        m = image.hflip(m)
+        m = m:transpose(1,2)
+        
         depthSet[i] = m
     end
 
@@ -87,6 +115,61 @@ function loadDataset(imageSet,depthSet)       --Load the images and depthMap, an
     return dataset
 
 end
+
+function miniBatchload(dataset, batchSize)
+    --randomize the data firstly
+    local shuffle = torch.randperm(dataset:size())
+    local imageSize = dataset.image[1]:size()
+    local depthSize = dataset.depth[1]:size()
+
+    --local numBatch = math.floor(dataset:size()/batchSize)
+    local numBatch = 2
+    --print(numBatch)
+    local imageSet = torch.Tensor(numBatch,batchSize,unpack(imageSize:totable()))
+    local depthSet = torch.Tensor(numBatch,batchSize,unpack(depthSize:totable()))
+
+    --local index = 0
+    for index = 1,numBatch,1
+    do
+        local numRemain = dataset:size() - (index-1)*batchSize
+        if(numRemain >=batchSize)then
+            --local imageBatch = torch.Tensor(batchSize,unpack(imageSize:totable()))
+            --local depthBatch = torch.Tensor(batchSize,unpack(depthSize:totable()))
+            local indexBegin = (index-1)*batchSize + 1
+            local indexEnd = indexBegin + batchSize - 1
+            for k = 1,batchSize,1 do
+                imageSet[{index,k,{}}] = dataset.image[shuffle[indexBegin]]
+                depthSet[{index,k,{}}] = dataset.depth[shuffle[indexBegin]]
+                indexBegin = indexBegin + 1
+            end
+                --imageSet[index] = dataset.image[{{indexBegin,indexEnd},{}}]
+                --depthSet[index] = dataset.depth[{{indexBegin,indexEnd},{}}]
+        --[[
+        else
+            local indexBegin = (index-1)*batchSize + 1
+            local indexEnd = indexBegin + numRemain - 1
+            imageSet[index] = dataset.image[{{indexBegin,indexEnd},{}}]
+            depthSet[index] = dataset.depth[{{indexBegin,indexEnd},{}}]
+            ]]
+        end
+        --index = index + 1
+    end
+
+    local data = {
+        image = imageSet,
+        depth = depthSet,
+        size =  function() return imageSet:size(1) end
+    }
+
+    setmetatable(data,
+    {__index = function(t, i)
+                return {t.image[i], t.depth[i]}
+               end}
+    )
+
+    return data
+end
+
 
 --Download the datasets
 --[[
@@ -122,65 +205,16 @@ if (not paths.dirp("Test134Depth")) then
 end
 ]]
 
-trainSet = loadDataset('imageTrain','depthTrain')
-print('trainSet size:'..trainSet:size())
-testSet = loadDataset('imageTest','depthTest')
-print('testSet size:'..testSet:size())
+
+--testSet = loadDataset('imageTest','depthTest')
+--print('testSet size:'..testSet:size())
+
+--imageset = loadImage('imageTrain')
 
 
 -------------------------------------------------------
 -- 2,Define our neural network
 -------------------------------------------------------
---convBlock1
-function convBlock1(d0, d1, d2)
-    local cat = nn.ConcatTable()
-
-    local branch1 = nn.Sequential()
-    branch1:add(nn.SpatialConvolution(d0, d1, 1, 1))
-    -- branch1:add(nn.SpatialBatchNormalization(d1))
-    branch1:add(nn.ReLU())
-    branch1:add(nn.SpatialConvolution(d1, d1, 3, 3, 1, 1, 1, 1))
-    -- branch1:add(nn.SpatialBatchNormalization(d1))
-    branch1:add(nn.ReLU())
-    branch1:add(nn.SpatialConvolution(d1, d2, 1, 1))
-    -- branch1:add(SpatialBatchNormalization(d2))
-    local branch2 = nn.Sequential()
-
-    branch2:add(nn.Identity())
-
-    cat:add(branch1)
-    cat:add(branch2)
-
-    net:add(cat)
-    net:add(nn.CAddTable())
-    net:add(nn.ReLU)
-end
-
---conBlock2
-function convBlock2(s, d0, d1, d2)
-    local cat = nn.ConcatTable()
-
-    local branch1 = nn.Sequential()
-    branch1:add(nn.SpatialConvolution(d0, d1, 1, 1, s, s))
-    --branch1:add(nn.SpatialBatchNormalization(d1))
-    branch1:add(nn.ReLU())
-    branch1:add(nn.SpatialConvolution(d1, d1, 3, 3, 1, 1, 1, 1))
-    -- branch1:add(nn.SpatialBatchNormalization(d1))
-    branch1:add(nn.ReLU())
-    branch1:add(nn.SpatialConvolution(d1, d2, 1, 1, 1, 1))
-    -- branch1:add(nn.SpatialBatchNormalization(d2))
-
-    local branch2 = nn.Sequential()
-    branch2:add(nn.SpatialConvolution(d0, d2, 1, 1, s, s))
-    -- branch2:add(nn.SpatialBatchNormalization(d2))
-
-    cat:add(branch1)
-    cat:add(branch2)
-
-    net:add(cat)
-    net:add(nn.CAddTable())
-    net:add(nn.ReLU())
-end
 
 --Up-projection
 -- implement simple version of up-convolution
@@ -213,23 +247,26 @@ function upProjection(net, d1, d2)
     net:add(nn.CAddTable())
 
     net:add(nn.ReLU())
-ends
+end
 
 -- input size 304x228x3
 -- first part pre-trained by Facebook
 -- https://github.com/facebook/fb.resnet.torch
-model_resnet
+resnet = torch.load('ResNet50.t7')
 
 -- verify resnet-50 structure
-print('CRN net\n' .. model_resnet:__tostring())
 
 -- Second step : different kinds of up-projection implementations
 net = nn.Sequential()
-net:add(model_resnet)
+--net:add(nn.View(-1):setNumInputDims(10))
+net:add(resnet)
+--print('CRN net\n' .. resnet:__tostring())
 
-d0
-net:add(nn.SpatialConvolution(d0, d0, 1, 1, 1, 1))
---net:add(nn.BatchNormalization())
+
+d0 = 2048
+d1 = 1024
+net:add(nn.SpatialConvolution(d0, d1, 1, 1, 1, 1))
+--net:add(nn.BatchNormalization(1024))
 
 --build up projection blocks
 up_projection = nn.Sequential()
@@ -243,32 +280,67 @@ net:add(up_projection)
 d_final = 64
 net:add(nn.SpatialConvolution(d_final, 1, 3, 3, 1, 1, 1, 1))
 net:add(nn.ReLU())
-
+net:evaluate()
+net = net:cuda()
 
 -------------------------------------------------------
 --3,Define the loss function
 -------------------------------------------------------
 criterion = nn.MSECriterion()    --we use the mean square error
+criterion = criterion:cuda()
 
+
+--trainSet = trainSet:cuda()
+--imageset = imageset:cuda()
+--errTest(net,testSet)
+--[[
+imageoutput = resnet:forward(trainSet.image)
+traindata = {
+        image = imageoutput,
+        depth = trainSet.depth,
+        size =  function() return imageoutput:size(1) end
+    }
+
+setmetatable(traindata,
+    {__index = function(t, i)
+                return {t.image[i], t.depth[i]}
+               end})
+]]
 
 -------------------------------------------------------
 --4,Train the neural network
 -------------------------------------------------------
+trainSet = loadDataset('minibatch','depthTest')
+print('trainSet size:'..trainSet:size())
+
+
 trainer = nn.StochasticGradient(net, criterion)
 trainer.learningRate = 0.001
-trainer.maxIteration = 5 -- just do 5 epochs of training.
+trainer.maxIteration = 1 -- just do 5 epochs of training.
 
-trainer:train(trainset)
+--trainSet.image = trainSet.image:cuda()
+--trainSet.depth = trainSet.depth:cuda()
+--trainset = trainset:cuda()
+for i=1,20,1 do
+    local input = miniBatchload(trainSet,5)  
+    --input = input:cuda()
+    input.image = input.image:cuda()
+    input.depth = input.depth:cuda()
+    trainer:train(input)
+end
+
+--torch.save('upprojectionnet.t7',net)
+--trainpredi = net:forward(traindSet.image[1])
+--
+--traindata_rel = traindata.depth[1]:double()
+--trainpredi = trainpredi:double()
+
+--torch.save('depth_pre_test.t7',traindata_rel)
+--torch.save('depth_real_test.t7',trainpredi)
 
 ------------------------------------------------------
 --5,Test the network, caculate accuracy
 -----------------------------------------------------
-
---[[Firstly we define several effror function here for later use
-Define the functions for measuring the error
-1,Mean absolute relative error(rel): 1|T|∑ỹ ∈T|ỹ −y|y
-where T is the number of valid pixels in all images of the validation set, ỹ
- the predicted depth and y the corresponding ground truth]]
 
 function Relerror(predicted, groundtruth)
     local err = 0
@@ -362,5 +434,11 @@ function errTest(net,testSet)
     return Rmserror(predicted,testSet.depth)
 end
 
-err = errTest(net,testSet)
-print('The error caculated for the testSet is:'..err)
+--img = image.load("img-combined1-p-139t0.jpg")
+--img:cuda()
+--img = image.loadJPG("img-combined1-p-15t0.extraperson
+--torch.typename(trainSet)
+
+
+--print('The error caculated for the testSet is:'..err)
+--output=net:forward(img)
