@@ -1,25 +1,105 @@
-require 'nn'
-require 'image'
-require 'paths'
-require 'os'
-require 'math'
-require 'xlua'
-require 'cudnn'
-require 'cutorch'
-require 'cunn'
+local optim = require 'optim'
 
+local Dataloader = require 'dataloader'
 
-function train(net, criterion, batchLoader, trainSet)
+local M = {}
+local Trainer = torch.class('resnet.Trainer', M)
 
-    trainer = nn.StochasticGradient(net, criterion)
-    trainer.learningRate = 0.001
-    trainer.maxIteration = 1 -- just do 5 epochs of training.
-
-    for i=1,20,1 do
-        local input = batchLoader.miniBatchload(trainSet, 5)  
-        input.image = input.image:cuda()
-        input.depth = input.depth:cuda()
-        trainer:train(input)
-    end
-    
+function Trainer:__init(model, criterion, optimState, opt)
+   self.model = model
+   self.criterion = criterion
+   self.optimState = optimState
+   self.params, self.gradParams = model:getParameters()
+   self.batchSize = opt.batchSize
+   self.opt = opt
 end
+
+function Trainer:train(epoch, dataloader)
+   -- Trains the model for a single epoch
+   
+   -- set learning rate
+   self.optimState.learningRate = self:learningRate(epoch)
+
+   -- set up timer to calculate training time cost
+   local timer = torch.Timer()
+   local dataTimer = torch.Timer()
+
+   -- feval function for optim.stochastic training
+   local function feval()
+      return self.criterion.output, self.gradParams
+   end
+
+   -- size of the input
+   local trainSize = #dataloader.imagename
+
+   -- training batch counter 
+   local N = 0
+
+   local loss
+   local dataTime
+
+   print('=> Training epoch # ' .. epoch)
+   
+   -- set the batch norm to training mode
+   self.model:training()
+
+   local indexbegin = 1
+   while(indexbegin < trainSize+1) do
+        sample = dataloader:loadDatafromtable(indexbegin)
+        indexbegin = indexbegin + dataloader.size
+
+        for i = 1, sample:size(), 1 do
+            dataTime = dataTimer:time().real
+
+            -- Copy input and target to the GPU
+
+            self:copyInputs(sample.image[i],sample.depth[i])
+
+            local output = self.model:forward(self.input):float()
+            local batchSize = output:size(1)
+            loss = self.criterion:forward(self.model.output, self.target)
+
+            self.model:zeroGradParameters()
+            self.criterion:backward(self.model.output, self.target)
+            self.model:backward(self.input, self.criterion.gradInput)
+
+            optim.sgd(feval, self.params, self.optimState)
+
+            N = N + batchSize
+            
+            -- check that the storage didn't get changed due to an unfortunate getParameters call
+            assert(self.params:storage() == self.model:parameters()[1]:storage())
+
+            timer:reset()
+            dataTimer:reset()
+        end
+
+        -- print training infos
+        print((' | Epoch: [%d][%d/%d]    Time %.3f  Data %.3f  Err %1.4f '):format(
+            epoch, N, trainSize, timer:time().real, dataTime, loss))
+    end
+
+end
+
+function Trainer:copyInputs(image,depth)
+   self.input = image
+   self.target = depth
+end
+
+function Trainer:computeScore(validationSet)
+    -- Compute error for validation set 
+
+    return 0.1, 0.1
+end
+
+function Trainer:learningRate(epoch)
+   -- Training schedule
+   local decay = 0
+   if self.opt.dataset == 'imagenet' then
+      decay = math.floor((epoch - 1) / 30)
+   end
+
+   return self.opt.LR * math.pow(0.1, decay)
+end
+
+return M.Trainer
