@@ -52,7 +52,6 @@ function Trainer:train(epoch, dataloader)
             dataTime = dataTimer:time().real
 
             -- Copy input and target to the GPU
-
             self:copyInputs(sample.image[i],sample.depth[i])
 
             local output = self.model:forward(self.input):float()
@@ -82,8 +81,8 @@ function Trainer:train(epoch, dataloader)
 end
 
 function Trainer:copyInputs(image,depth)
-   self.input = image
-   self.target = depth
+   self.input = image:cuda()
+   self.target = depth:cuda()
 end
 
 function Trainer:computeScore(validationSet)
