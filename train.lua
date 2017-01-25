@@ -30,7 +30,7 @@ function Trainer:train(epoch, dataloader)
    end
 
    -- size of the input
-   local trainSize = #dataloader.imagename
+   local trainSize = #dataloader.trainImageTable
 
    -- training batch counter 
    local N = 0

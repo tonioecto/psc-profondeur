@@ -53,7 +53,7 @@ local trainer = Trainer(net, criterion, optimState, opt)
 -- Start or resume training precedure
 besValErr = math.huge
 for epoch = 1, opt.maxIteration, 1 do
-    dataloader:tableShuffle()
+    dataloader:tableShuffle('train')
     trainer:train(epoch, dataloader)
 
     --[[
