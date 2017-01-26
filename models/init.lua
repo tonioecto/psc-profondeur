@@ -52,10 +52,10 @@ function M.create(opt)
 
     -- build up projection blocks
     local up_projection = nn.Sequential()
-    upProjection(up_projection, 1024, 512, opt.batchSize, 16, 20)
-    upProjection(up_projection, 512, 256, opt.batchSize, 32, 40)
-    upProjection(up_projection, 256, 128, opt.batchSize, 64, 80)
-    upProjection(up_projection, 128, 64, opt.batchSize, 128, 160)
+    upProjection(up_projection, 1024, 512)
+    upProjection(up_projection, 512, 256)
+    upProjection(up_projection, 256, 128)
+    upProjection(up_projection, 128, 64)
     up_projection = up_projection:cuda()
 
     net:add(up_projection)

@@ -4,6 +4,7 @@ require 'nn'
 require 'cudnn'
 require 'cutorch'
 require 'cunn'
+require '/models/modules/UnPoolingCuda'
 
 local M = {}
 
@@ -16,9 +17,9 @@ function M.upConvolution(net, d1, d2)
 end
 
 -- Define simple up-projection block
-function M.upProjection(net, d1, d2, batchSize, h, w)
+function M.upProjection(net, d1, d2)
     
-    net:add(maxUnPoolingModule(batchSize, d1, h, w))
+    net:add(nn.UnPooling(2))
     local cat = nn.ConcatTable()
 
     local branch1 = nn.Sequential()
