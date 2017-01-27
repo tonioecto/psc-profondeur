@@ -29,14 +29,12 @@ end
 
 function M.create(opt)
 
-    -- input size 304x228x3
+    -- input size 3x228x304
     -- First step: load modified pre-trained model resnet-50
     local resnet = torch.load('ResNet50.t7')
 
     -- verify resnet-50 structure
     -- print('Pre-trained ResNet 50 model\n' .. resnet:__tostring())
-
-    -- Second step: simple up-projection implementations
     local net = nn.Sequential()
 
     -- add resnet-50
@@ -50,6 +48,7 @@ function M.create(opt)
     -- input depth 1024, SpatialBatchNormalization
     net:add(nn.SpatialBatchNormalization(1024))
 
+    -- Second step: simple up-projection implementations
     -- build up projection blocks
     local up_projection = nn.Sequential()
     upProjection(up_projection, 1024, 512)

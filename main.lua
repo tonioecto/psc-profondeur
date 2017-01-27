@@ -6,6 +6,7 @@ require 'nn'
 local DataLoader = require 'dataloader'
 local model = require '/models/init'
 local Trainer = require 'train'
+local checkpoints = require 'checkpoints'
 
 -- Creat options
 -- define batch-size, data-set to load, learning rate, max iteration times
@@ -19,7 +20,7 @@ local opt = {
     LR = 0.01,
     maxIteration = 100,
     tensorType = 'cuda'
-    resume = 'none'
+    resume = nil
 }
 
 print '==> load dataset'

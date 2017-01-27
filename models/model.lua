@@ -1,5 +1,4 @@
 --We import necessairy packages
-
 require 'nn'
 require 'cudnn'
 require 'cutorch'
@@ -38,6 +37,7 @@ function M.upProjection(net, d1, d2)
     net:add(cudnn.ReLU())
 end
 
+-- max un pooling module constructor
 function maxUnPoolingModule(batchSize, d1, d2, d3)
     
     local c = torch.Tensor(batchSize, d1, d2, d3)
