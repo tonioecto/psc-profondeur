@@ -3,7 +3,7 @@ local optim = require 'optim'
 local Dataloader = require 'dataloader'
 
 local M = {}
-local Trainer = torch.class('resnet.Trainer', M)
+local Trainer = torch.class('resunpooling.Trainer', M)
 
 function Trainer:__init(model, criterion, optimState, opt)
    self.model = model
@@ -65,6 +65,10 @@ function Trainer:train(epoch, dataloader)
             optim.sgd(feval, self.params, self.optimState)
 
             N = N + batchSize
+
+            -- print training infos
+            print((' | Epoch: [%d][%d/%d]    Time %.3f  Data %.3f  Err %1.4f '):format(
+                epoch, N, trainSize, timer:time().real, dataTime, loss))
             
             -- check that the storage didn't get changed due to an unfortunate getParameters call
             assert(self.params:storage() == self.model:parameters()[1]:storage())
@@ -73,9 +77,6 @@ function Trainer:train(epoch, dataloader)
             dataTimer:reset()
         end
 
-        -- print training infos
-        print((' | Epoch: [%d][%d/%d]    Time %.3f  Data %.3f  Err %1.4f '):format(
-            epoch, N, trainSize, timer:time().real, dataTime, loss))
     end
 
 end

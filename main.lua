@@ -20,7 +20,7 @@ local opt = {
     LR = 0.01,
     maxIteration = 100,
     tensorType = 'cuda'
-    resume = nil
+    resume = 'none'
 }
 
 print '==> load dataset'
@@ -33,7 +33,7 @@ local checkpoint, optimState = checkpoints.latest(opt)
 
 -- Create model
 print '==> create model'
-local net, criterion = model.create(opt)
+local net, criterion = model.setup(opt)
 -- verify the structure of the neural network created
 print('ResNet and up-projection \n' .. net:__tostring())
 

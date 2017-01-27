@@ -27,7 +27,7 @@ function M.setup(opt, checkpoint)
 
 end
 
-function M.create(opt)
+function M.create()
 
     -- input size 3x228x304
     -- First step: load modified pre-trained model resnet-50

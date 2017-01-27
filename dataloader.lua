@@ -2,12 +2,11 @@ require 'image'
 require 'paths'
 require 'os'
 require 'math'
---require 'matio'
 require 'xlua'
 
 local unpack = unpack or table.unpack
 local M = {}
-local DataLoader = torch.class('resnet.DataLoader', M)
+local DataLoader = torch.class('resunpooling.DataLoader', M)
 
 function M.load()
     local trainSet
