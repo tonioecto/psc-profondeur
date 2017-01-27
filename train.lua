@@ -1,5 +1,5 @@
+require 'paths'
 local optim = require 'optim'
-
 local Dataloader = require 'dataloader'
 
 local M = {}
@@ -84,6 +84,19 @@ end
 function Trainer:copyInputs(image,depth)
    self.input = image:cuda()
    self.target = depth:cuda()
+end
+
+function Trainer:saveLoss(loss)
+    local lossFilePath = paths.concat((opt.lossFile), 'training_loss.t7')
+
+    if self.opt.resume == 'none'
+        local trainingTrack = {}
+    else 
+        local trainingTrack = torch.load(lossFilePath)
+    end
+
+    table.insert(trainingTrack, loss)
+    torch.save(lossFilePath, trainingTrack)
 end
 
 function Trainer:computeScore(validationSet)

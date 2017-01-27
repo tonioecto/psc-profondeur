@@ -13,14 +13,15 @@ local checkpoints = require 'checkpoints'
 -- and resume flag
 print '==> set up training options'
 local opt = {
-    save = 'model_trained'
+    save = 'model_trained',
     sampleSize = 200,
     batchSize = 10,
     dataset  = 'imagenet',
     LR = 0.01,
     maxIteration = 100,
-    tensorType = 'cuda'
-    resume = 'none'
+    tensorType = 'cuda',
+    resume = 'none',
+    lossFile = 'loss_track'
 }
 
 print '==> load dataset'
@@ -56,6 +57,8 @@ besValErr = math.huge
 for epoch = 1, opt.maxIteration, 1 do
     dataloader:tableShuffle('train')
     trainer:train(epoch, dataloader)
+
+    -- trainer:saveLoss()
 
     --[[
     -- Run model on validation set
