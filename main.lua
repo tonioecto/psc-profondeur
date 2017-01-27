@@ -58,7 +58,7 @@ for epoch = 1, opt.maxIteration, 1 do
     dataloader:tableShuffle('train')
     trainer:train(epoch, dataloader)
 
-    -- trainer:saveLoss()
+    --trainer:saveLoss()
 
     --[[
     -- Run model on validation set
