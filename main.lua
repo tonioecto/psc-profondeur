@@ -14,19 +14,21 @@ local checkpoints = require 'checkpoints'
 print '==> set up training options'
 local opt = {
     save = 'model_trained',
-    sampleSize = 200,
-    batchSize = 10,
+    sampleSize = 1,
+    batchSize = 1,
     dataset  = 'imagenet',
-    LR = 0.01,
+    LR = 0.1,
     maxIteration = 100,
     tensorType = 'cuda',
     resume = 'none',
-    lossFile = 'loss_track'
+    lossFile = 'loss_track',
+    nesterov = true,
+    dampening = 0.0
 }
 
 print '==> load dataset'
 -- Data loading
-local dataloader = DataLoader("","",opt)
+local dataloader = DataLoader('imagetest', 'depth',opt)
 dataloader:creDatatable()
 
 -- Load previous checkpoint, if it exists
@@ -43,10 +45,12 @@ print '==> configuring optimizer'
 -- set parameters for optimized stochastic gradient descent method
 local optimState = {
     learningRate = opt.LR,
-    weightDecay = 0,
-    momentum = 0,
+    weightDecay = 1e-4,
+    momentum = 0.9,
     learningRateDecay = 0,
-    precision = 0.1
+    precision = 'single',
+    nesterov = true,
+    dampening = 0.0
 }
 
 -- Create Trainer class
@@ -58,7 +62,6 @@ for epoch = 1, opt.maxIteration, 1 do
     dataloader:tableShuffle('train')
     trainer:train(epoch, dataloader)
 
-    -- get loss for a ransom sample
     --trainer:saveLoss()
 
     --[[
@@ -75,3 +78,5 @@ for epoch = 1, opt.maxIteration, 1 do
     checkpoints.save(epoch, model, trainer.optimState, bestModel, opt)
     --]]
 end
+
+
