@@ -58,6 +58,7 @@ for epoch = 1, opt.maxIteration, 1 do
     dataloader:tableShuffle('train')
     trainer:train(epoch, dataloader)
 
+    -- get loss for a ransom sample
     --trainer:saveLoss()
 
     --[[
@@ -74,5 +75,3 @@ for epoch = 1, opt.maxIteration, 1 do
     checkpoints.save(epoch, model, trainer.optimState, bestModel, opt)
     --]]
 end
-
-
