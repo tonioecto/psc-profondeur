@@ -95,12 +95,14 @@ function Trainer:copyInputs(image,depth)
 end
 
 function Trainer:saveLoss(epoch, trainErr, valErr)
-    local lossFilePath = paths.concat((opt.lossFile), 'loss.t7')
+    local lossFilePath = paths.concat((self.opt.lossFile), 'loss.t7')
+    print(lossFilePath)
+	local trainingTrack
 
     if self.opt.resume == 'none' then
-        local trainingTrack = {}
+        trainingTrack = {}
     else
-        local trainingTrack = torch.load(lossFilePath)
+        trainingTrack = torch.load(lossFilePath)
     end
 
     local loss = {epoch, trainErr, valErr}
@@ -115,20 +117,23 @@ function Trainer:sampleTrainingLoss(num)
   local setSize = #self.dataloader.trainImageTable
   local indexTable = torch.randperm(setSize)
   local depthReal = torch.Tensor(num,unpack(self.opt.outputSize))
-  local imageSample = tprch.Tensor(num,unpack(self.opt.inputSize))
+  local imageSample = torch.Tensor(num,unpack(self.opt.inputSize))
   for i=1,num,1 do
     imageSample[i] = image.loadJPG(self.dataloader.trainImageTable[indexTable[i]])
     depthReal[i] = image.loadJPG(self.dataloader.trainDepthTable[indexTable[i]])
   end
-  local depthPred = self.model:forward(imageSample)
-  local loss = self.criterion:forward(depthPred, depthReal)
+  local depthPred = self.model:forward(imageSample:cuda())
+  local loss = self.criterion:forward(depthPred, depthReal:cuda())
   return loss
 end
 
 function Trainer:computeScore(validationSet)
     -- Compute error for validation set
-    local depthPred = self.model:forward(validationSet.image)
-    local loss = self.criterion:forward(depthPred,validationSet.depth)
+    print(#validationSet.image)
+    local depthPred = self.model:forward(validationSet.image:cuda())
+    print(#depthPred)
+    print(#validationSet.depth)
+    local loss = self.criterion:forward(depthPred,validationSet.depth:cuda())
 
     return loss
 end
