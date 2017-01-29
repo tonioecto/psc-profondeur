@@ -48,9 +48,9 @@ function M.create()
     d0 = 2048
     d1 = 1024
     -- 1-convolution, input depth 2048, output depth 1024
-    net:add(nn.SpatialConvolution(d0, d1, 1, 1, 1, 1))
+    up_projection:add(cudnn.SpatialConvolution(d0, d1, 1, 1, 1, 1))
     -- input depth 1024, SpatialBatchNormalization
-    net:add(nn.SpatialBatchNormalization(1024))
+    up_projection:add(cudnn.SpatialBatchNormalization(1024))
     upProjection(up_projection, 1024, 512)
     upProjection(up_projection, 512, 256)
     upProjection(up_projection, 256, 128)
