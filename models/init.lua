@@ -5,6 +5,7 @@ require 'cunn'
 
 local model = require '/models/model'
 local upProjection = model.upProjection
+local weightInit = require '/models/weight_init'
 
 local M = {}
 
@@ -40,6 +41,9 @@ function M.create()
     -- add resnet-50
     net:add(resnet)
 
+    -- Second step: simple up-projection implementations
+    -- build up projection blocks
+    local up_projection = nn.Sequential()
     -- add several modules before up-projection blocks
     d0 = 2048
     d1 = 1024
@@ -47,24 +51,23 @@ function M.create()
     net:add(nn.SpatialConvolution(d0, d1, 1, 1, 1, 1))
     -- input depth 1024, SpatialBatchNormalization
     net:add(nn.SpatialBatchNormalization(1024))
-
-    -- Second step: simple up-projection implementations
-    -- build up projection blocks
-    local up_projection = nn.Sequential()
     upProjection(up_projection, 1024, 512)
     upProjection(up_projection, 512, 256)
     upProjection(up_projection, 256, 128)
     upProjection(up_projection, 128, 64)
     up_projection = up_projection:cuda()
 
-    net:add(up_projection)
-
     -- add final modules
     local d_final = 64
     -- input depth 64, output depth 1, kernel 3X3
-    net:add(cudnn.SpatialConvolution(d_final, 1, 3, 3, 1, 1, 1, 1))
-    net:add(cudnn.ReLU())
+    un_projection:add(cudnn.SpatialConvolution(d_final, 1, 3, 3, 1, 1, 1, 1))
+    un_projection:add(cudnn.ReLU())
     -- convert net to cuda model
+    
+    -- set up weights of un_projection
+    weightInit.w_init(un_projection)
+
+    net:add(up_projection)
     net = net:cuda()
 
     -- define criterion
