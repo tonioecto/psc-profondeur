@@ -68,7 +68,7 @@ function Trainer:train(epoch, dataloader)
 
             --print(self.params:size())
 
-      
+
 
             optim.sgd(feval, self.params, self.optimState)
 
@@ -125,8 +125,10 @@ end
 
 function Trainer:computeScore(validationSet)
     -- Compute error for validation set
+    local depthPred = self.model:forward(validationSet.image)
+    local loss = self.criterion:forward(depthPred,validationSet.depth)
 
-    return 0.1, 0.1
+    return loss
 end
 
 function Trainer:learningRate(epoch)
