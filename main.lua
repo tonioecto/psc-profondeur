@@ -57,13 +57,16 @@ local optimState = {
 local trainer = Trainer(net, criterion, optimState, opt)
 
 -- Start or resume training precedure
+local num = 100
 besValErr = math.huge
 for epoch = 1, opt.maxIteration, 1 do
     dataloader:tableShuffle('train')
     trainer:train(epoch, dataloader)
 
     -- Run model on validation set
-    local valErr= trainer:test(epoch, valLoader)
+    local valErr = trainer:computeScore()
+
+    local trainErr = trainer:sampleTrainingLoss(100)
     
     local bestModel = false
     if valErr < bestValErr then
@@ -72,7 +75,7 @@ for epoch = 1, opt.maxIteration, 1 do
         print(' * Best model ', valErr)
     end
     
-    trainer:saveLoss()
+    trainer:saveLoss(epoch, valErr, trainErr)
 
     checkpoints.save(epoch, model, trainer.optimState, bestModel, opt)
 end
