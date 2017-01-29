@@ -66,17 +66,18 @@ for epoch = 1, opt.maxIteration, 1 do
     trainer:train(epoch, dataloader)
 
     -- Run model on validation set
-    local valErr = trainer:computeScore()
+    local valSet = dataloader:loadDataset(val)
+    local valErr = trainer:computeScore(valSet)
 
     local trainErr = trainer:sampleTrainingLoss(100)
-    
+
     local bestModel = false
     if valErr < bestValErr then
         bestModel = true
         bestValErr = valErr
         print(' * Best model ', valErr)
     end
-    
+
     trainer:saveLoss(epoch, valErr, trainErr)
 
     checkpoints.save(epoch, model, trainer.optimState, bestModel, opt)
