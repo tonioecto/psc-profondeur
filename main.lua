@@ -66,10 +66,10 @@ for epoch = 1, opt.maxIteration, 1 do
     trainer:train(epoch, dataloader)
 
     -- Run model on validation set
-    local valSet = dataloader:loadDataset(val)
+    local valSet = dataloader:loadDataset('val')
     local valErr = trainer:computeScore(valSet)
 
-    local trainErr = trainer:sampleTrainingLoss(100)
+    local trainErr = trainer:sampleTrainingLoss(10)
 
     local bestModel = false
     if valErr < bestValErr then

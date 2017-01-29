@@ -95,7 +95,7 @@ function Trainer:copyInputs(image,depth)
 end
 
 function Trainer:saveLoss(epoch, trainErr, valErr)
-    local lossFilePath = paths.concat((opt.lossFile), 'training_loss.t7')
+    local lossFilePath = paths.concat((opt.lossFile), 'loss.t7')
 
     if self.opt.resume == 'none' then
         local trainingTrack = {}
@@ -103,7 +103,7 @@ function Trainer:saveLoss(epoch, trainErr, valErr)
         local trainingTrack = torch.load(lossFilePath)
     end
 
-    local loss = {trainErr, valErr}
+    local loss = {epoch, trainErr, valErr}
 
     table.insert(trainingTrack, loss)
     torch.save(lossFilePath, trainingTrack)
