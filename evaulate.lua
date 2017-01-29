@@ -7,8 +7,15 @@ require 'xlua'
 require 'cudnn'
 require 'cutorch'
 require 'cunn'
+local gnu = require 'gnuplot'
 
 local M = {}
+
+function M.Display(pred,real)
+  gnu.imagesc(pred)
+  gnu.imagesc(real)
+end
+
 
 function M.Relerror(predicted, groundtruth)
     local err = 0

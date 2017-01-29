@@ -122,9 +122,9 @@ function DataLoader:loadDataset(s)       --Load the images and depthMap, and gen
         error('given directory doesn\'t contain any JPG files')
     end
 
-    local imageSet = torch.Tensor(#self.imagename,unpack(self.opt.inputSize))
-    local depthSet = torch.Tensor(#self.depthname,unpack(self.opt.outputSize))
-    local mat = require 'matio'
+    local imageSet = torch.Tensor(#imagetable,unpack(self.opt.inputSize))
+    local depthSet = torch.Tensor(#depthtable,unpack(self.opt.outputSize))
+    --local mat = require 'matio'
 
     for i,file in ipairs(self.imagename) do
         local m = image.loadJPG(file)
