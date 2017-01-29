@@ -48,7 +48,7 @@ local optimState = {
     weightDecay = 1e-3,
     momentum = 0.9,
     learningRateDecay = 0,
-    precision = 'single',
+    precision = 'double',
     nesterov = true,
     dampening = 0.0
 }
