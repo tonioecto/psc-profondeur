@@ -94,7 +94,7 @@ function Trainer:copyInputs(image,depth)
    self.target = depth:cuda()
 end
 
-function Trainer:saveLoss(trainErr, valErr)
+function Trainer:saveLoss(epoch, trainErr, valErr)
     local lossFilePath = paths.concat((opt.lossFile), 'training_loss.t7')
 
     if self.opt.resume == 'none' then
