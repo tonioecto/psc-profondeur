@@ -126,13 +126,13 @@ function DataLoader:loadDataset(s)       --Load the images and depthMap, and gen
     local depthSet = torch.Tensor(#depthtable,unpack(self.opt.outputSize))
     --local mat = require 'matio'
 
-    for i,file in ipairs(self.imagename) do
+    for i,file in ipairs(imagetable) do
         local m = image.loadJPG(file)
         --m = image.scale(m,304,228,'bicubic')
         imageSet[i] = m
     end
 
-    for i,file in ipairs(self.depthname) do
+    for i,file in ipairs(depthtable) do
         --local m = mat.load(file,'depthMap')
         --m = image.scale(m,128 ,160,'bicubic')
         local m = image.loadJPG(file)
