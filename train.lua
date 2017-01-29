@@ -106,6 +106,11 @@ function Trainer:saveLoss(loss)
     torch.save(lossFilePath, trainingTrack)
 end
 
+function Trainer:sampleTrainingLoss(num)
+	-- sample of size num
+	-- dataloader:tableShuffle('train')
+end	
+
 function Trainer:computeScore(validationSet)
     -- Compute error for validation set 
 
