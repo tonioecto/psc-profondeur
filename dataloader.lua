@@ -2,11 +2,12 @@ require 'image'
 require 'paths'
 require 'os'
 require 'math'
+--require 'matio'
 require 'xlua'
 
 local unpack = unpack or table.unpack
 local M = {}
-local DataLoader = torch.class('resunpooling.DataLoader', M)
+local DataLoader = torch.class('resnet.DataLoader', M)
 
 function M.load()
     local trainSet
@@ -39,7 +40,7 @@ function DataLoader:creDatatable()
     self.testDepthTable = {}
 
     for file in paths.files(self.imageset) do
-        if file:find(".*(jpg)$") then
+        if file:find(".*(jpeg)$") then
             table.insert(self.imagename, paths.concat(self.imageset,file))
         end
     end
@@ -53,10 +54,11 @@ function DataLoader:creDatatable()
 
     local indexFakefile = {}
     for i,file in ipairs(self.imagename) do
-        local name = file:match(".+/img(.*).jpg$")
-        local index = 'depth'..name
-        local fullname = index..'.mat'
-        local matname = paths.concat(self.depthset,fullname)
+        --local name = file:match(".+/img(.*).jpg$")
+        local name = file:match(".+/(.*)$")
+        --local index = 'depth'..name
+        --local fullname = index..'.mat'
+        local matname = paths.concat(self.depthset,name)
         if paths.filep(matname)then
             table.insert(self.depthname,matname)
         else
@@ -79,8 +81,8 @@ function DataLoader:creDatatable()
 
     local dataSetSize = #self.imagename
 
-    local trainSetSize = 0.8 * dataSetSize
-    local valiSetSize = 0.9 * dataSetSize
+    local trainSetSize = math.ceil(0.8 * dataSetSize)
+    local valiSetSize = math.ceil(0.9 * dataSetSize)
 
     for i=1,trainSetSize,1 do
       table.insert(self.trainImageTable,self.imagename[i])
@@ -101,40 +103,6 @@ end
 
 
 function DataLoader:loadDataset(s)       --Load the images and depthMap, and generate dataset for trainning
-
-  --[[
-    local self.imagename = {}
-    local self.depthname = {}
-
-    for file in paths.files(imageSet) do
-        if file:find(".*(jpg)$") then
-            table.insert(self.imagename, paths.concat(imageSet,file))
-        end
-    end
-
-    if #self.imagename == 0 then
-        error('given directory doesn\'t contain any JPG files')
-    end
-
-    table.sort(self.imagename, function (a,b) return a < b end)
-    print(#self.imagename)
-
-    local indexFakefile = {}
-    for i,file in ipairs(self.imagename) do
-        local name = file:match(".+/img(.*).jpg$")
-        local index = 'depth'..name
-        local fullname = index..'.mat'
-        local matname = paths.concat(depthSet,fullname)
-        if paths.filep(matname)then
-            table.insert(self.depthname,matname)
-        else
-            table.insert(indexFakefile,i)
-        end
-    end
-    for i=#indexFakefile,1,-1 do
-        table.remove(self.imagename,indexFakefile[i])
-    end
-   ]]
     local imagetable = {}
     local depthtable = {}
     if s=="val" then
@@ -154,19 +122,19 @@ function DataLoader:loadDataset(s)       --Load the images and depthMap, and gen
     end
 
     local imageSet = torch.Tensor(#self.imagename,3,228,304)
-    local depthSet = torch.Tensor(#self.depthname,160,128)
+    local depthSet = torch.Tensor(#self.depthname,128,160)
     local mat = require 'matio'
 
     for i,file in ipairs(self.imagename) do
         local m = image.loadJPG(file)
-        m = image.scale(m,304,228,'bicubic')
+        --m = image.scale(m,304,228,'bicubic')
         imageSet[i] = m
     end
 
     for i,file in ipairs(self.depthname) do
-        local m = mat.load(file,'depthMap')
-        m = image.scale(m,128,160,'bicubic')
-
+        --local m = mat.load(file,'depthMap')
+        --m = image.scale(m,128 ,160,'bicubic')
+        local m = image.loadJPG(file)
         depthSet[i] = m
     end
 
@@ -267,15 +235,16 @@ function DataLoader:loadDatafromtable(indexstart)
         sampleRealsize = imageRemain
     end
     local imageSet = torch.Tensor(sampleRealsize,3,228,304)
-    local depthSet = torch.Tensor(sampleRealsize,160,128)
+    local depthSet = torch.Tensor(sampleRealsize,128,160)
     local mat = require 'matio'
 
     for i = 1,sampleRealsize,1 do
         local index = indexstart + i - 1
         local m1 = image.loadJPG(self.trainImageTable[index])
-        local m2 = mat.load(self.trainDepthTable[index],'depthMap')
-        m1 = image.scale(m1,304,228,'bicubic')
-        m2 = image.scale(m2,128,160,'bicubic')
+        local m2 = image.loadJPG(self.trainDepthTable[index])
+        --local m2 = mat.load(self.trainDepthTable[index],'depthMap')
+        --m1 = image.scale(m1,304,228,'bicubic')
+        --m2 = image.scale(m2,128,160,'bicubic')
 
         imageSet[i] = m1
         depthSet[i] = m2
