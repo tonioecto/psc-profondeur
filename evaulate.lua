@@ -8,7 +8,9 @@ require 'cudnn'
 require 'cutorch'
 require 'cunn'
 
-function Relerror(predicted, groundtruth)
+local M = {}
+
+function M.Relerror(predicted, groundtruth)
     local err = 0
     local Tsize = predicted:size(1)*predicted:size(2)
     Tsize:mul(predicted:size(3))
@@ -21,7 +23,7 @@ function Relerror(predicted, groundtruth)
     return err
 end
 
-function Rmserror(predicted,groudtruth)
+function M.Rmserror(predicted,groudtruth)
     local err = 0
     local Tsize = predicted:size(1)*predicted:size(2)
     Tsize:mul(predicted:size(3))
@@ -37,7 +39,7 @@ function Rmserror(predicted,groudtruth)
     return err
 end
 
-function Rmslogerr(predicted,groudtruth)
+function M.Rmslogerr(predicted,groudtruth)
     local err = 0
     local Tsize = predicted:size(1)*predicted:size(2)
     Tsize:mul(predicted:size(3))
@@ -56,7 +58,7 @@ function Rmslogerr(predicted,groudtruth)
     return err
 end
 
-function Logerr(predicted,groundtruth)
+function M.Logerr(predicted,groundtruth)
     local err = 0
     local Tsize = predicted:size(1)*predicted:size(2)
     Tsize:mul(predicted:size(3))
@@ -73,7 +75,7 @@ function Logerr(predicted,groundtruth)
     return err
 end
 
-function Thresherr(predicted,groundtruth,i)
+function M.Thresherr(predicted,groundtruth,i)
     local Thresh = math.pow(1.25,i)
     local Tsize = predicted:size(1)*predicted:size(2)
     Tsize:mul(predicted:size(3))
@@ -92,10 +94,12 @@ function Thresherr(predicted,groundtruth,i)
     return err*100
 end
 
-function errTest(net,testSet)
+function M.errTest(net,testSet)
     local predicted = torch.Tensor(testSet.depth:size())
     for i = 1,predicted:size(1) do
         predicted[i] = net:forward(testSet.image[i])
     end
     return Rmserror(predicted,testSet.depth)
 end
+
+return M
