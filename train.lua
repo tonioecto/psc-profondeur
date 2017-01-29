@@ -94,7 +94,7 @@ function Trainer:copyInputs(image,depth)
    self.target = depth:cuda()
 end
 
-function Trainer:saveLoss(loss)
+function Trainer:saveLoss(trainErr, valErr)
     local lossFilePath = paths.concat((opt.lossFile), 'training_loss.t7')
 
     if self.opt.resume == 'none' then
@@ -102,6 +102,8 @@ function Trainer:saveLoss(loss)
     else
         local trainingTrack = torch.load(lossFilePath)
     end
+
+    local loss = {trainErr, valErr}
 
     table.insert(trainingTrack, loss)
     torch.save(lossFilePath, trainingTrack)
