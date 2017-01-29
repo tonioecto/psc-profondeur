@@ -17,7 +17,7 @@ function Trainer:train(epoch, dataloader)
    -- Trains the model for a single epoch
 
    self.dataloader = dataloader
-   
+
    -- set learning rate
    self.optimState.learningRate = self:learningRate(epoch)
    print(self.optimState.learningRate)
@@ -34,14 +34,14 @@ function Trainer:train(epoch, dataloader)
    -- size of the input
    local trainSize = #self.dataloader.trainImageTable
 
-   -- training batch counter 
+   -- training batch counter
    local N = 0
 
    local loss
    local dataTime
 
    print('=> Training epoch # ' .. epoch)
-   
+
    -- set the batch norm to training mode
    self.model:training()
 
@@ -63,9 +63,9 @@ function Trainer:train(epoch, dataloader)
             self.model:zeroGradParameters()
             self.criterion:backward(self.model.output, self.target)
             self.model:backward(self.input, self.criterion.gradInput)
-            
+
             --print(self.params:size())
-            
+
             for i = 63580033, 63580023, -1 do
 				print(self.params[i])
 			end
@@ -77,7 +77,7 @@ function Trainer:train(epoch, dataloader)
             -- print training infos
             print((' | Epoch: [%d][%d/%d]    Time %.3f  Data %.3f  Err %1.4f '):format(
                 epoch, N, trainSize, timer:time().real, dataTime, loss))
-            
+
             -- check that the storage didn't get changed due to an unfortunate getParameters call
             assert(self.params:storage() == self.model:parameters()[1]:storage())
 
@@ -99,7 +99,7 @@ function Trainer:saveLoss(loss)
 
     if self.opt.resume == 'none' then
         local trainingTrack = {}
-    else 
+    else
         local trainingTrack = torch.load(lossFilePath)
     end
 
@@ -110,10 +110,15 @@ end
 function Trainer:sampleTrainingLoss(num)
 	-- sample of size num
 	-- self.dataloader:tableShuffle('train')
-end	
+  local setSize = #self.dataloader.trainImageTable
+  local indexTable = torch.randperm(setSize)
+  local depthReal = torch.Tensor(num,128,160)
+  local imageSample = tprch.Tensor(num,3,228,304)
+  for 
+end
 
 function Trainer:computeScore(validationSet)
-    -- Compute error for validation set 
+    -- Compute error for validation set
 
     return 0.1, 0.1
 end
