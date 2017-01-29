@@ -114,17 +114,17 @@ end
 function Trainer:sampleTrainingLoss(num)
 	-- sample of size num
 	-- self.dataloader:tableShuffle('train')
-  local setSize = #self.dataloader.trainImageTable
-  local indexTable = torch.randperm(setSize)
-  local depthReal = torch.Tensor(num,unpack(self.opt.outputSize))
-  local imageSample = torch.Tensor(num,unpack(self.opt.inputSize))
-  for i=1,num,1 do
-    imageSample[i] = image.loadJPG(self.dataloader.trainImageTable[indexTable[i]])
-    depthReal[i] = image.loadJPG(self.dataloader.trainDepthTable[indexTable[i]])
-  end
-  local depthPred = self.model:forward(imageSample:cuda())
-  local loss = self.criterion:forward(depthPred, depthReal:cuda())
-  return loss
+    local setSize = #self.dataloader.trainImageTable
+    local indexTable = torch.randperm(setSize)
+    local depthReal = torch.Tensor(num,unpack(self.opt.outputSize))
+    local imageSample = torch.Tensor(num,unpack(self.opt.inputSize))
+    for i=1,num,1 do
+        imageSample[i] = image.loadJPG(self.dataloader.trainImageTable[indexTable[i]])
+        depthReal[i] = image.loadJPG(self.dataloader.trainDepthTable[indexTable[i]])
+    end
+    local depthPred = self.model:forward(imageSample:cuda())
+    local loss = self.criterion:forward(depthPred, depthReal:cuda())
+    return loss
 end
 
 function Trainer:computeScore(validationSet)
