@@ -14,11 +14,11 @@ local checkpoints = require 'checkpoints'
 print '==> set up training options'
 local opt = {
     save = 'model_trained',
-    sampleSize = 1,
-    batchSize = 1,
+    sampleSize = 100,
+    batchSize = 8,
     dataset  = 'imagenet',
-    LR = 0.1,
-    maxIteration = 100,
+    LR = 0.01,
+    maxIteration = 1000,
     tensorType = 'cuda',
     resume = 'none',
     lossFile = 'loss_track',
@@ -28,7 +28,7 @@ local opt = {
 
 print '==> load dataset'
 -- Data loading
-local dataloader = DataLoader('imagetest', 'depth',opt)
+local dataloader = DataLoader('image', 'depth',opt)
 dataloader:creDatatable()
 
 -- Load previous checkpoint, if it exists
@@ -45,7 +45,7 @@ print '==> configuring optimizer'
 -- set parameters for optimized stochastic gradient descent method
 local optimState = {
     learningRate = opt.LR,
-    weightDecay = 1e-4,
+    weightDecay = 1e-3,
     momentum = 0.9,
     learningRateDecay = 0,
     precision = 'single',

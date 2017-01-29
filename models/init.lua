@@ -12,7 +12,7 @@ local M = {}
 function M.setup(opt, checkpoint)
 
     if (checkpoint == nil) then
-        return create()
+        return M.create()
     end
 
     -- load latest models
@@ -55,17 +55,18 @@ function M.create()
     upProjection(up_projection, 512, 256)
     upProjection(up_projection, 256, 128)
     upProjection(up_projection, 128, 64)
-    up_projection = up_projection:cuda()
 
     -- add final modules
     local d_final = 64
     -- input depth 64, output depth 1, kernel 3X3
-    un_projection:add(cudnn.SpatialConvolution(d_final, 1, 3, 3, 1, 1, 1, 1))
-    un_projection:add(cudnn.ReLU())
+    up_projection:add(cudnn.SpatialConvolution(d_final, 1, 3, 3, 1, 1, 1, 1))
+    up_projection:add(cudnn.ReLU())
     -- convert net to cuda model
+    up_projection = up_projection:cuda()
+
     
     -- set up weights of un_projection
-    weightInit.w_init(un_projection)
+    weightInit.w_init(up_projection)
 
     net:add(up_projection)
     net = net:cuda()

@@ -3,26 +3,28 @@ require 'distributions'
 
 local M = {}
 
-function sampleGauss(m, mu, sigma)
+function M.sampleGauss(m, gen, mu, sigma)
     local w, g = m:getParameters()
-    for i = 1, w:size()[1], 1 do
-        w[i] = distributions.mvn.rnd(mu, sigma)
-    end
+    local size = w:size()
+    print(size)
+    w:copy(sigma * torch.randn(size))
+    print(m:__tostring())
     return m
 end
 
 
 function M.w_init(net)
 
-    local mu = torch.Tensor({0})
-    local sigma = torch.Tensor({0.01})
+    local mu = 0
+    local sigma = 0.01
+    local gen = torch.Generator()
     
     for i,m in ipairs(net:listModules()) do
         if m.modules == nil then
             if m.__typename == 'nn.SpatialConvolution' then
-                M.sampleGauss(m, mu, sigma)
+                M.sampleGauss(m, gen, mu, sigma)
             elseif m.__typename == 'cudnn.SpatialConvolution' then
-                M.sampleGauss(m, mu, sigma)       
+                M.sampleGauss(m, gen, mu, sigma)       
             end
 
             if m.bias then
@@ -36,4 +38,4 @@ function M.w_init(net)
 end
 
 
-return w_init
+return M

@@ -19,6 +19,7 @@ function Trainer:train(epoch, dataloader)
    
    -- set learning rate
    self.optimState.learningRate = self:learningRate(epoch)
+   print(self.optimState.learningRate)
 
    -- set up timer to calculate training time cost
    local timer = torch.Timer()
@@ -61,6 +62,12 @@ function Trainer:train(epoch, dataloader)
             self.model:zeroGradParameters()
             self.criterion:backward(self.model.output, self.target)
             self.model:backward(self.input, self.criterion.gradInput)
+            
+            --print(self.params:size())
+            
+            for i = 63580033, 63580023, -1 do
+				print(self.params[i])
+			end
 
             optim.sgd(feval, self.params, self.optimState)
 
@@ -89,7 +96,7 @@ end
 function Trainer:saveLoss(loss)
     local lossFilePath = paths.concat((opt.lossFile), 'training_loss.t7')
 
-    if self.opt.resume == 'none'
+    if seslf.opt.resume == 'none' then
         local trainingTrack = {}
     else 
         local trainingTrack = torch.load(lossFilePath)
@@ -107,10 +114,7 @@ end
 
 function Trainer:learningRate(epoch)
    -- Training schedule
-   local decay = 0
-   if self.opt.dataset == 'imagenet' then
-      decay = math.floor((epoch - 1) / 30)
-   end
+   local decay = math.floor((epoch - 1) / 10)
 
    return self.opt.LR * math.pow(0.1, decay)
 end
