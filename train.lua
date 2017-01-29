@@ -1,8 +1,10 @@
 require 'paths'
 local optim = require 'optim'
+require 'image'
 
 local M = {}
 local Trainer = torch.class('resunpooling.Trainer', M)
+local unpack = unpack or table.unpack
 
 function Trainer:__init(model, criterion, optimState, opt)
    self.model = model
@@ -66,9 +68,7 @@ function Trainer:train(epoch, dataloader)
 
             --print(self.params:size())
 
-            for i = 63580033, 63580023, -1 do
-				print(self.params[i])
-			end
+      
 
             optim.sgd(feval, self.params, self.optimState)
 
@@ -112,9 +112,15 @@ function Trainer:sampleTrainingLoss(num)
 	-- self.dataloader:tableShuffle('train')
   local setSize = #self.dataloader.trainImageTable
   local indexTable = torch.randperm(setSize)
-  local depthReal = torch.Tensor(num,128,160)
-  local imageSample = tprch.Tensor(num,3,228,304)
-  for 
+  local depthReal = torch.Tensor(num,unpack(self.opt.outputSize))
+  local imageSample = tprch.Tensor(num,unpack(self.opt.inputSize))
+  for i=1,num,1 do
+    imageSample[i] = image.loadJPG(self.dataloader.trainImageTable[indexTable[i]])
+    depthReal[i] = image.loadJPG(self.dataloader.trainDepthTable[indexTable[i]])
+  end
+  local depthPred = self.model:forward(imageSample)
+  local loss = self.criterion:forward(depthPred, depthReal)
+  return loss
 end
 
 function Trainer:computeScore(validationSet)
