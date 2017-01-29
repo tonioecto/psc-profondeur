@@ -6,9 +6,7 @@ local M = {}
 function M.sampleGauss(m, gen, mu, sigma)
     local w, g = m:getParameters()
     local size = w:size()
-    print(size)
     w:copy(sigma * torch.randn(size))
-    print(m:__tostring())
     return m
 end
 

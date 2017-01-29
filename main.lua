@@ -16,8 +16,8 @@ local opt = {
     inputSize = {3, 228, 304},
     outputSize = {128, 160},
     save = 'model_trained',
-    sampleSize = 100,
-    batchSize = 8,
+    sampleSize = 6,
+    batchSize = 2,
     dataset  = 'imagenet',
     LR = 0.01,
     maxIteration = 1000,
@@ -30,7 +30,7 @@ local opt = {
 
 print '==> load dataset'
 -- Data loading
-local dataloader = DataLoader('image', 'depth',opt)
+local dataloader = DataLoader('imagetest', 'depth',opt)
 dataloader:creDatatable()
 
 -- Load previous checkpoint, if it exists
@@ -69,7 +69,7 @@ for epoch = 1, opt.maxIteration, 1 do
     local valSet = dataloader:loadDataset('val')
     local valErr = trainer:computeScore(valSet)
 
-    local trainErr = trainer:sampleTrainingLoss(10)
+    local trainErr = trainer:sampleTrainingLoss(2)
 
     local bestModel = false
     if valErr < bestValErr then
