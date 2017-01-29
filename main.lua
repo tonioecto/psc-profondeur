@@ -13,8 +13,8 @@ local checkpoints = require 'checkpoints'
 -- and resume flag
 print '==> set up training options'
 local opt = {
-    inputSize = {3, 228, 304}
-    outputSize = {128, 160}
+    inputSize = {3, 228, 304},
+    outputSize = {128, 160},
     save = 'model_trained',
     sampleSize = 100,
     batchSize = 8,
