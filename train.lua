@@ -1,6 +1,5 @@
 require 'paths'
 local optim = require 'optim'
-local Dataloader = require 'dataloader'
 
 local M = {}
 local Trainer = torch.class('resunpooling.Trainer', M)
@@ -16,6 +15,8 @@ end
 
 function Trainer:train(epoch, dataloader)
    -- Trains the model for a single epoch
+
+   self.dataloader = dataloader
    
    -- set learning rate
    self.optimState.learningRate = self:learningRate(epoch)
@@ -31,7 +32,7 @@ function Trainer:train(epoch, dataloader)
    end
 
    -- size of the input
-   local trainSize = #dataloader.trainImageTable
+   local trainSize = #self.dataloader.trainImageTable
 
    -- training batch counter 
    local N = 0
@@ -46,8 +47,8 @@ function Trainer:train(epoch, dataloader)
 
    local indexbegin = 1
    while(indexbegin < trainSize+1) do
-        sample = dataloader:loadDatafromtable(indexbegin)
-        indexbegin = indexbegin + dataloader.size
+        sample = self.dataloader:loadDatafromtable(indexbegin)
+        indexbegin = indexbegin + self.dataloader.size
 
         for i = 1, sample:size(), 1 do
             dataTime = dataTimer:time().real
@@ -96,7 +97,7 @@ end
 function Trainer:saveLoss(loss)
     local lossFilePath = paths.concat((opt.lossFile), 'training_loss.t7')
 
-    if seslf.opt.resume == 'none' then
+    if self.opt.resume == 'none' then
         local trainingTrack = {}
     else 
         local trainingTrack = torch.load(lossFilePath)
@@ -108,7 +109,7 @@ end
 
 function Trainer:sampleTrainingLoss(num)
 	-- sample of size num
-	-- dataloader:tableShuffle('train')
+	-- self.dataloader:tableShuffle('train')
 end	
 
 function Trainer:computeScore(validationSet)

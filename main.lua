@@ -62,9 +62,6 @@ for epoch = 1, opt.maxIteration, 1 do
     dataloader:tableShuffle('train')
     trainer:train(epoch, dataloader)
 
-    --trainer:saveLoss()
-
-    --[[
     -- Run model on validation set
     local valErr= trainer:test(epoch, valLoader)
     
@@ -75,8 +72,7 @@ for epoch = 1, opt.maxIteration, 1 do
         print(' * Best model ', valErr)
     end
     
+    trainer:saveLoss()
+
     checkpoints.save(epoch, model, trainer.optimState, bestModel, opt)
-    --]]
 end
-
-
