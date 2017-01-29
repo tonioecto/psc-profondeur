@@ -21,7 +21,7 @@ function DataLoader:__init(imageset, depthset,opt)
    self.depthset = depthset
    --self.indexstart = indexstart
    self.size = opt.sampleSize
-   self.batchsize = opt.batchsize
+   self.batchsize = opt.batchSize
    self.opt = opt
 end
 
