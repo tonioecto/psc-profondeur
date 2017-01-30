@@ -129,10 +129,7 @@ end
 
 function Trainer:computeScore(validationSet)
     -- Compute error for validation set
-    print(#validationSet.image)
     local depthPred = self.model:forward(validationSet.image:cuda())
-    print(#depthPred)
-    print(#validationSet.depth)
     local loss = self.criterion:forward(depthPred,validationSet.depth:cuda())
 
     return loss
