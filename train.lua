@@ -66,10 +66,6 @@ function Trainer:train(epoch, dataloader)
             self.criterion:backward(self.model.output, self.target)
             self.model:backward(self.input, self.criterion.gradInput)
 
-            --print(self.params:size())
-
-
-
             optim.sgd(feval, self.params, self.optimState)
 
             N = N + batchSize
