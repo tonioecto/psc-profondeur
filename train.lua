@@ -137,7 +137,8 @@ function Trainer:showDepth(str,num)
     for i=1,num,i do
       local rand = math.random(#self.dataloader.trainImageTable)
       local depthPred = self.model:forward(image.loadJPG(self.dataloader.trainImageTable[rand]):cuda())
-      local Pred = depthPred[1]
+      
+      print(#Pred)
       local depthReal = image.loadJPG(self.dataloader.trainDepthTable[rand])
       local Real = depthReal[1]
       evaluate.Display(Pred,Real)
@@ -149,6 +150,7 @@ function Trainer:showDepth(str,num)
       local depthReal = image.loadJPG(self.dataloader.valDepthTable[rand])
       local Pred = depthPred[1]
       local Real = depthReal[1]
+      
       evaluate.Display(Pred,Real)
     end
   end
