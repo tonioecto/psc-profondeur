@@ -137,10 +137,9 @@ function Trainer:showDepth(str,num)
     for i=1,num,i do
       local rand = math.random(#self.dataloader.trainImageTable)
       local depthPred = self.model:forward(image.loadJPG(self.dataloader.trainImageTable[rand]):cuda())
-      
-      print(#Pred)
       local depthReal = image.loadJPG(self.dataloader.trainDepthTable[rand])
-      local Real = depthReal[1]
+      local Pred = torch.reshape(depthPred,unpack(self.opt.outputSize))
+      local Real = torch.reshape(depthReal,unpack(self.opt.outputSize))
       evaluate.Display(Pred,Real)
     end
   elseif str == "val" then
@@ -148,9 +147,9 @@ function Trainer:showDepth(str,num)
       local rand = math.random(#self.dataloader.valImageTable)
       local depthPred = self.model:forward(image.loadJPG(self.dataloader.valImageTable[rand]):cuda())
       local depthReal = image.loadJPG(self.dataloader.valDepthTable[rand])
-      local Pred = depthPred[1]
-      local Real = depthReal[1]
-      
+      local Pred = torch.reshape(depthPred,unpack(self.opt.outputSize))
+      local Real = torch.reshape(depthReal,unpack(self.opt.outputSize))
+
       evaluate.Display(Pred,Real)
     end
   end
