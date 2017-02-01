@@ -70,6 +70,7 @@ for epoch = 1, opt.maxIteration, 1 do
     local valErr = trainer:computeScore(valSet)
 
     local trainErr = trainer:sampleTrainingLoss(2)
+    trainer:showDepth('train',2)
 
     local bestModel = false
     if valErr < bestValErr then
