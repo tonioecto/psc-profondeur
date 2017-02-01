@@ -134,26 +134,35 @@ end
 
 function Trainer:showDepth(str,num)
   if str == "train" then
-    for i=1,num,i do
+    for i=1,num,1 do
       local rand = math.random(#self.dataloader.trainImageTable)
       local depthPred = self.model:forward(image.loadJPG(self.dataloader.trainImageTable[rand]):cuda())
       local depthReal = image.loadJPG(self.dataloader.trainDepthTable[rand])
       local Pred = torch.reshape(depthPred,unpack(self.opt.outputSize))
       local Real = torch.reshape(depthReal,unpack(self.opt.outputSize))
-      local preName = "depthPred"..i..".pdf"
-      local realName = "depthReal"..i..".pdf"
-      evaluate.Display(Pred,Real,preName,realName)
+      local preName = "depthPred"..i..".t7"
+      local realName = "depthReal"..i..".t7"
+      Pred = Pred:float()
+      Real = Real:float()
+      torch.save(preName,Pred)
+      torch.save(realName,Real)
+      
+      --evaluate.Display(Pred,Real,preName,realName)
     end
   elseif str == "val" then
-    for i=1,num,i do
+    for i=1,num,1 do
       local rand = math.random(#self.dataloader.valImageTable)
       local depthPred = self.model:forward(image.loadJPG(self.dataloader.valImageTable[rand]):cuda())
       local depthReal = image.loadJPG(self.dataloader.valDepthTable[rand])
       local Pred = torch.reshape(depthPred,unpack(self.opt.outputSize))
       local Real = torch.reshape(depthReal,unpack(self.opt.outputSize))
-      local preName = "depthPred"..i..".pdf"
-      local realName = "depthReal"..i..".pdf"
-      evaluate.Display(Pred,Real,preName,realName)
+      local preName = "depthPred"..i..".t7"
+      local realName = "depthReal"..i..".t7"
+      Pred = Pred:float()
+      Real = Real:float()
+      torch.save(preName,Pred)
+      torch.save(realName,Real)
+      --evaluate.Display(Pred,Real,preName,realName)
     end
   end
 end
