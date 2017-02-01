@@ -11,9 +11,13 @@ local gnu = require 'gnuplot'
 
 local M = {}
 
-function M.Display(pred,real)
+function M.Display(pred,real,preName,realName)
+  gnu.pdffigure(preName)
   gnu.imagesc(pred,'color')
+  gnuplot.plotflush()
+  gnu.pdffigure(realName)
   gnu.imagesc(real,'color')
+  gnuplot.plotflush()
 end
 
 
