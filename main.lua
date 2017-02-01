@@ -66,7 +66,7 @@ for epoch = 1, opt.maxIteration, 1 do
     trainer:train(epoch, dataloader)
 
     -- Run model on validation set
-    model:evaluate()
+    net:evaluate()
 
     local valSet = dataloader:loadDataset('val')
     local valErr = trainer:computeScore(valSet)
@@ -83,5 +83,5 @@ for epoch = 1, opt.maxIteration, 1 do
 
     trainer:saveLoss(epoch, valErr, trainErr)
 
-    checkpoints.save(epoch, model, trainer.optimState, bestModel, opt)
+    checkpoints.save(epoch, net, trainer.optimState, bestModel, opt)
 end
