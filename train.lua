@@ -2,6 +2,7 @@ require 'paths'
 local optim = require 'optim'
 require 'image'
 
+local evaluate = require "evaluate"
 local M = {}
 local Trainer = torch.class('resunpooling.Trainer', M)
 local unpack = unpack or table.unpack
@@ -130,6 +131,27 @@ function Trainer:computeScore(validationSet)
 
     return loss
 end
+
+function Trainer:showDepth(str,num)
+  if str == "train" then
+    for i=1,num,i do
+      local rand = math.random(#self.dataloader.trainImageTable)
+      local depthPred = self.model:forward(image.loadJPG(self.dataloader.trainImageTable[rand]))
+      local depthReal = image.loadJPG(self.dataloader.trainDepthTable[rand])
+      evaluate.Display(depthPred,depthReal)
+    end
+  elseif str == "val" then
+    for i=1,num,i do
+      local rand = math.random(#self.dataloader.valImageTable)
+      local depthPred = self.model:forward(image.loadJPG(self.dataloader.valImageTable[rand]))
+      local depthReal = image.loadJPG(self.dataloader.valDepthTable[rand])
+      evaluate.Display(depthPred,depthReal)
+    end
+  end
+end
+
+
+
 
 function Trainer:learningRate(epoch)
    -- Training schedule
