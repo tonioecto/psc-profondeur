@@ -2,7 +2,7 @@ require 'paths'
 local optim = require 'optim'
 require 'image'
 
-local evaluate = require "evaluate"
+local evaluate = require 'evaluate'
 local M = {}
 local Trainer = torch.class('resunpooling.Trainer', M)
 local unpack = unpack or table.unpack
