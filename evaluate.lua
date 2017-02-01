@@ -12,8 +12,8 @@ local gnu = require 'gnuplot'
 local M = {}
 
 function M.Display(pred,real)
-  gnu.imagesc(pred)
-  gnu.imagesc(real)
+  gnu.imagesc(pred,'color')
+  gnu.imagesc(real,'color')
 end
 
 
