@@ -96,7 +96,7 @@ function Trainer:saveLoss(epoch, trainErr, valErr)
 
     if self.opt.resume == 'none' then
         trainingTrack = {}
-        opt.resume = 'model_trained'
+        self.opt.resume = 'model_trained'
     else
         trainingTrack = torch.load(lossFilePath)
     end
