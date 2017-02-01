@@ -40,7 +40,7 @@ local checkpoint, optimState = checkpoints.latest(opt)
 print '==> create model'
 local net, criterion = model.setup(opt)
 -- verify the structure of the neural network created
-print('ResNet and up-projection \n' .. net:__tostring())
+-- print('ResNet and up-projection \n' .. net:__tostring())
 
 print '==> configuring optimizer'
 -- Create optimizer
