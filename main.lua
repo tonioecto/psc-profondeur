@@ -52,7 +52,7 @@ local optimState = {
     learningRateDecay = 0,
     precision = 'double',
     nesterov = true,
-    dampening = 0.0
+    dampening = 0.0,
 }
 
 -- Create Trainer class
