@@ -3,6 +3,7 @@ local checkpoint = {}
 local function deepCopy(tbl)
    -- creates a copy of a network with new modules and the same tensors
    local copy = {}
+
    for k, v in pairs(tbl) do
       if type(v) == 'table' then
          copy[k] = deepCopy(v)
@@ -10,9 +11,11 @@ local function deepCopy(tbl)
          copy[k] = v
       end
    end
+
    if torch.typename(tbl) then
       torch.setmetatable(copy, torch.typename(tbl))
    end
+
    return copy
 end
 
@@ -36,7 +39,7 @@ end
 function checkpoint.save(epoch, model, optimState, isBestModel, opt)
 
    -- create a clean copy on the CPU without modifying the original network
-   -- model = deepCopy(model)
+   model = deepCopy(model)
 
    local modelFile = 'model_' .. epoch .. '.t7'
    local optimFile = 'optimState_' .. epoch .. '.t7'
