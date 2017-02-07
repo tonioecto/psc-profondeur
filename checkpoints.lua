@@ -3,7 +3,6 @@ local checkpoint = {}
 local function deepCopy(tbl)
    -- creates a copy of a network with new modules and the same tensors
    local copy = {}
-
    for k, v in pairs(tbl) do
       if type(v) == 'table' then
          copy[k] = deepCopy(v)

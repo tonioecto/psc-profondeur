@@ -8,7 +8,7 @@ local model = require '/models/init'
 local Trainer = require 'train'
 local checkpoints = require 'checkpoints'
 
--- Creat options
+-- Create options
 -- define batch-size, data-set to load, learning rate, max iteration times
 -- and resume flag
 print '==> set up training options'
