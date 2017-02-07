@@ -66,11 +66,11 @@ function Trainer:train(epoch, dataloader)
             self.model:zeroGradParameters()
             self.criterion:backward(self.model.output, self.target)
             self.model:backward(self.input, self.criterion.gradInput)
-
+            
             optim.sgd(feval, self.params, self.optimState)
-
+            
             N = N + batchSize
-
+            
             -- print training infos
             print((' | Epoch: [%d][%d/%d]    Time %.3f  Data %.3f  Err %1.4f '):format(
                 epoch, N, trainSize, timer:time().real, dataTime, loss))
@@ -166,9 +166,6 @@ function Trainer:showDepth(str,num)
     end
   end
 end
-
-
-
 
 function Trainer:learningRate(epoch)
    -- Training schedule
