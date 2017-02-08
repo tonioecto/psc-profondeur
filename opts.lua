@@ -13,6 +13,7 @@ require 'cunn'
 local M = { }
 
 function M.parse(arg)
+
     local cmd = torch.CmdLine()
     cmd:text()
     cmd:text('Torch-7 ResNet Up Pooling Script')
