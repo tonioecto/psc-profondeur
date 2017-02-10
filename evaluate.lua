@@ -11,6 +11,12 @@ local gnu = require 'gnuplot'
 
 local M = {}
 
+function M.plotTrainLoss(opt)
+    local lossFilePath = paths.concat(opt.lossFile, 'loss.t7')
+    local loss = torch.load(lossFile)
+    
+end
+
 function M.Display(pred,real,preName,realName)
     gnu.pdffigure(preName)
     gnu.imagesc(pred,'color')
