@@ -16,7 +16,7 @@ function M.w_init(net)
     local mu = 0
     local sigma = 0.01
     local gen = torch.Generator()
-    
+
     for i,m in ipairs(net:listModules()) do
         if m.modules == nil then
             if m.__typename == 'nn.SpatialConvolution' then
@@ -32,7 +32,7 @@ function M.w_init(net)
         end
     end
 
-   return net
+    return net
 end
 
 

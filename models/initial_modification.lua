@@ -49,25 +49,25 @@ end
 model = torch.load('resnet-50.t7')
 nombre = 49
 model:replace(function(module)
-	if torch.typename(module)== 'cudnn.ReLU' then
-	 nombre = nombre - 1
-	 if nombre == 0  then
-		return nn.Identity()
-	 end
-	end
-   if torch.typename(module) == 'cudnn.SpatialAveragePooling' then
-      return nn.Identity()
-   elseif torch.typename(module) == 'nn.Linear' then
-	  return nn.Identity()
-   elseif torch.typename(module) == 'nn.View' then
-	  return nn.Identity() 
-   elseif torch.typename(module)== 'nn.SpatialBatchNormalization' then
-	  return nn.Identity()
-   else
-   
-      return module
-   end
-   
+    if torch.typename(module)== 'cudnn.ReLU' then
+        nombre = nombre - 1
+        if nombre == 0  then
+            return nn.Identity()
+        end
+    end
+    if torch.typename(module) == 'cudnn.SpatialAveragePooling' then
+        return nn.Identity()
+    elseif torch.typename(module) == 'nn.Linear' then
+        return nn.Identity()
+    elseif torch.typename(module) == 'nn.View' then
+        return nn.Identity() 
+    elseif torch.typename(module)== 'nn.SpatialBatchNormalization' then
+        return nn.Identity()
+    else
+
+        return module
+    end
+
 end)
 
 torch.save('ResNet50woBN.t7', model)

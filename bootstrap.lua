@@ -82,39 +82,39 @@ end
 
 function boot(image1, image2,i, nombre)
 
-  --print(#image2)
+    --print(#image2)
 
-  for j=1,nombre,1 do
+    for j=1,nombre,1 do
 
-    local symh = (math.random(1, 10) > 5);
-    local symv = (math.random(1, 10) > 5);
-    local x = math.random(1,303)
-    local y = math.random(1,227)
+        local symh = (math.random(1, 10) > 5);
+        local symv = (math.random(1, 10) > 5);
+        local x = math.random(1,303)
+        local y = math.random(1,227)
 
-    image3 = image.crop(image1, x,y, x+304,y+228)
-    image4 = image.crop(image2, x,y ,x+304,y+228)
+        image3 = image.crop(image1, x,y, x+304,y+228)
+        image4 = image.crop(image2, x,y ,x+304,y+228)
 
 
-    if symh then
-      image3 =  image.hflip(image3)
-      image4 =  image.hflip(image4)
+        if symh then
+            image3 =  image.hflip(image3)
+            image4 =  image.hflip(image4)
+        end
+
+        if symv then
+            image3 =  image.vflip(image3)
+            image4 =  image.vflip(image4)
+        end
+
+        path = '/home/niva/Desktop/psc/bootstrap/'..i..'-'..j..'.jpeg'
+        image.save(path, image3)
+        --image.display(image3)
+
+        path = '/home/niva/Desktop/psc/bootstrapDepth/'..i..'-'..j..'.jpeg'
+        image4=image.scale(image4,160,128,'bicubic')
+        --image.display(image4)
+
+        image.save(path, image4)  -- A changer si vous voulez un .mat
     end
-
-    if symv then
-      image3 =  image.vflip(image3)
-      image4 =  image.vflip(image4)
-    end
-
-    path = '/home/niva/Desktop/psc/bootstrap/'..i..'-'..j..'.jpeg'
-    image.save(path, image3)
-    --image.display(image3)
-
-    path = '/home/niva/Desktop/psc/bootstrapDepth/'..i..'-'..j..'.jpeg'
-    image4=image.scale(image4,160,128,'bicubic')
-    --image.display(image4)
-
-    image.save(path, image4)  -- A changer si vous voulez un .mat
-  end
 end
 
 
@@ -123,8 +123,8 @@ imageSet, depthSet, taille = loadDataset("minibatch", "depthTest")
 
 print(taille)
 for i=1, taille, 1 do
-  boot(imageSet[i], depthSet[i],i,20)
-  print(i)
+    boot(imageSet[i], depthSet[i],i,20)
+    print(i)
 end
 
 

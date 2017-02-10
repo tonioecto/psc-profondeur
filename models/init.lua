@@ -64,7 +64,6 @@ function M.create()
     -- convert net to cuda model
     up_projection = up_projection:cuda()
 
-    
     -- set up weights of un_projection
     weightInit.w_init(up_projection)
 

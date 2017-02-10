@@ -17,12 +17,12 @@ end
 
 
 function DataLoader:__init(imageset, depthset,opt)
-   self.imageset =imageset
-   self.depthset = depthset
-   --self.indexstart = indexstart
-   self.size = opt.sampleSize
-   self.batchsize = opt.batchSize
-   self.opt = opt
+    self.imageset =imageset
+    self.depthset = depthset
+    --self.indexstart = indexstart
+    self.size = opt.sampleSize
+    self.batchsize = opt.batchSize
+    self.opt = opt
 end
 
 
@@ -86,18 +86,18 @@ function DataLoader:creDatatable()
     local valiSetSize = math.ceil(0.9 * dataSetSize)
 
     for i=1,trainSetSize,1 do
-      table.insert(self.trainImageTable,self.imagename[i])
-      table.insert(self.trainDepthTable,self.depthname[i])
+        table.insert(self.trainImageTable,self.imagename[i])
+        table.insert(self.trainDepthTable,self.depthname[i])
     end
 
     for i = trainSetSize+1,valiSetSize,1 do
-      table.insert(self.valImageTable,self.imagename[i])
-      table.insert(self.valDepthTable,self.depthname[i])
+        table.insert(self.valImageTable,self.imagename[i])
+        table.insert(self.valDepthTable,self.depthname[i])
     end
 
     for i = valiSetSize+1,dataSetSize,1 do
-      table.insert(self.testImageTable,self.imagename[i])
-      table.insert(self.testDepthTable,self.depthname[i])
+        table.insert(self.testImageTable,self.imagename[i])
+        table.insert(self.testDepthTable,self.depthname[i])
     end
     --return self.imagename,self.depthname
 end
@@ -107,13 +107,13 @@ function DataLoader:loadDataset(s)       --Load the images and depthMap, and gen
     local imagetable = {}
     local depthtable = {}
     if s=="val" then
-      print('loading validation dataset')
-      imagetable = self.valImageTable
-      depthtable = self.valDepthTable
+        print('loading validation dataset')
+        imagetable = self.valImageTable
+        depthtable = self.valDepthTable
     elseif s=="test" then
-      print('loading test dataset')
-      imagetable = self.testImageTable
-      depthtable = self.testDepthTable
+        print('loading test dataset')
+        imagetable = self.testImageTable
+        depthtable = self.testDepthTable
     end
     print('The number of image is:'..#imagetable)
     print('The number of correponding depthmap is:'..#depthtable)
@@ -147,8 +147,8 @@ function DataLoader:loadDataset(s)       --Load the images and depthMap, and gen
 
     setmetatable(dataset,
     {__index = function(t, i)
-                return {t.image[i], t.depth[i]}
-               end}
+        return {t.image[i], t.depth[i]}
+    end}
     )
 
     return dataset
@@ -167,10 +167,9 @@ function DataLoader:miniBatchload(dataset)   --create mini batch
     local imageSet = torch.Tensor(numBatch,self.batchsize,unpack(self.opt.inputSize))
     local depthSet = torch.Tensor(numBatch,self.batchsize,unpack(self.opt.outputSize))
 
-    for index = 1,numBatch,1
-    do
+    for index = 1,numBatch,1 do
         local numRemain = dataset:size() - (index-1)*self.batchsize
-        if(numRemain >=self.batchsize)then
+        if(numRemain >=self.batchsize) then
             local indexBegin = (index-1)*self.batchsize + 1
             local indexEnd = indexBegin + self.batchsize - 1
             for k = 1,self.batchsize,1 do
@@ -189,8 +188,8 @@ function DataLoader:miniBatchload(dataset)   --create mini batch
 
     setmetatable(data,
     {__index = function(t, i)
-                return {t.image[i], t.depth[i]}
-               end}
+        return {t.image[i], t.depth[i]}
+    end}
     )
 
     return data
@@ -199,27 +198,27 @@ end
 
 
 function DataLoader:tableShuffle(s)
-  local rand = math.random
-  if s=='all' then
-    local iteration = #self.imagename
-    local j
+    local rand = math.random
+    if s=='all' then
+        local iteration = #self.imagename
+        local j
 
-    for i=iteration,2,-1 do
-      j = rand(i)
-      self.imagename[i],self.imagename[j] = self.imagename[j],self.imagename[i]
-      self.depthname[i],self.depthname[j] = self.depthname[j],self.depthname[i]
+        for i=iteration,2,-1 do
+            j = rand(i)
+            self.imagename[i],self.imagename[j] = self.imagename[j],self.imagename[i]
+            self.depthname[i],self.depthname[j] = self.depthname[j],self.depthname[i]
+        end
+    elseif s=='train' then
+        local iteration = #self.trainImageTable
+        local j
+
+        for i=iteration,2,-1 do
+            j = rand(i)
+            self.trainImageTable[i],self.trainImageTable[j] = self.trainImageTable[j],self.trainImageTable[i]
+            self.trainDepthTable[i],self.trainDepthTable[j] = self.trainDepthTable[j],self.trainDepthTable[i]
+        end
+
     end
-  elseif s=='train' then
-    local iteration = #self.trainImageTable
-    local j
-
-    for i=iteration,2,-1 do
-      j = rand(i)
-      self.trainImageTable[i],self.trainImageTable[j] = self.trainImageTable[j],self.trainImageTable[i]
-      self.trainDepthTable[i],self.trainDepthTable[j] = self.trainDepthTable[j],self.trainDepthTable[i]
-    end
-
-  end
 end
 
 
@@ -259,8 +258,8 @@ function DataLoader:loadDatafromtable(indexstart)
 
     setmetatable(dataset,
     {__index = function(t, i)
-                return {t.image[i], t.depth[i]}
-               end}
+        return {t.image[i], t.depth[i]}
+    end}
     )
 
     local input = self:miniBatchload(dataset)

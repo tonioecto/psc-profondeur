@@ -62,7 +62,7 @@ for epoch = 1, opt.nEpochs, 1 do
     trainer:showDepth('train',2)
 
     local bestModel = false
-    
+
     if valErr < bestValErr then
         bestModel = true
         bestValErr = valErr

@@ -35,11 +35,11 @@ function M.parse(arg)
     cmd:option('-momentum',        0.9,         'momentum')
     cmd:option('-weightDecay',     1e-4,        'weight decay')
     cmd:text()
-    
+
     local opt = cmd:parse(arg or {})
 
     opt.testOnly = opt.testOnly ~= 'false'
-    
+
     -- Default nEpochs=90
     opt.nEpochs = opt.nEpochs == 0 and 90 or opt.nEpochs
 
