@@ -40,8 +40,7 @@ function M.parse(arg)
 
     opt.testOnly = opt.testOnly ~= 'false'
     
-    -- Default shortcutType=B and nEpochs=90
-    opt.shortcutType = opt.shortcutType == '' and 'B' or opt.shortcutType
+    -- Default nEpochs=90
     opt.nEpochs = opt.nEpochs == 0 and 90 or opt.nEpochs
 
     if opt.precision == nil or opt.precision == 'single' then
