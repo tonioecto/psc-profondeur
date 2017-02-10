@@ -8,48 +8,48 @@ local Trainer = torch.class('resunpooling.Trainer', M)
 local unpack = unpack or table.unpack
 
 function Trainer:__init(model, criterion, optimState, opt)
-   self.model = model
-   self.criterion = criterion
-   self.optimState = optimState
-   self.params, self.gradParams = model:getParameters()
-   self.batchSize = opt.batchSize
-   self.opt = opt
+    self.model = model
+    self.criterion = criterion
+    self.optimState = optimState
+    self.params, self.gradParams = model:getParameters()
+    self.batchSize = opt.batchSize
+    self.opt = opt
 end
 
 function Trainer:train(epoch, dataloader)
-   -- Trains the model for a single epoch
+    -- Trains the model for a single epoch
 
-   self.dataloader = dataloader
+    self.dataloader = dataloader
 
-   -- set learning rate
-   self.optimState.learningRate = self:learningRate(epoch)
-   print(self.optimState.learningRate)
+    -- set learning rate
+    self.optimState.learningRate = self:learningRate(epoch)
+    print(self.optimState.learningRate)
 
-   -- set up timer to calculate training time cost
-   local timer = torch.Timer()
-   local dataTimer = torch.Timer()
+    -- set up timer to calculate training time cost
+    local timer = torch.Timer()
+    local dataTimer = torch.Timer()
 
-   -- feval function for optim.stochastic training
-   local function feval()
-      return self.criterion.output, self.gradParams
-   end
+    -- feval function for optim.stochastic training
+    local function feval()
+        return self.criterion.output, self.gradParams
+    end
 
-   -- size of the input
-   local trainSize = #self.dataloader.trainImageTable
+    -- size of the input
+    local trainSize = #self.dataloader.trainImageTable
 
-   -- training batch counter
-   local N = 0
+    -- training batch counter
+    local N = 0
 
-   local loss
-   local dataTime
+    local loss
+    local dataTime
 
-   print('=> Training epoch # ' .. epoch)
+    print('=> Training epoch # ' .. epoch)
 
-   -- set the batch norm to training mode
-   self.model:training()
+    -- set the batch norm to training mode
+    self.model:training()
 
-   local indexbegin = 1
-   while(indexbegin < trainSize+1) do
+    local indexbegin = 1
+    while(indexbegin < trainSize+1) do
         sample = self.dataloader:loadDatafromtable(indexbegin)
         indexbegin = indexbegin + self.dataloader.size
 
@@ -66,14 +66,14 @@ function Trainer:train(epoch, dataloader)
             self.model:zeroGradParameters()
             self.criterion:backward(self.model.output, self.target)
             self.model:backward(self.input, self.criterion.gradInput)
-            
+
             optim.sgd(feval, self.params, self.optimState)
-            
+
             N = N + batchSize
-            
+
             -- print training infos
             print((' | Epoch: [%d][%d/%d]    Time %.3f  Data %.3f  Err %1.4f '):format(
-                epoch, N, trainSize, timer:time().real, dataTime, loss))
+            epoch, N, trainSize, timer:time().real, dataTime, loss))
 
             -- check that the storage didn't get changed due to an unfortunate getParameters call
             assert(self.params:storage() == self.model:parameters()[1]:storage())
@@ -87,13 +87,13 @@ function Trainer:train(epoch, dataloader)
 end
 
 function Trainer:copyInputs(image,depth)
-   self.input = image:cuda()
-   self.target = depth:cuda()
+    self.input = image:cuda()
+    self.target = depth:cuda()
 end
 
 function Trainer:saveLoss(epoch, trainErr, valErr)
     local lossFilePath = paths.concat((self.opt.lossFile), 'loss.t7')
-	local trainingTrack
+    local trainingTrack
 
     if self.opt.resume == 'none' then
         trainingTrack = {}
@@ -109,8 +109,8 @@ function Trainer:saveLoss(epoch, trainErr, valErr)
 end
 
 function Trainer:sampleTrainingLoss(num)
-	-- sample of size num
-	-- self.dataloader:tableShuffle('train')
+    -- sample of size num
+    -- self.dataloader:tableShuffle('train')
     local setSize = #self.dataloader.trainImageTable
     local indexTable = torch.randperm(setSize)
     local depthReal = torch.Tensor(num,unpack(self.opt.outputSize))
@@ -133,45 +133,45 @@ function Trainer:computeScore(validationSet)
 end
 
 function Trainer:showDepth(str,num)
-  if str == "train" then
-    for i=1,num,1 do
-      local rand = math.random(#self.dataloader.trainImageTable)
-      local depthPred = self.model:forward(image.loadJPG(self.dataloader.trainImageTable[rand]):cuda())
-      local depthReal = image.loadJPG(self.dataloader.trainDepthTable[rand])
-      local Pred = torch.reshape(depthPred,unpack(self.opt.outputSize))
-      local Real = torch.reshape(depthReal,unpack(self.opt.outputSize))
-      local preName = "depthPred"..i..".t7"
-      local realName = "depthReal"..i..".t7"
-      Pred = Pred:float()
-      Real = Real:float()
-      torch.save(preName,Pred)
-      torch.save(realName,Real)
-      
-      --evaluate.Display(Pred,Real,preName,realName)
+    if str == "train" then
+        for i=1,num,1 do
+            local rand = math.random(#self.dataloader.trainImageTable)
+            local depthPred = self.model:forward(image.loadJPG(self.dataloader.trainImageTable[rand]):cuda())
+            local depthReal = image.loadJPG(self.dataloader.trainDepthTable[rand])
+            local Pred = torch.reshape(depthPred,unpack(self.opt.outputSize))
+            local Real = torch.reshape(depthReal,unpack(self.opt.outputSize))
+            local preName = "depthPred"..i..".t7"
+            local realName = "depthReal"..i..".t7"
+            Pred = Pred:float()
+            Real = Real:float()
+            torch.save(preName,Pred)
+            torch.save(realName,Real)
+
+            --evaluate.Display(Pred,Real,preName,realName)
+        end
+    elseif str == "val" then
+        for i=1,num,1 do
+            local rand = math.random(#self.dataloader.valImageTable)
+            local depthPred = self.model:forward(image.loadJPG(self.dataloader.valImageTable[rand]):cuda())
+            local depthReal = image.loadJPG(self.dataloader.valDepthTable[rand])
+            local Pred = torch.reshape(depthPred,unpack(self.opt.outputSize))
+            local Real = torch.reshape(depthReal,unpack(self.opt.outputSize))
+            local preName = "depthPred"..i..".t7"
+            local realName = "depthReal"..i..".t7"
+            Pred = Pred:float()
+            Real = Real:float()
+            torch.save(preName,Pred)
+            torch.save(realName,Real)
+            --evaluate.Display(Pred,Real,preName,realName)
+        end
     end
-  elseif str == "val" then
-    for i=1,num,1 do
-      local rand = math.random(#self.dataloader.valImageTable)
-      local depthPred = self.model:forward(image.loadJPG(self.dataloader.valImageTable[rand]):cuda())
-      local depthReal = image.loadJPG(self.dataloader.valDepthTable[rand])
-      local Pred = torch.reshape(depthPred,unpack(self.opt.outputSize))
-      local Real = torch.reshape(depthReal,unpack(self.opt.outputSize))
-      local preName = "depthPred"..i..".t7"
-      local realName = "depthReal"..i..".t7"
-      Pred = Pred:float()
-      Real = Real:float()
-      torch.save(preName,Pred)
-      torch.save(realName,Real)
-      --evaluate.Display(Pred,Real,preName,realName)
-    end
-  end
 end
 
 function Trainer:learningRate(epoch)
-   -- Training schedule
-   local decay = math.floor((epoch - 1) / 10)
+    -- Training schedule
+    local decay = math.floor((epoch - 1) / 10)
 
-   return self.opt.LR * math.pow(0.1, decay)
+    return self.opt.LR * math.pow(0.1, decay)
 end
 
 return M.Trainer
