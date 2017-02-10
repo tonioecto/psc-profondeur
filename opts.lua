@@ -59,6 +59,8 @@ function M.parse(arg)
     -- Default opt save and resume options 
     opt.save = 'model_trained'
     opt.lossFile = 'loss_track'
+
+    -- Default input and output size informations
     opt.inputSize = {3, 228, 304}
     opt.outputSize = {128, 160}
 
