@@ -1,4 +1,4 @@
---We import necessairy packages
+--We import necessary packages
 require 'nn'
 require 'cudnn'
 require 'cutorch'
@@ -7,7 +7,7 @@ require '/models/modules/UnPoolingCuda'
 
 local M = {}
 
--- Defin simple up-convolution block
+-- Define simple up-convolution block
 function M.upConvolution(net, d1, d2)
     net:add(nn.SpatialZeroPadding(0, 1, 0, 1))
     net:add(cudnn.SpatialFullConvolution(d1, d2, 5, 5, 2, 2, 2, 2))
