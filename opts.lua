@@ -53,6 +53,9 @@ function M.parse(arg)
         cmd:error('unknown precision: ' .. opt.precision)
     end
 
+    -- Defaut dataset options
+    opt.dataset = 'imagenet'
+
     -- Default opt save and resume options 
     opt.save = 'model_trained'
     opt.lossFile = 'loss_track'

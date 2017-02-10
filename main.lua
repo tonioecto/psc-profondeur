@@ -7,26 +7,13 @@ local DataLoader = require 'dataloader'
 local model = require '/models/init'
 local Trainer = require 'train'
 local checkpoints = require 'checkpoints'
+local opts = require 'opts'
 
 -- Create options
 -- define batch-size, data-set to load, learning rate, max iteration times
 -- and resume flag
 print '==> set up training options'
-local opt = {
-    inputSize = {3, 228, 304},
-    outputSize = {128, 160},
-    save = 'model_trained',
-    sampleSize = 6,
-    batchSize = 3,
-    dataset  = 'imagenet',
-    LR = 0.01,
-    maxIteration = 1000,
-    tensorType = 'cuda',
-    resume = 'none',
-    lossFile = 'loss_track',
-    nesterov = true,
-    dampening = 0.0
-}
+local opt = opts.parse()
 
 print '==> load dataset'
 -- Data loading
@@ -47,10 +34,10 @@ print '==> configuring optimizer'
 -- set parameters for optimized stochastic gradient descent method
 local optimState = {
     learningRate = opt.LR,
-    weightDecay = 1e-3,
-    momentum = 0.9,
+    weightDecay = opt.weightDecay,
+    momentum = opt.momentum,
     learningRateDecay = 0,
-    precision = 'double',
+    precision = opt.precision,
     nesterov = true,
     dampening = 0.0,
 }
@@ -61,7 +48,7 @@ local trainer = Trainer(net, criterion, optimState, opt)
 -- Start or resume training precedure
 local num = 100
 local bestValErr = math.huge
-for epoch = 1, opt.maxIteration, 1 do
+for epoch = 1, opt.nEpochs, 1 do
     dataloader:tableShuffle('train')
     trainer:train(epoch, dataloader)
 
