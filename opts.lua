@@ -48,7 +48,6 @@ function M.parse(arg)
     elseif opt.precision == 'double' then
         opt.tensorType = 'torch.CudaDoubleTensor'
     elseif opt.precision == 'half' then
-        opt.tensorType = 'torch.CudaHalfTensor'
     else
         cmd:error('unknown precision: ' .. opt.precision)
     end
