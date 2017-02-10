@@ -8,7 +8,7 @@ require 'math'
 require 'xlua'
 --require 'cudnn'
 require 'cutorch'
-require 'cunn'
+--require 'cunn'
 
 local M = { }
 
