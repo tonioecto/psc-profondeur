@@ -17,7 +17,7 @@ end
 
 -- Define simple up-projection block
 function M.upProjection(net, d1, d2)
-    
+
     net:add(nn.UnPooling(2))
     local cat = nn.ConcatTable()
 
@@ -39,12 +39,12 @@ end
 
 -- max un pooling module constructor
 function maxUnPoolingModule(batchSize, d1, d2, d3)
-    
+
     local c = torch.Tensor(batchSize, d1, d2, d3)
     c = c:cuda()
     local t = torch.Tensor(d2, d3)
     t = t:cuda()
-    
+
     for i = 1, d3, 1 do
         for j = 1, d2, 1 do
             if i%2 == 0 then
@@ -56,19 +56,19 @@ function maxUnPoolingModule(batchSize, d1, d2, d3)
             end
         end
     end
-    
+
     for k = 1, d1, 1 do
         for l = 1, batchSize, 1 do
             c[l][k] = t
         end
     end
-    
+
     local mp = nn.SpatialMaxPooling(2, 2, 2, 2)
     mp = mp:cuda()
     mp:forward(c)
-    
+
     local mup = nn.SpatialMaxUnpooling(mp)
-    
+
     return mup
 
 end
