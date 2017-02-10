@@ -39,18 +39,6 @@ function M.parse(arg)
 
     opt.testOnly = opt.testOnly ~= 'false'
     
-    if not paths.dirp(opt.save) and not paths.mkdir(opt.save) then
-        cmd:error('error: unable to create checkpoint directory: ' .. opt.save .. '\n')
-    end
-    
-    local trainDir = paths.concat(opt.data, 'train')
-    
-    if not paths.dirp(opt.data) then
-        cmd:error('error: missing ImageNet data directory')
-    elseif not paths.dirp(trainDir) then
-        cmd:error('error: ImageNet missing `train` directory: ' .. trainDir)
-    end
-    
     -- Default shortcutType=B and nEpochs=90
     opt.shortcutType = opt.shortcutType == '' and 'B' or opt.shortcutType
     opt.nEpochs = opt.nEpochs == 0 and 90 or opt.nEpochs
