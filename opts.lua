@@ -21,7 +21,7 @@ function M.parse(arg)
     cmd:text()
     cmd:text('Options:')
     ------------ General options --------------------
-    cmd:option('-precision', 'single',    'Options: single | double | half')
+    cmd:option('-precision', 'double',    'Options: single | double | half')
     --------------- Training options --------------------
     cmd:option('-nEpochs',         0,       'Number of total epochs to run')
     cmd:option('-epochNumber',     1,       'Manual epoch number (useful on restarts)')
@@ -52,7 +52,6 @@ function M.parse(arg)
     end
     
     -- Default shortcutType=B and nEpochs=90
-
     opt.shortcutType = opt.shortcutType == '' and 'B' or opt.shortcutType
     opt.nEpochs = opt.nEpochs == 0 and 90 or opt.nEpochs
 
@@ -64,16 +63,6 @@ function M.parse(arg)
         opt.tensorType = 'torch.CudaHalfTensor'
     else
         cmd:error('unknown precision: ' .. opt.precision)
-    end
-    
-    if opt.resetClassifier then
-        if opt.nClasses == 0 then
-            cmd:error('-nClasses required when resetClassifier is set')
-        end
-    end
-    
-    if opt.shareGradInput and opt.optnet then
-        cmd:error('error: cannot use both -shareGradInput and -optnet')
     end
     
     return opt
