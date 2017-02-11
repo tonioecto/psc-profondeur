@@ -6,6 +6,7 @@ require 'cudnn'
 
 -- load initial resnet-50
 model = torch.load('resnet-50.t7')
+print(model:__tosring())
 
 --get the location of 'cudnn.ReLU'
 num = 0
