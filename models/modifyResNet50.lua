@@ -9,13 +9,7 @@ model = torch.load('resnet-50.t7')
 print('ResNet initial model \n' .. model:__tostring())
 
 --get the location of 'cudnn.ReLU'
-num = 0
-model:replace(function(module)
-    if torch.typename(module)== 'cudnn.ReLU' then
-        num = num + 1
-    end
-end)
-print(num)
+num = 49
 
 -- delete modules: 'cudnn.ReLU', 'cudnn.SpatialAveragePooling',
 -- 'nn.Linear' and 'nn.View'
