@@ -12,7 +12,7 @@ print('ResNet and up-projection \n' .. model:__tostring())
 num = 0
 model:replace(function(module)
     if torch.typename(module)== 'cudnn.ReLU' then
-        num = num - 1
+        num = num + 1
         if num == 0  then
             return nn.Identity()
         end
