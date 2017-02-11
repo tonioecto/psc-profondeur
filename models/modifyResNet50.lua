@@ -22,6 +22,7 @@ print(num)
 model:replace(function(module)
     if torch.typename(module)== 'cudnn.ReLU' then
         num = num - 1
+        print(num)
         if num == 0  then
             return nn.Identity()
         end
@@ -38,5 +39,5 @@ model:replace(function(module)
 end)
 
 -- save the changed model
-print('ResNet and up-projection \n' .. model:__tostring())
+print('ResNet \n' .. model:__tostring())
 torch.save('ResNet50.t7', model)
