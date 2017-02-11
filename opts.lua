@@ -6,7 +6,7 @@ require 'paths'
 require 'os'
 require 'math'
 require 'xlua'
---require 'cudnn'
+require 'cudnn'
 require 'cutorch'
 --require 'cunn'
 
