@@ -31,6 +31,7 @@ function checkpoint.latest(opt)
     print('=> Loading checkpoint ' .. latestPath)
     local latest = torch.load(latestPath)
     local optimState = torch.load(paths.concat(opt.resume, latest.optimFile))
+    opt.epochNumber = lastest.epoch
 
     return latest, optimState
 end
@@ -46,6 +47,35 @@ function checkpoint.save(epoch, model, optimState, isBestModel, opt)
     model = deepCopy(model):float():clearState()
 
     local modelFile = 'model_' .. epoch .. '.t7'
+    local optimFile = 'optimState_' .. epoch .. '.t7'
+    local optFile = 'opt'..'.t7'
+
+    torch.save(paths.concat(opt.save, modelFile), model)
+    torch.save(paths.concat(opt.save, optimFile), optimState)
+    torch.save(paths.concat(opt.save, optFile), opt)
+    torch.save(paths.concat(opt.save, 'latest.t7'), {
+        epoch = epoch,
+        modelFile = modelFile,
+        optimFile = optimFile,
+    })
+
+    if isBestModel then
+        torch.save(paths.concat(opt.save, 'model_best.t7'), model)
+    end
+
+end
+
+function checkpoint.saveCurrent(epoch, model, optimState, isBestModel, opt)
+    -- we store only the last and best epoch model in trained model file
+    -- don't save the DataParallelTable for easier loading on other machines
+    if torch.type(model) == 'nn.DataParallelTable' then
+        model = model:get(1)
+    end
+
+    -- create a clean copy on the CPU without modifying the original network
+    model = deepCopy(model):float():clearState()
+
+    local modelFile = 'model_' .. 'last' .. '.t7'
     local optimFile = 'optimState_' .. epoch .. '.t7'
     local optFile = 'opt'..'.t7'
 

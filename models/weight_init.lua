@@ -22,7 +22,7 @@ function M.w_init(net)
             if m.__typename == 'nn.SpatialConvolution' then
                 M.sampleGauss(m, gen, mu, sigma)
             elseif m.__typename == 'cudnn.SpatialConvolution' then
-                M.sampleGauss(m, gen, mu, sigma)       
+                M.sampleGauss(m, gen, mu, sigma)
             end
 
             if m.bias then

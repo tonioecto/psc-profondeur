@@ -46,9 +46,8 @@ local optimState = {
 local trainer = Trainer(net, criterion, optimState, opt)
 
 -- Start or resume training precedure
-local num = 100
 local bestValErr = math.huge
-for epoch = 1, opt.nEpochs, 1 do
+for epoch = opt.epochNumber, opt.nEpochs+opt.epochNumber, 1 do
     dataloader:tableShuffle('train')
     trainer:train(epoch, dataloader)
 
