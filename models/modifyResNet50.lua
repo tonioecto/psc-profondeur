@@ -2,7 +2,7 @@ require 'nn'
 require 'torch'
 require 'cutorch'
 require 'cudnn'
-require 'cunn'
+--require 'cunn'
 
 -- load initial resnet-50
 model = torch.load('resnet-50.t7')
