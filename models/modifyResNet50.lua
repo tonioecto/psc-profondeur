@@ -6,16 +6,13 @@ require 'cudnn'
 
 -- load initial resnet-50
 model = torch.load('resnet-50.t7')
-print('ResNet and up-projection \n' .. model:__tostring())
+print('ResNet initial model \n' .. model:__tostring())
 
 --get the location of 'cudnn.ReLU'
 num = 0
 model:replace(function(module)
     if torch.typename(module)== 'cudnn.ReLU' then
         num = num + 1
-        if num == 0  then
-            return nn.Identity()
-        end
     end
 end)
 print(num)
