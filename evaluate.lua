@@ -18,8 +18,8 @@ function M.plotTrainLoss(opt)
     loss = torch.Tensor(loss)
     loss = loss:transpose(1, 2)
     -- plot trainErr and validationErr graph
-    gnuplot.plot({'TrainErr', loss[1], loss[2]},
-    {'ValErr', loss[1], loss[3]})
+    gnuplot.plot({'TrainErr', loss[2]},
+    {'ValErr', loss[3]})
 end
 
 function M.Display(pred,real,preName,realName)
