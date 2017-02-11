@@ -70,5 +70,5 @@ for epoch = opt.epochNumber, opt.nEpochs+opt.epochNumber, 1 do
 
     trainer:saveLoss(epoch, valErr, trainErr)
 
-    checkpoints.save(epoch, net, trainer.optimState, bestModel, opt)
+    checkpoints.saveCurrent(epoch, net, trainer.optimState, bestModel, opt)
 end
