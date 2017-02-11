@@ -40,5 +40,5 @@ model:replace(function(module)
 end)
 
 -- save the changed model
-print(model:__tostring())
+print('ResNet and up-projection \n' .. model:__tostring())
 torch.save('ResNet50.t7', model)
