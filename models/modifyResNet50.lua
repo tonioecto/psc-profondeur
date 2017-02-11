@@ -18,6 +18,7 @@ model:replace(function(module)
         end
     end
 end)
+print(num)
 
 -- delete modules: 'cudnn.ReLU', 'cudnn.SpatialAveragePooling',
 -- 'nn.Linear' and 'nn.View'
@@ -33,7 +34,7 @@ model:replace(function(module)
     elseif torch.typename(module) == 'nn.Linear' then
         return nn.Identity()
     elseif torch.typename(module) == 'nn.View' then
-        return nn.Identity() 
+        return nn.Identity()
     else
         return module
     end
