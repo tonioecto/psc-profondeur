@@ -14,7 +14,12 @@ local M = {}
 function M.plotTrainLoss(opt)
     local lossFilePath = paths.concat(opt.lossFile, 'loss.t7')
     local loss = torch.load(lossFile)
-    
+    -- convert a table to tensor, and transpose it
+    loss = torch.Tensor(loss)
+    loss = loss:transpose(1, 2)
+    -- plot trainErr and validationErr graph
+    gnuplot.plot({'TrainErr', loss[1], loss[2]},
+    {'ValErr', loss[1], loss[3]})
 end
 
 function M.Display(pred,real,preName,realName)
