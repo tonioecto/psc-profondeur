@@ -1,13 +1,13 @@
 --We import necessairy packages
 
-require 'nn'
-require 'image'
-require 'paths'
-require 'os'
-require 'math'
-require 'xlua'
-require 'cudnn'
-require 'cutorch'
+--require 'nn'
+--require 'image'
+--require 'paths'
+--require 'os'
+--require 'math'
+--require 'xlua'
+--require 'cudnn'
+--require 'cutorch'
 --require 'cunn'
 
 local M = { }
@@ -55,6 +55,9 @@ function M.parse(arg)
 
     -- Defaut dataset options
     opt.dataset = 'imagenet'
+    opt.data = 'data'
+    opt.trainDepth = 'Train400Depth'
+    opt.testDepth = 'Test134Depth'
 
     -- Default opt save and resume options 
     opt.save = 'model_trained'

@@ -7,7 +7,7 @@ require 'math'
 require 'xlua'
 require 'cudnn'
 require 'cutorch'
-require 'cunn'
+--require 'cunn'
 
 function loadDataset(imageSet,depthSet)       --Load the images and depthMap, and generate dataset for trainning
     local imagename = {}
@@ -34,7 +34,7 @@ function loadDataset(imageSet,depthSet)       --Load the images and depthMap, an
         local index = 'depth'..name
         local fullname = index..'.mat'
         local matname = paths.concat(depthSet,fullname)
-        if paths.filep(matname)then
+        if paths.filep(matname) then
             table.insert(depthname,matname)
         else
             --table.remove(imagename,i)
