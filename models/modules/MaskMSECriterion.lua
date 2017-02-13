@@ -13,10 +13,10 @@ function MaskMSECriterion:__init(highMask, lowMask, sizeAverage)
 end
 
 function MaskMSECriterion:updateOutput(input, target)
-    print(input)
     self.m = self:mask(target)
     input = input:maskedFill(self.m, 0)
     target = target:maskedFill(self.m, 0)
+    print(input)
     self.output_tensor = self.output_tensor or input.new(1)
     input.THNN.MSECriterion_updateOutput(
     input:cdata(),
