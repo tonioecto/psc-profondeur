@@ -3,6 +3,7 @@
 Data Augmentation Process indicated in the article of Eigen et al
 We augment the training data with random online transformations: 
 
+```lua
 Scale: Input and target images are scaled by $s \in [1, 1.5]$, and the depths are divided by s
 Rotation: Input and target are rotated by r \in [−5, 5] degrees
 Translation: Input and target are randomly cropped to the sizes indicated in Fig. 1
