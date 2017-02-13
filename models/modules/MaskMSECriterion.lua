@@ -39,7 +39,7 @@ function MaskMSECriterion:updateGradInput(input, target)
     return self.gradInput
 end
 
-local function mask(target)
+function mask(target)
     local g = torch.ge(target, self.highMask)
     local l = torch.eq(target, self.lowMask)
     return l + g
