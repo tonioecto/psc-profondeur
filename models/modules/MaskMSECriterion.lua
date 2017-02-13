@@ -3,7 +3,6 @@ local MaskMSECriterion, parent = torch.class('nn.MaskMSECriterion', 'nn.Criterio
 function MaskMSECriterion:__init(highMask, lowMask, sizeAverage)
     parent.__init(self)
     self.highMask = highMask
-    print(self.highMask)
     self.lowMask = lowMask
     if sizeAverage ~= nil then
         self.sizeAverage = sizeAverage
@@ -14,6 +13,7 @@ end
 
 function MaskMSECriterion:updateOutput(input, target)
     self.m = self:mask(target)
+    print(input)
     input = input:maskedFill(self.m, 0)
     print(input)
     target = target:maskedFill(self.m, 0)
