@@ -152,47 +152,8 @@ end
 function M.Rotation(deg)
     return function(input)
         if deg ~= 0 then
-            input = image.rotate(input, (torch.uniform() - 0.5) * deg * math.pi / 180, 'bilinear')
+            local input = image.rotate(input, (torch.uniform() - 0.5) * deg * math.pi / 180, 'bilinear')
         end
-        return input
-    end
-end
-
-local function blend(img1, img2, alpha)
-    return img1:mul(alpha):add(1 - alpha, img2)
-end
-
-local function grayscale(dst, img)
-    dst:resizeAs(img)
-    dst[1]:zero()
-    dst[1]:add(0.299, img[1]):add(0.587, img[2]):add(0.114, img[3])
-    dst[2]:copy(dst[1])
-    dst[3]:copy(dst[1])
-    return dst
-end
-
-function M.Saturation(var)
-    local gs
-
-    return function(input)
-        gs = gs or input.new()
-        grayscale(gs, input)
-
-        local alpha = 1.0 + torch.uniform(-var, var)
-        blend(input, gs, alpha)
-        return input
-    end
-end
-
-function M.Brightness(var)
-    local gs
-
-    return function(input)
-        gs = gs or input.new()
-        gs:resizeAs(input):zero()
-
-        local alpha = 1.0 + torch.uniform(-var, var)
-        blend(input, gs, alpha)
         return input
     end
 end
@@ -209,28 +170,5 @@ function M.RandomOrder(ts)
     end
 end
 
-
-function M.ColorJitter(opt)
-    local brightness = opt.brightness or 0
-    local contrast = opt.contrast or 0
-    local saturation = opt.saturation or 0
-
-    local ts = {}
-    if brightness ~= 0 then
-        table.insert(ts, M.Brightness(brightness))
-    end
-    if contrast ~= 0 then
-        table.insert(ts, M.Contrast(contrast))
-    end
-    if saturation ~= 0 then
-        table.insert(ts, M.Saturation(saturation))
-    end
-
-    if #ts == 0 then
-        return function(input) return input end
-    end
-
-    return M.RandomOrder(ts)
-end
 
 return M
