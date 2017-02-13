@@ -15,8 +15,9 @@ end
 function MaskMSECriterion:updateOutput(input, target)
     self.m = self:mask(target)
     input = input:maskedFill(self.m, 0)
-    target = target:maskedFill(self.m, 0)
     print(input)
+    target = target:maskedFill(self.m, 0)
+    print(target)
     self.output_tensor = self.output_tensor or input.new(1)
     input.THNN.MSECriterion_updateOutput(
     input:cdata(),
@@ -44,6 +45,6 @@ end
 function MaskMSECriterion:mask(target)
     local g = torch.ge(target, self.highMask)
     local l = torch.eq(target, self.lowMask)
-    print(l + g)
+    -- print(l + g)
     return l + g
 end
