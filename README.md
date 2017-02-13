@@ -11,3 +11,5 @@ We augment the training data with random online transformations:
 - `Color`: Input values are multiplied globally by a random RGB value `c` in [0.8, 1.2]. 
 - `Flips`: Input and target are horizontally flipped with 0.5 probability. 
 
+
+to reduce the effect of meaningless candidates in sky regions, we used a classifier to label sky pixels and for the depth of the corresponding superpixels to take the value (0, 0, 1, 80).

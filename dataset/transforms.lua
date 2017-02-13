@@ -170,5 +170,8 @@ function M.RandomOrder(ts)
     end
 end
 
+function M.mask(depth, threshold)
+    return torch.clamp(depth, 0, threshold)
+end
 
 return M
