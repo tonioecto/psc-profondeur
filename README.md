@@ -20,6 +20,13 @@ We resize all images to `345x460` and further reduce the resolution of
 the RGB inputs to the network by half `(173x230)` because of the large 
 architecture and hardware limitations.
 
+During training, most of the target depth maps will have some missing 
+values, particularly near object boundaries, windows and specular 
+surfaces. We deal with these simply by masking them out and evaluating 
+the loss only on valid points, *i.e.* we replace n in Eqn. 4 with the 
+number of pixels that have a target depth, and perform the sums
+excluding pixels i that have no depth value.
+
 To reduce the effect of meaningless candidates in sky regions, we used a 
 classifier to label sky pixels and for the depth of the corresponding 
 superpixels to take the value (0, 0, 1, 80).
