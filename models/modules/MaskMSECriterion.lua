@@ -14,8 +14,8 @@ end
 
 function MaskMSECriterion:updateOutput(input, target)
     self.m = self:mask(target)
-    input = input:cmul(self.m)
-    target = target:cmul(self.m)
+    input = input:maskedFill(self.m, 0)
+    target = target:maskedFill(self.m, 0)
     self.output_tensor = self.output_tensor or input.new(1)
     input.THNN.MSECriterion_updateOutput(
     input:cdata(),
@@ -29,8 +29,8 @@ end
 
 function MaskMSECriterion:updateGradInput(input, target)
     self.m = self:mask(target)
-    input = input:cmul(self.m)
-    target = target:cmul(self.m)
+    input = input:maskedFill(self.m, 0)
+    target = target:maskedFill(self.m, 0)
     input.THNN.MSECriterion_updateGradInput(
     input:cdata(),
     target:cdata(),
