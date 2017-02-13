@@ -5,7 +5,7 @@ We use the method indicated in the article of Eigen et al.
 
 We augment the training data with random online transformations: 
 
-- `Scale`: Input and target images are scaled by `s` in [1, 1.5], and the depths are divided by s. 
+- `Scale`: Input and target images are scaled by `s` in [1, 1.5], and the depths are divided by `s`. 
 - `Rotation`: Input and target are rotated by `s` in [−5, 5] degrees. 
 - `Translation`: Input and target are randomly cropped to the sizes we need. 
 - `Color`: Input values are multiplied globally by a random RGB value `c` in [0.8, 1.2]. 
