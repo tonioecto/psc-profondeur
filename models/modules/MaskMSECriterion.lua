@@ -42,5 +42,6 @@ end
 function mask(target)
     local g = torch.ge(target, self.highMask)
     local l = torch.eq(target, self.lowMask)
+    print(l + g)
     return l + g
 end
