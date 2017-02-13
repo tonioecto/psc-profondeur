@@ -56,6 +56,7 @@ function M.parse(arg)
     -- Defaut dataset options
     opt.dataset = 'imagenet'
     opt.data = 'data'
+    opt.format = 't7'
     opt.trainDepth = 'Train400Depth'
     opt.testDepth = 'Test134Depth'
 
