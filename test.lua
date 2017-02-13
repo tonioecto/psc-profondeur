@@ -1,6 +1,12 @@
-opts = require 'opts'
-transforms = require 'dataset/transforms.lua'
+require 'nn'
+require 'models/modules/MaskMSECriterion'
 
-print(arg)
-local opt = opts.parse(arg)
-print(opt)
+input = torch.rand(2, 2)
+print(input)
+
+target = torch.eye(2, 2)
+print(target)
+
+criterion = nn.MaskMSECriterion(0.5, 0, false)
+
+print(criterion:forward(input, target))
