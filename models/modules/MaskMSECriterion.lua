@@ -13,7 +13,7 @@ function MaskMSECriterion:__init(highMask, lowMask, sizeAverage)
 end
 
 function MaskMSECriterion:updateOutput(input, target)
-    self.m = mask(target)
+    self.m = self:mask(target)
     input = input:cmul(self.m)
     target = target:cmul(self.m)
     self.output_tensor = self.output_tensor or input.new(1)
@@ -28,7 +28,7 @@ function MaskMSECriterion:updateOutput(input, target)
 end
 
 function MaskMSECriterion:updateGradInput(input, target)
-    self.m = mask(target)
+    self.m = self:mask(target)
     input = input:cmul(self.m)
     target = target:cmul(self.m)
     input.THNN.MSECriterion_updateGradInput(
@@ -40,7 +40,7 @@ function MaskMSECriterion:updateGradInput(input, target)
     return self.gradInput
 end
 
-function mask(target)
+function MaskMSECriterion:mask(target)
     local g = torch.ge(target, self.highMask)
     local l = torch.eq(target, self.lowMask)
     print(l + g)
