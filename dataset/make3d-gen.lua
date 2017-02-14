@@ -82,6 +82,7 @@ function M.augmentation(imageDirOrigin, depthDirOrigin, opt)
     })
 
     local imageScale = T.Scale(345, 460)
+    local depthScale = T.Scale(192, 256)
 
     for i = 1, sizeOrigin, 1 do
         local img = image.loadJPG(imagePathOrigin[i])
@@ -91,6 +92,7 @@ function M.augmentation(imageDirOrigin, depthDirOrigin, opt)
 
         local depth = torch.load(depthPathOrigin[i])
         depth = depth:select(3, 4)
+        depth = imageScale
 
         local basename = paths.basename(imagePathOrigin[i])
         basename = basename:match('img(.*).jpg$')
