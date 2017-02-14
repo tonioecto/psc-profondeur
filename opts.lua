@@ -59,7 +59,7 @@ function M.parse(arg)
     opt.format = 't7'
     opt.trainDepth = 'Train400Depth'
     opt.testDepth = 'Test134Depth'
-    opt.sizeAugmented = 16000
+    opt.sizeAugmented = 800
 
     -- Default opt save and resume options 
     opt.save = 'model_trained'

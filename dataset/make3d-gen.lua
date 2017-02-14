@@ -74,12 +74,12 @@ function M.augmentation(imageDirOrigin, depthDirOrigin, opt)
     local num = opt.sizeAugmented/#imagePath
     -- data augmentation compose
     -- create transform function table
-    local trans = {
+    local trans = T.Compose({
         T.RandomCrop(173, 230, 96, 128),
         T.RandomScale(1, 1.5),
         T.HorizontalFlip(0.5),
         T.Rotation(5)
-    }
+    })
 
     local imageScale = T.Scale(345, 460)
 
@@ -87,7 +87,7 @@ function M.augmentation(imageDirOrigin, depthDirOrigin, opt)
         local img = image.loadJPG(imagePathOrigin[i])
         print(#img)
         img = imageScale(img)
-        print(img)
+        print(#img)
 
         local depth = torch.load(depthPathOrigin[i])
         depth = depth:select(3, 4)
@@ -96,7 +96,7 @@ function M.augmentation(imageDirOrigin, depthDirOrigin, opt)
         basename = basename:match('img(.*).jpg$')
 
         for j = 1, num, 1 do
-            img, depth = T.Compose(trans)
+            img, depth = trans(img, depth)
             image.save(paths.concat(imagePath, 'img'..basename..'.jpg'), img)
             torch.save(paths.concat(depthPath, 'depth'..basename..'.t7'), depth)
         end
