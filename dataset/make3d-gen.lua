@@ -26,7 +26,7 @@ local function findImageDepthMatches(imageDir, depthDir, opt)
         end
     end
 
-    print(image:size())
+    print(#imagePath)
 
     return imagePath, depthPath
 end
