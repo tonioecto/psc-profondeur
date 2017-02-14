@@ -85,7 +85,9 @@ function M.augmentation(imageDirOrigin, depthDirOrigin, opt)
 
     for i = 1, sizeOrigin, 1 do
         local img = image.loadJPG(imagePathOrigin[i])
+        print(#img)
         img = imageScale(img)
+        print(img)
 
         local depth = torch.load(depthPathOrigin[i])
         depth = depth:select(3, 4)
