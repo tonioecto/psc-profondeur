@@ -95,10 +95,14 @@ function M.augmentation(imageDirOrigin, depthDirOrigin, opt)
         local basename = paths.basename(imagePathOrigin[i])
         basename = basename:match('img(.*).jpg$')
 
+        local tmpImg
+        local tmpDep
+
         for j = 1, num, 1 do
-            img, depth = trans(img, depth)
-            image.save(paths.concat(imagePath, 'img'..basename..'.jpg'), img)
-            torch.save(paths.concat(depthPath, 'depth'..basename..'.t7'), depth)
+            tmpImg, tmpDep = img,depth
+            tmpImg, tmpDep = trans(tmpImg, tmpDep)
+            image.save(paths.concat(imagePath, 'img'..basename..'-'..num..'.jpg'), img)
+            torch.save(paths.concat(depthPath, 'depth'..basename..'-'..num..'.t7'), depth)
         end
     end
 end
