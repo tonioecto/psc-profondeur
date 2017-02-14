@@ -3,144 +3,85 @@ require 'image'
 local M = {}
 
 function M.Compose(transforms)
-    return function(input)
+    return function(img, depth)
         for _, transform in ipairs(transforms) do
-            input = transform(input)
+            img, depth = transform(img, depth)
         end
-        return input
+        return img, depth
     end
 end
 
 -- Scales the smaller edge to size
-function M.Scale(size, interpolation)
+function M.Scale(width, height, interpolation)
     interpolation = interpolation or 'bicubic'
     return function(input)
-        local w, h = input:size(3), input:size(2)
-        if (w <= h and w == size) or (h <= w and h == size) then
-            return input
-        end
-        if w < h then
-            return image.scale(input, size, h/w * size, interpolation)
-        else
-            return image.scale(input, w/h * size, size, interpolation)
-        end
-    end
-end
-
--- Crop to centered rectangle
-function M.CenterCrop(size)
-    return function(input)
-        local w1 = math.ceil((input:size(3) - size)/2)
-        local h1 = math.ceil((input:size(2) - size)/2)
-        return image.crop(input, w1, h1, w1 + size, h1 + size) -- center patch
-    end
-end
-
--- Random crop form larger image with optional zero padding
-function M.RandomCrop(size, padding)
-    padding = padding or 0
-
-    return function(input)
-        if padding > 0 then
-            local temp = input.new(3, input:size(2) + 2*padding, input:size(3) + 2*padding)
-            temp:zero()
-            :narrow(2, padding+1, input:size(2))
-            :narrow(3, padding+1, input:size(3))
-            :copy(input)
-            input = temp
-        end
-
-        local w, h = input:size(3), input:size(2)
-        if w == size and h == size then
-            return input
-        end
-
-        local x1, y1 = torch.random(0, w - size), torch.random(0, h - size)
-        local out = image.crop(input, x1, y1, x1 + size, y1 + size)
-        assert(out:size(2) == size and out:size(3) == size, 'wrong crop size')
-        return out
+        return image.scale(input, width, height, interpolation)
     end
 end
 
 -- Resized with shorter side randomly sampled from [minSize, maxSize] (ResNet-style)
-function M.RandomScale(minSize, maxSize)
-    return function(input)
-        local w, h = input:size(3), input:size(2)
+function M.RandomScale(minRatio, maxRatio)
+    return function(img, depth)
+        local ratio = torch.random(minRatio, maxRatio)
 
-        local targetSz = torch.random(minSize, maxSize)
-        local targetW, targetH = targetSz, targetSz
-        if w < h then
-            targetH = torch.round(h / w * targetW)
-        else
-            targetW = torch.round(w / h * targetH)
+        local w, h = img:size(3), img:size(2)
+        local wDepth, hDepth = depth:size(2), depth:size(1)
+
+        local targetW = torch.round(w / ratio)
+        local targetH = torch.round(h / ratio)
+        local targetWDepth = torch.round(wDepth / ratio)
+        local targetHDepth = torch.round(hDepth / ratio)
+
+        -- divide depth by the ratio 
+        depth = depth / ratio
+
+        return image.scale(img, targetW, targetH, 'bicubic'), 
+        image.scale(depth, targetWDepth, targetHDepth, 'bicubic')
+    end
+end
+
+-- Random crop from larger image
+function M.RandomCrop(widthImage, heightImage, widthDepth, heightDepth)
+    return function(img, depth)
+        local w, h = img:size(3), img:size(2)
+        local wD, hD = depth:size(2), depth:size(1)
+
+        assert(w < widthImage or h < heightImage, 'wrong crop size for image')
+        assert(wD < widthDepth or hD < heightDepth, 'wrong crop size for depth')
+
+        if w == widthImage and h == heightImage then
+            return img, depth
         end
 
-        return image.scale(input, targetW, targetH, 'bicubic')
+        local x1, y1 = torch.random(0, w - widthImage), torch.random(0, h - heightImage)
+        local x2, y2 = torch.round(x1 / w * wD), torch.round(y1 / h * hD)
+
+        local outImg = image.crop(img, x1, y1, x1 + widthImage, y1 + heightImage)
+        local outDep = image.crop(depth, x2, y2, x2 + widthDepth, y2 + widthDepth)
+        return outImg, outDep
     end
 end
 
--- Random crop with size 8%-100% and aspect ratio 3/4 - 4/3 (Inception-style)
-function M.RandomSizedCrop(size)
-    local scale = M.Scale(size)
-    local crop = M.CenterCrop(size)
-
-    return function(input)
-        local attempt = 0
-        repeat
-            local area = input:size(2) * input:size(3)
-            local targetArea = torch.uniform(0.08, 1.0) * area
-
-            local aspectRatio = torch.uniform(3/4, 4/3)
-            local w = torch.round(math.sqrt(targetArea * aspectRatio))
-            local h = torch.round(math.sqrt(targetArea / aspectRatio))
-
-            if torch.uniform() < 0.5 then
-                w, h = h, w
-            end
-
-            if h <= input:size(2) and w <= input:size(3) then
-                local y1 = torch.random(0, input:size(2) - h)
-                local x1 = torch.random(0, input:size(3) - w)
-
-                local out = image.crop(input, x1, y1, x1 + w, y1 + h)
-                assert(out:size(2) == h and out:size(3) == w, 'wrong crop size')
-
-                return image.scale(out, size, size, 'bicubic')
-            end
-            attempt = attempt + 1
-        until attempt >= 10
-
-        -- fallback
-        return crop(scale(input))
-    end
-end
-
+-- flip the image horizontally with probability prob
 function M.HorizontalFlip(prob)
-    return function(input)
+    return function(img, depth)
         if torch.uniform() < prob then
-            input = image.hflip(input)
+            img = image.hflip(img)
+            depth = image.hflip(depth)
         end
-        return input
+        return input, depth
     end
 end
 
+-- rotate deg degrees from -deg to deg
 function M.Rotation(deg)
-    return function(input)
+    return function(img, depth)
+        local ratio = (torch.uniform() - 0.5) * 2
         if deg ~= 0 then
-            local input = image.rotate(input, (torch.uniform() - 0.5) * deg * math.pi / 180, 'bilinear')
+            img = image.rotate(img, ratio * deg * math.pi / 180, 'bilinear')
+            depth = image.rotate(depth, ratio * deg * math.pi / 180, 'bilinear')
         end
-        return input
-    end
-end
-
-function M.RandomOrder(ts)
-    return function(input)
-        local img = input.img or input
-        local order = torch.randperm(#ts)
-        for i=1,#ts do
-            img = ts[order[i]](img)
-        end
-        return img
+        return img, depth
     end
 end
 
