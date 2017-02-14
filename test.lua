@@ -19,7 +19,7 @@ local opt = opts.parse()
 print '==> create model'
 local net, criterion = model.setup(opt)
 net:evaluate()
-net:forward(torch.rand(200, 200, 3):cuda())
+net:forward(torch.rand(3, 200, 200):cuda())
 -- verify the structure of the neural network created
 print('ResNet and up-projection \n' .. net:__tostring())
 
