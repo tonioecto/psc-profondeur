@@ -9,7 +9,7 @@ local function findImageDepthMatches(imageDir, depthDir, opt)
     imageDir = paths.concat(opt.data, imageDir)
     depthDir = paths.concat(opt.data, depthDir)
     local dirsImage = paths.dir(imageDir)
-    table.sort(dirs)
+    table.sort(dirsImage)
     local imagePath = {}
     local depthPath = {}
 
