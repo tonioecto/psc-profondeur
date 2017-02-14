@@ -2,7 +2,7 @@
 require 'nn'
 require 'cudnn'
 require 'cutorch'
-require 'cunn'
+--require 'cunn'
 require '/models/modules/UnPoolingCuda'
 
 local M = {}

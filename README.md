@@ -11,7 +11,7 @@ the depths are divided by `s`.
 - `Translation`: Input and target are randomly cropped to the sizes we 
 need. 
 - `Color`: Input values are multiplied globally by a random RGB value 
-`c` in [0.8, 1.2]. 
+`c` in `[0.8, 1.2]^3`. 
 - `Flips`: Input and target are horizontally flipped with 0.5 probability. 
 
 For the Make3D dataset, we use mask method introduced in the article.
@@ -27,8 +27,3 @@ the loss only on valid points, *i.e.* we replace n in Eqn. 4 with the
 number of pixels that have a target depth, and perform the sums
 excluding pixels i that have no depth value.
 
-To reduce the effect of meaningless candidates in sky regions, we used a 
-classifier to label sky pixels and for the depth of the corresponding 
-superpixels to take the value (0, 0, 1, 80).
-
-T

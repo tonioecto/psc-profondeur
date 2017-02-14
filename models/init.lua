@@ -1,7 +1,7 @@
 require 'nn'
 require 'cudnn'
 require 'cutorch'
-require 'cunn'
+-- require 'cunn'
 
 local model = require '/models/model'
 local upProjection = model.upProjection
