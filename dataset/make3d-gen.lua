@@ -1,6 +1,6 @@
 require 'paths'
 require 'ffi'
-local T = require 'transforms'
+local T = require 'dataset/transforms'
 local unpack = unpack or table.unpack
 
 local M = {}
@@ -19,6 +19,7 @@ local function findImageDepthMatches(imageDir, depthDir, opt)
             local basename = img:match('img(.*).jpg$')
             local depth = 'depth_sph_corr'..basename..'.t7'
             if paths.filep(paths.concat(depthDir, depth)) then
+                print(basename)
                 table.insert(imagePath, paths.concat(imageDir, img))
                 table.insert(depthPath, paths.concat(depthDir, depth))
             end
