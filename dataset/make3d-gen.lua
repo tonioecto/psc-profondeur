@@ -72,7 +72,7 @@ function M.augmentation(imageDirOrigin, depthDirOrigin, opt)
     -- data augmentation compose
     -- create transform function table
     local trans = {
-        T.RandomCrop(unpack(opt.inputSize), unpack(opt.outputSize)),
+        T.RandomCrop(173, 230, 96, 128),
         T.RandomScale(1, 1.5),
         T.HorizontalFlip(0.5),
         T.Rotation(5)
