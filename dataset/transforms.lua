@@ -64,7 +64,7 @@ function M.RandomCrop(widthImage, heightImage, widthDepth, heightDepth)
         local x2, y2 = torch.round(x1 / w * wD), torch.round(y1 / h * hD)
 
         local outImg = image.crop(img, x1, y1, x1 + widthImage, y1 + heightImage)
-        local outDep = image.crop(depth, x2, y2, x2 + widthDepth, y2 + widthDepth)
+        local outDep = image.crop(depth, x2, y2, x2 + widthDepth, y2 + heightDepth)
         return outImg, outDep
     end
 end
