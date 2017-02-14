@@ -47,8 +47,8 @@ function M.RandomCrop(widthImage, heightImage, widthDepth, heightDepth)
         local wD, hD = depth:size(2), depth:size(1)
 
         print(w..'  '..h..'  '..widthImage..'  '..heightImage)
-        assert(w < widthImage or h < heightImage, 'wrong crop size for image')
-        assert(wD < widthDepth or hD < heightDepth, 'wrong crop size for depth')
+        assert(w >= widthImage and h >= heightImage, 'wrong crop size for image')
+        assert(wD >= widthDepth and hD >= heightDepth, 'wrong crop size for depth')
 
         if w == widthImage and h == heightImage then
             return img, depth
