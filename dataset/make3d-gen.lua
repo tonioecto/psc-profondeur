@@ -90,7 +90,7 @@ function M.augmentation(imageDirOrigin, depthDirOrigin, opt)
         local depth = torch.load(depthPathOrigin[i])
         depth = depth:select(3, 4)
 
-        local basename = paths.basename(img)
+        local basename = paths.basename(imagePathOrigin[i])
         basename = basename:match('img(.*).jpg$')
 
         for j = 1, num, 1 do
