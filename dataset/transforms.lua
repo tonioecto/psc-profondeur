@@ -62,31 +62,6 @@ function M.RandomCrop(size, padding)
     end
 end
 
--- Four corner patches and center crop from image and its horizontal reflection
-function M.TenCrop(size)
-    local centerCrop = M.CenterCrop(size)
-
-    return function(input)
-        local w, h = input:size(3), input:size(2)
-
-        local output = {}
-        for _, img in ipairs{input, image.hflip(input)} do
-            table.insert(output, centerCrop(img))
-            table.insert(output, image.crop(img, 0, 0, size, size))
-            table.insert(output, image.crop(img, w-size, 0, w, size))
-            table.insert(output, image.crop(img, 0, h-size, size, h))
-            table.insert(output, image.crop(img, w-size, h-size, w, h))
-        end
-
-        -- View as mini-batch
-        for i, img in ipairs(output) do
-            output[i] = img:view(1, img:size(1), img:size(2), img:size(3))
-        end
-
-        return input.cat(output, 1)
-    end
-end
-
 -- Resized with shorter side randomly sampled from [minSize, maxSize] (ResNet-style)
 function M.RandomScale(minSize, maxSize)
     return function(input)
@@ -158,7 +133,6 @@ function M.Rotation(deg)
     end
 end
 
-
 function M.RandomOrder(ts)
     return function(input)
         local img = input.img or input
@@ -168,10 +142,6 @@ function M.RandomOrder(ts)
         end
         return img
     end
-end
-
-function M.mask(depth, threshold)
-    return torch.clamp(depth, 0, threshold)
 end
 
 return M
