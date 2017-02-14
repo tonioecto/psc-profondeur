@@ -19,7 +19,6 @@ local function findImageDepthMatches(imageDir, depthDir, opt)
             local basename = img:match('img(.*).jpg$')
             local depth = 'depth_sph_corr'..basename..'.t7'
             if paths.filep(paths.concat(depthDir, depth)) then
-                --print(basename)
                 table.insert(imagePath, paths.concat(imageDir, img))
                 table.insert(depthPath, paths.concat(depthDir, depth))
             end
@@ -86,12 +85,10 @@ function M.augmentation(imageDirOrigin, depthDirOrigin, opt)
 
     local imageScale = T.Scale(345, 460)
     local depthScale = T.Scale(192, 256)
-    --[[
+
     for i = 1, sizeOrigin, 1 do
         local img = image.loadJPG(imagePathOrigin[i])
-        --print(#img)
         img = imageScale(img)
-        --print(#img)
 
         local depth = torch.load(depthPathOrigin[i])
         depth = depth:select(3, 4)
@@ -110,7 +107,7 @@ function M.augmentation(imageDirOrigin, depthDirOrigin, opt)
             torch.save(paths.concat(depthPath, 'depth'..basename..'-'..j..'.t7'), depth)
         end
     end
-    ]]--
+
 end
 
 return M
