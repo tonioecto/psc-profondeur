@@ -26,6 +26,7 @@ function M.RandomScale(minRatio, maxRatio)
     return function(img, depth)
         print('RamdomScale')
         local ratio = torch.random(minRatio, maxRatio)
+        print(ratio)
 
         local w, h = img:size(3), img:size(2)
         local wDepth, hDepth = depth:size(2), depth:size(1)
@@ -86,6 +87,7 @@ function M.Rotation(deg)
         print('RandomRotate')
         local ratio = (torch.uniform() - 0.5) * 2
         if deg ~= 0 then
+            print(deg * ratio)
             img = image.rotate(img, ratio * deg * math.pi / 180, 'bilinear')
             depth = image.rotate(depth, ratio * deg * math.pi / 180, 'bilinear')
         end
