@@ -75,10 +75,10 @@ function M.augmentation(imageDirOrigin, depthDirOrigin, opt)
     -- data augmentation compose
     -- create transform function table
     local trans = T.Compose({
-        T.RandomCrop(173, 230, 96, 128),
         T.RandomScale(1, 1.5),
         T.HorizontalFlip(0.5),
-        T.Rotation(5)
+        T.Rotation(5),
+        T.RandomCrop(173, 230, 96, 128)
     })
 
     local imageScale = T.Scale(345, 460)
@@ -86,9 +86,9 @@ function M.augmentation(imageDirOrigin, depthDirOrigin, opt)
 
     for i = 1, sizeOrigin, 1 do
         local img = image.loadJPG(imagePathOrigin[i])
-        print(#img)
+        --print(#img)
         img = imageScale(img)
-        print(#img)
+        --print(#img)
 
         local depth = torch.load(depthPathOrigin[i])
         depth = depth:select(3, 4)

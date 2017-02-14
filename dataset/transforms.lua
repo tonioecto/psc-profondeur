@@ -6,6 +6,8 @@ function M.Compose(transforms)
     return function(img, depth)
         for _, transform in ipairs(transforms) do
             img, depth = transform(img, depth)
+            print(#img)
+            print(#depth)
         end
         return img, depth
     end
