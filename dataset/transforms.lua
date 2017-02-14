@@ -24,6 +24,7 @@ end
 -- Resized with shorter side randomly sampled from [minSize, maxSize] (ResNet-style)
 function M.RandomScale(minRatio, maxRatio)
     return function(img, depth)
+        print('RamdomScale')
         local ratio = torch.random(minRatio, maxRatio)
 
         local w, h = img:size(3), img:size(2)
@@ -45,6 +46,7 @@ end
 -- Random crop from larger image
 function M.RandomCrop(widthImage, heightImage, widthDepth, heightDepth)
     return function(img, depth)
+        print('RandomCrop')
         local w, h = img:size(3), img:size(2)
         local wD, hD = depth:size(2), depth:size(1)
 
@@ -69,6 +71,7 @@ end
 -- flip the image horizontally with probability prob
 function M.HorizontalFlip(prob)
     return function(img, depth)
+        print('RandomFlip')
         if torch.uniform() < prob then
             img = image.hflip(img)
             depth = image.hflip(depth)
@@ -80,6 +83,7 @@ end
 -- rotate deg degrees from -deg to deg
 function M.Rotation(deg)
     return function(img, depth)
+        print('RandomRotate')
         local ratio = (torch.uniform() - 0.5) * 2
         if deg ~= 0 then
             img = image.rotate(img, ratio * deg * math.pi / 180, 'bilinear')
