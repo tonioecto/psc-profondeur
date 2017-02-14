@@ -60,7 +60,6 @@ end
 function M.augmentation(imageDirOrigin, depthDirOrigin, opt)
     local imagePath = paths.concat(opt.data, 'image')
     local depthPath = paths.concat(opt.data, 'depth')
-    local sizeOrigin = #imagePath
     paths.mkdir(imagePath)
     paths.mkdir(depthPath)
 
@@ -68,6 +67,7 @@ function M.augmentation(imageDirOrigin, depthDirOrigin, opt)
     local imagePathOrigin, depthPathOrigin = findImageDepthMatches(
     imageDirOrigin, depthDirOrigin, opt
     )
+    local sizeOrigin = #imagePathOrigin
 
     -- firstly we scale depth image 
     -- number of data to generate for  each origin image
