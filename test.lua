@@ -1,13 +1,23 @@
+-- import packages
+require 'torch'
+require 'paths'
+require 'optim'
 require 'nn'
-require 'models/modules/MaskMSECriterion'
+local DataLoader = require 'dataloader'
+local model = require '/models/init'
+local Trainer = require 'train'
+local checkpoints = require 'checkpoints'
+local opts = require 'opts'
 
-input = torch.rand(300, 300)
---print(input)
+-- Create options
+-- define batch-size, data-set to load, learning rate, max iteration times
+-- and resume flag
+print '==> set up training options'
+local opt = opts.parse()
 
-target = torch.rand(300, 300)
---print(target)
+-- Create model
+print '==> create model'
+local net, criterion = model.setup(opt)
+-- verify the structure of the neural network created
+-- print('ResNet and up-projection \n' .. net:__tostring())
 
-criterion = nn.MaskMSECriterion(0.5, 0, false)
-
-print(criterion:forward(input, target))
-print(criterion:backward(input, target))
