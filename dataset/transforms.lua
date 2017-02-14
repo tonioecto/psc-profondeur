@@ -25,7 +25,7 @@ end
 function M.RandomScale(minRatio, maxRatio)
     return function(img, depth)
         print('RamdomScale')
-        local ratio = torch.random(minRatio, maxRatio)
+        local ratio = torch.uniform() * (maxRatio - minRatio) + minRatio
         print(ratio)
 
         local w, h = img:size(3), img:size(2)
@@ -77,7 +77,7 @@ function M.HorizontalFlip(prob)
             img = image.hflip(img)
             depth = image.hflip(depth)
         end
-        return input, depth
+        return img, depth
     end
 end
 
