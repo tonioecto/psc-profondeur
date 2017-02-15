@@ -73,7 +73,7 @@ function M.augmentation(imageDirOrigin, depthDirOrigin, opt)
     -- number of data to generate for  each origin image
     local num = opt.sizeAugmented/sizeOrigin
     print('=> original size '..sizeOrigin)
-    print('=> after augmentation '..sizeAugmented)
+    print('=> after augmentation '..opt.sizeAugmented)
     -- data augmentation compose
     -- create transform function table
     local trans = T.Compose({
