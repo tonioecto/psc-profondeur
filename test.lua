@@ -2,6 +2,9 @@
 local gen = require 'datasets/init'
 local opts = require 'opts'
 require 'nn'
+require 'cudnn'
+require 'cutorch'
+require 'cunn'
 require 'models/modules/MaskMSECriterion'
 
 local opt = opts.parse(arg)
