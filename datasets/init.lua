@@ -2,6 +2,7 @@
 local M = {}
 
 function M.create(opt, split)
+    print(opt.dataset)
     local Dataset = require('datasets/' .. opt.dataset)
     Dataset.preprocess()
     local gen = require('datasets/' .. opt.dataset .. '-gen')
