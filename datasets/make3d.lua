@@ -22,7 +22,7 @@ function Make3dDataset:size()
     return #self.info.imagePath
 end
 
-function Make3dDataset.preprocess()
+function Make3dDataset.preprocess(opt)
     -- transformation combination
     local trans = T.Compose({
         T.RandomScale(1, 1.5),
@@ -32,8 +32,8 @@ function Make3dDataset.preprocess()
         T.RandomCrop(173, 230, 96, 128)
     })
     -- from the original dataset, generate val and train set
-    G.augmentation('Train400Image', 'Train400Depth_t7', self.opt,
-    self.split, self.opt.trainDataPortion)
+    G.augmentation('Train400Image', 'Train400Depth_t7', opt,
+    split, opt.trainDataPortion)
 end
 
 return M.Make3dDataset
