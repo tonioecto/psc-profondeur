@@ -54,14 +54,17 @@ function M.parse(arg)
     end
 
     -- Defaut dataset options
-    opt.dataset = 'imagenet'
+    opt.dataset = 'make3d'
     opt.data = 'data'
     opt.format = 't7'
     opt.depthOrigin = 'Train400Depth_t7'
     opt.imageOrigin = 'Train400Image'
     opt.testDepth = 'Test134Depth_t7'
     opt.testImage = 'Test134Image_t7'
-    opt.sizeAugmented = 16000
+    opt.incre = 40
+    
+    -- Defaut val and train repartition 
+    opt.trainDataPortion = 0.8
 
     -- Default opt save and resume options 
     opt.save = 'model_trained'

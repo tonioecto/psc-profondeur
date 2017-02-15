@@ -1,13 +1,12 @@
 require 'paths'
 require 'ffi'
-local T = require 'dataset/transforms'
+local T = require 'datasets/transforms'
 local unpack = unpack or table.unpack
 
 local M = {}
 
-local function findImageDepthMatches(imageDir, depthDir, opt)
-    imageDir = paths.concat(opt.data, imageDir)
-    depthDir = paths.concat(opt.data, depthDir)
+local function findImageDepthMatches(imageDir, depthDir)
+    
     local dirsImage = paths.dir(imageDir)
     table.sort(dirsImage)
     local imagePath = {}
@@ -33,57 +32,81 @@ end
 
 function M.exec(opt, cacheFile)
     -- find the image and depth matches
-    local imageDir = 'image'
-    local depthDir = 'depth'
+    local trainImageDir = paths.concat(opt.data, 'train', 'image')
+    local trainDepthDir = paths.concat(opt.data, 'train', 'depth')
+    local valImageDir = paths.concat(opt.data, 'val', 'image')
+    local valDepthDir = paths.concat(opt.data, 'val', 'depth')
 
-    assert(paths.dirp(paths.concat(opt.data, imageDir)), 'image directory not found: ' .. 
-    paths.concat(opt.data, imageDir))
-    assert(paths.dirp(paths.concat(opt.data, depthDir)), 'depth directory not found: ' .. 
-    paths.concat(opt.data, depthDir))
+    assert(trainImageDir, 'train image directory not found: ' .. trainImageDir)
+    assert(trainDepthDir, 'train depth directory not found: ' .. trainDepthDir)
 
-    print("=> Generating list of images and corresponding depths")
-    local imagePath, depthPath = findImageDepthMatches(
-    imageDir, depthDir, opt
+    assert(valImageDir, 'val image directory not found: ' .. valImageDir)
+    assert(valDepthDir, 'val depth directory not found: ' .. valDepthDir)
+
+    print("=> Generating list of images and corresponding depths for trainset and valset")
+    local trainImagePath, trainDepthPath = findImageDepthMatches(
+    trainImageDir, trainDepthDir
+    )
+    local valImagePath, valDepthPath = findImageDepthMatches(
+    valImageDir, valDepthDir
     )
 
     local info = {
-        basedir = opt.data,
-        imageSet = imagePath,
-        depthSet = depthPath
+        val = {
+            basedir = paths.concat(opt.data, 'val'),
+            imagePath = valImagePath,
+            depthPath = valDepthPath,
+        },
+        train = {
+            basedir = opt.concat(opt.data, 'train'),
+            imagePath = trainImagePath,
+            depthPath = trainDepthPath,
+        },
     }
 
     print(" | saving list of images and depths to " .. cacheFile)
     torch.save(cacheFile, info)
+    
     return info
 end
 
-function M.augmentation(imageDirOrigin, depthDirOrigin, opt)
-    local imagePath = paths.concat(opt.data, 'image')
-    local depthPath = paths.concat(opt.data, 'depth')
+function M.augmentation(imageDirOrigin, depthDirOrigin, opt, split, trainDataPortion, trans)
+
+    local imagePath = paths.concat(opt.data, split, 'image')
+    local depthPath = paths.concat(opt.data, split, 'depth')
     paths.mkdir(imagePath)
     paths.mkdir(depthPath)
 
     -- find all origin image and depth matches
+    imageDirOrigin = paths.concat(opt.data, imageDirOrigin)
+    depthDirOrigin = paths.concat(opt.data, depthDirOrigin)
     local imagePathOrigin, depthPathOrigin = findImageDepthMatches(
-    imageDirOrigin, depthDirOrigin, opt
+    imageDirOrigin, depthDirOrigin
     )
     local sizeOrigin = #imagePathOrigin
 
+    local startIndex
+    local endIndex
+    local size
+
+    if split == 'train' then
+        startIndex = 1
+        endIndex = torch.round(sizeOrigin * trainDataPortion)
+    else
+        startIndex = torch.round(sizeOrigin * trainDataPortion) + 1
+        endIndex = sizeOrigin
+    end
+
+    size = endIndex - startIndex + 1
+    local targetSize =size * opt.incre
+
     -- firstly we scale depth image 
     -- number of data to generate for  each origin image
-    local num = opt.sizeAugmented/sizeOrigin
-    print('=> original size '..sizeOrigin)
-    print('=> after augmentation '..opt.sizeAugmented)
-    -- data augmentation compose
-    -- create transform function table
-    local trans = T.Compose({
-        T.RandomScale(1, 1.5),
-        T.HorizontalFlip(0.5),
-        T.Rotation(5),
-        T.Color(0.8, 1,2),
-        T.RandomCrop(173, 230, 96, 128)
-    })
+    local num = opt.incre
+    print('=> original size of '..split..' '..size)
+    print('=> after augmentation '..split..' '..targetSize)
 
+    -- data augmentation compose
     local imageScale = T.Scale(345, 460)
     local depthScale = T.Scale(192, 256)
 
@@ -101,7 +124,7 @@ function M.augmentation(imageDirOrigin, depthDirOrigin, opt)
         local tmpImg
         local tmpDep
 
-        print('=>processe image: '..basename)
+        print('=>process image: '..basename)
 
         for j = 1, num, 1 do
             tmpImg, tmpDep = img,depth
