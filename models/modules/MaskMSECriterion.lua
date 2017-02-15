@@ -18,6 +18,7 @@ function MaskMSECriterion:updateOutput(input, target)
     target:maskedFill(self.m, 0)
     
     self.nValid = torch.sum(self.mInverse)
+    print(self.nValid)
     
     self.output_tensor = self.output_tensor or input.new(1)
     input.THNN.MSECriterion_updateOutput(
