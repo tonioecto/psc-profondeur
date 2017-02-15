@@ -15,10 +15,6 @@ function Make3dDataset:__init(info, opt, split)
     assert(paths.dirp(self.dir), 'directory does not exist: ' .. self.dir)
 end
 
-function Make3dDataset:_loadImageDepth()
-    
-end
-
 function Make3dDataset:size()
     return #self.info.imagePath
 end
@@ -35,6 +31,10 @@ function Make3dDataset.preprocess(opt, split)
     -- from the original dataset, generate val and train set
     G.augmentation('Train400Image', 'Train400Depth_t7', opt,
     split, opt.trainDataPortion, trans)
+end
+
+function Make3dDataset.info(opt, cache)
+    return G.exec(opt, cache)
 end
 
 return M.Make3dDataset

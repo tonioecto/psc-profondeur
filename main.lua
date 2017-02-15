@@ -8,6 +8,7 @@ local model = require '/models/init'
 local Trainer = require 'train'
 local checkpoints = require 'checkpoints'
 local opts = require 'opts'
+local datasetInit = require 'datasets/init'
 
 -- Create options
 -- define batch-size, data-set to load, learning rate, max iteration times
@@ -17,8 +18,9 @@ local opt = opts.parse()
 
 print '==> load dataset'
 -- Data loading
-local dataloader = DataLoader('imagetest', 'depth',opt)
-dataloader:creDatatable()
+datasetInit.__init(opt, {'train', 'val'})
+local info = datasetInit.info(opt)
+local dataloader = DataLoader(info,opt)
 
 -- Load previous checkpoint, if it exists
 local checkpoint, optimState = checkpoints.latest(opt)
