@@ -33,7 +33,7 @@ function Make3dDataset.preprocess(opt, split)
     })
     -- from the original dataset, generate val and train set
     G.augmentation('Train400Image', 'Train400Depth_t7', opt,
-    split, opt.trainDataPortion)
+    split, opt.trainDataPortion, trans)
 end
 
 return M.Make3dDataset
