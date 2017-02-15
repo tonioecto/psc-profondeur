@@ -61,7 +61,7 @@ function M.parse(arg)
     opt.imageOrigin = 'Train400Image'
     opt.testDepth = 'Test134Depth_t7'
     opt.testImage = 'Test134Image_t7'
-    opt.incre = 40
+    opt.incre = 2
     
     -- Defaut val and train repartition 
     opt.trainDataPortion = 0.8
