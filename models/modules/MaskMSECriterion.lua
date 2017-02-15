@@ -28,7 +28,7 @@ function MaskMSECriterion:updateOutput(input, target)
     )
     
     if(self.sizeAverage) then
-        self.output = self.output_tensor[1] / n
+        self.output = self.output_tensor[1] / self.nValid
     else
         self.output = self.output_tensor[1]
     end
@@ -52,7 +52,7 @@ function MaskMSECriterion:updateGradInput(input, target)
     )
     
     if self.sizeAverage then
-        return self.gradInput / self.mInverse
+        return self.gradInput / self.nValid
     else
         return self.gradInput
     end
