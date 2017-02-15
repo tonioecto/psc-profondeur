@@ -22,7 +22,7 @@ function Make3dDataset:size()
     return #self.info.imagePath
 end
 
-function Make3dDataset.preprocess(opt)
+function Make3dDataset.preprocess(opt, split)
     -- transformation combination
     local trans = T.Compose({
         T.RandomScale(1, 1.5),
