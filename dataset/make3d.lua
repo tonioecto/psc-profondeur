@@ -4,7 +4,7 @@ local t = require 'datasets/transforms'
 local ffi = require 'ffi'
 
 local M = {}
-local ImagenetDataset = torch.class('resnet.ImagenetDataset', M)
+local ImagenetDataset = torch.class('resnetUnPooling.ImagenetDataset', M)
 
 function ImagenetDataset:__init(imageInfo, opt, split)
    self.imageInfo = imageInfo[split]
@@ -51,20 +51,6 @@ end
 function ImagenetDataset:size()
    return self.imageInfo.imageClass:size(1)
 end
-
--- Computed from random subset of ImageNet training images
-local meanstd = {
-   mean = { 0.485, 0.456, 0.406 },
-   std = { 0.229, 0.224, 0.225 },
-}
-local pca = {
-   eigval = torch.Tensor{ 0.2175, 0.0188, 0.0045 },
-   eigvec = torch.Tensor{
-      { -0.5675,  0.7192,  0.4009 },
-      { -0.5808, -0.0045, -0.8140 },
-      { -0.5836, -0.6948,  0.4203 },
-   },
-}
 
 function ImagenetDataset:preprocess()
    if self.split == 'train' then
