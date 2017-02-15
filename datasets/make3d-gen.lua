@@ -16,10 +16,17 @@ local function findImageDepthMatches(imageDir, depthDir)
     for _,img in ipairs(dirsImage) do
         if not (img:find('.jpg') == nil) then
             local basename = img:match('img(.*).jpg$')
-            local depth = 'depth_sph_corr'..basename..'.t7'
-            if paths.filep(paths.concat(depthDir, depth)) then
-                table.insert(imagePath, paths.concat(imageDir, img))
-                table.insert(depthPath, paths.concat(depthDir, depth))
+            -- create possible corresponding depth name
+            local depth = {
+                'depth_sph_corr'..basename..'.t7',
+                'depth'..basename..'.t7',
+            }
+            for _,d in ipairs(depth) do
+                if paths.filep(paths.concat(depthDir, d)) then
+                    table.insert(imagePath, paths.concat(imageDir, img))
+                    table.insert(depthPath, paths.concat(depthDir, d))
+                    break
+                end
             end
         end
     end
