@@ -23,7 +23,6 @@ end
 function M.RandomScale(minRatio, maxRatio)
     return function(img, depth)
         local ratio = torch.uniform() * (maxRatio - minRatio) + minRatio
-        print(ratio)
 
         local w, h = img:size(3), img:size(2)
         local wDepth, hDepth = depth:size(2), depth:size(1)
