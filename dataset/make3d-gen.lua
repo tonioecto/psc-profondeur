@@ -80,6 +80,7 @@ function M.augmentation(imageDirOrigin, depthDirOrigin, opt)
         T.RandomScale(1, 1.5),
         T.HorizontalFlip(0.5),
         T.Rotation(5),
+        T.Color(0.8, 1,2),
         T.RandomCrop(173, 230, 96, 128)
     })
 

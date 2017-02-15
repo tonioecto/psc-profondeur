@@ -47,8 +47,6 @@ function M.RandomCrop(widthImage, heightImage, widthDepth, heightDepth)
         local w, h = img:size(3), img:size(2)
         local wD, hD = depth:size(2), depth:size(1)
 
-        print(w..'  '..h..'  '..widthImage..'  '..heightImage)
-        print(wD..'  '..hD..'  '..widthDepth..'  '..heightDepth)
         assert(w >= widthImage and h >= heightImage, 'wrong crop size for image')
         assert(wD >= widthDepth and hD >= heightDepth, 'wrong crop size for depth')
 
@@ -81,9 +79,20 @@ function M.Rotation(deg)
     return function(img, depth)
         local ratio = (torch.uniform() - 0.5) * 2
         if deg ~= 0 then
-            print(deg * ratio)
             img = image.rotate(img, ratio * deg * math.pi / 180, 'bilinear')
             depth = image.rotate(depth, ratio * deg * math.pi / 180, 'bilinear')
+        end
+        return img, depth
+    end
+end
+
+-- color multiplication
+function M.Color(minRatio, maxRatio)
+    return function (img, depth)
+        local alpha = torch.rand(3) * (maxRatio - minRatio) + minRatio
+        --adjust 3 color layers
+        for i=1, 3, 1 do
+            img[i] = img[i] * alpha[i]
         end
         return img, depth
     end

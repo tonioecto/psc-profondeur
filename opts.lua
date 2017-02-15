@@ -57,8 +57,10 @@ function M.parse(arg)
     opt.dataset = 'imagenet'
     opt.data = 'data'
     opt.format = 't7'
-    opt.trainDepth = 'Train400Depth'
-    opt.testDepth = 'Test134Depth'
+    opt.depthOrigin = 'Train400Depth_t7'
+    opt.imageOrigin = 'Train400Image'
+    opt.testDepth = 'Test134Depth_t7'
+    opt.testImage = 'Test134Image_t7'
     opt.sizeAugmented = 1600
 
     -- Default opt save and resume options 
