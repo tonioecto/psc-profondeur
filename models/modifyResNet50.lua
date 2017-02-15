@@ -5,18 +5,26 @@ require 'cudnn'
 --require 'cunn'
 
 -- load initial resnet-50
-model = torch.load('resnet-50.t7')
+local model = torch.load('resnet-50.t7')
 print('ResNet initial model \n' .. model:__tostring())
 
 --get the location of 'cudnn.ReLU'
+local num = 0
+model:replace(function(module)
+    if torch.typename(module) == 'cudnn.ReLU' then
+        num = num + 1
+    end
+
+    return module
+end)
+
 num = 49
 
 -- delete modules: 'cudnn.ReLU', 'cudnn.SpatialAveragePooling',
 -- 'nn.Linear' and 'nn.View'
 model:replace(function(module)
-    if torch.typename(module)== 'cudnn.ReLU' then
+    if torch.typename(module) == 'cudnn.ReLU' then
         num = num - 1
-        print(num)
         if num == 0  then
             return nn.Identity()
         end
