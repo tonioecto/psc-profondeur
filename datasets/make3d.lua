@@ -15,7 +15,8 @@ function Make3dDataset:__init(info, opt, split)
     assert(paths.dirp(self.dir), 'directory does not exist: ' .. self.dir)
 end
 
-function Make3dDataset:_loadImage(path)
+function Make3dDataset:_loadImageDepth()
+    
 end
 
 function Make3dDataset:size()

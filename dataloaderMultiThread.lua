@@ -1,116 +1,161 @@
-local datasets = require 'datasets/init'
-local Threads = require 'threads'
-Threads.serialization('threads.sharedserialize')
+require 'image'
+require 'paths'
+require 'os'
+require 'math'
+require 'xlua'
 
+local unpack = unpack or table.unpack
 local M = {}
 local DataLoader = torch.class('resnetUnPooling.DataLoader', M)
 
-function DataLoader.create(opt)
-    -- The train and val loader
-    local loaders = {}
-
-    for i, split in ipairs{'train', 'val'} do
-        local dataset = datasets.create(opt, split)
-        loaders[i] = M.DataLoader(dataset, opt, split)
-    end
-
-    return table.unpack(loaders)
+function M.load()
+    local trainSet
+    local validationSet
+    return trainSet, validationSet
 end
 
-function DataLoader:__init(dataset, opt, split)
-    local manualSeed = opt.manualSeed
-    local function init()
-        require('datasets/' .. opt.dataset)
-    end
-    local function main(idx)
-        if manualSeed ~= 0 then
-            torch.manualSeed(manualSeed + idx)
-        end
-        torch.setnumthreads(1)
-        _G.dataset = dataset
-        _G.preprocess = dataset:preprocess()
-        return dataset:size()
-    end
 
-    local threads, sizes = Threads(opt.nThreads, init, main)
-    self.nCrops = (split == 'val' and opt.tenCrop) and 10 or 1
-    self.threads = threads
-    self.__size = sizes[1][1]
-    self.batchSize = math.floor(opt.batchSize / self.nCrops)
-    local function getCPUType(tensorType)
-        if tensorType == 'torch.CudaHalfTensor' then
-            return 'HalfTensor'
-        elseif tensorType == 'torch.CudaDoubleTensor' then
-            return 'DoubleTensor'
-        else
-            return 'FloatTensor'
-        end
-    end
-    self.cpuType = getCPUType(opt.tensorType)
+function DataLoader:__init(imageset, depthset,opt)
+    self.imageset =imageset
+    self.depthset = depthset
+    self.size = opt.sampleSize
+    self.batchsize = opt.batchSize
+    self.opt = opt
 end
 
-function DataLoader:size()
-    return math.ceil(self.__size / self.batchSize)
+function DataLoader:loadDataset(s)       --Load the images and depthMap, and generate dataset for trainning
+    local imagetable = {}
+    local depthtable = {}
+    if s=="val" then
+        print('loading validation dataset')
+        imagetable = self.valImageTable
+        depthtable = self.valDepthTable
+    elseif s=="test" then
+        print('loading test dataset')
+        imagetable = self.testImageTable
+        depthtable = self.testDepthTable
+    end
+    print('The number of image is:'..#imagetable)
+    print('The number of correponding depthmap is:'..#depthtable)
+
+    if #self.imagename == 0 then
+        error('given directory doesn\'t contain any JPG files')
+    end
+
+    local imageSet = torch.Tensor(#imagetable,unpack(self.opt.inputSize))
+    local depthSet = torch.Tensor(#depthtable,1,unpack(self.opt.outputSize))
+    --local mat = require 'matio'
+
+    for i,file in ipairs(imagetable) do
+        local m = image.loadJPG(file)
+        --m = image.scale(m,304,228,'bicubic')
+        imageSet[i] = m
+    end
+
+    for i,file in ipairs(depthtable) do
+        --local m = mat.load(file,'depthMap')
+        --m = image.scale(m,128 ,160,'bicubic')
+        local m = image.loadJPG(file)
+        depthSet[i] = m
+    end
+
+    local dataset = {
+        image = imageSet,
+        depth = depthSet,
+        size =  function() return imageSet:size(1) end
+    }
+
+    setmetatable(dataset,
+    {__index = function(t, i)
+        return {t.image[i], t.depth[i]}
+    end}
+    )
+
+    return dataset
+
 end
 
-function DataLoader:run()
-    local threads = self.threads
-    local size, batchSize = self.__size, self.batchSize
-    local perm = torch.randperm(size)
 
-    local idx, sample = 1, nil
-    local function enqueue()
-        while idx <= size and threads:acceptsjob() do
-            local indices = perm:narrow(1, idx, math.min(batchSize, size - idx + 1))
-            threads:addjob(
-            function(indices, nCrops, cpuType)
-                local sz = indices:size(1)
-                local batch, imageSize
-                local target = torch.IntTensor(sz)
-                for i, idx in ipairs(indices:totable()) do
-                    local sample = _G.dataset:get(idx)
-                    local input = _G.preprocess(sample.input)
-                    if not batch then
-                        imageSize = input:size():totable()
-                        if nCrops > 1 then table.remove(imageSize, 1) end
-                        batch = torch[cpuType](sz, nCrops, table.unpack(imageSize))
-                    end
-                    batch[i]:copy(input)
-                    target[i] = sample.target
-                end
-                collectgarbage()
-                return {
-                    input = batch:view(sz * nCrops, table.unpack(imageSize)),
-                    target = target,
-                }
-            end,
-            function(_sample_)
-                sample = _sample_
-            end,
-            indices,
-            self.nCrops,
-            self.cpuType
-            )
-            idx = idx + batchSize
+function DataLoader:miniBatchload(dataset)   --create mini batch
+    --randomize the data firstly
+    --local shuffle = torch.randperm(dataset:size())
+    --local imageSize = dataset.image[1]:size()
+    --local depthSize = dataset.depth[1]:size()
+
+    local numBatch = math.floor(dataset:size()/self.batchsize)
+    --print(numBatch)
+    local imageSet = torch.Tensor(numBatch,self.batchsize,unpack(self.opt.inputSize))
+    local depthSet = torch.Tensor(numBatch,self.batchsize,unpack(self.opt.outputSize))
+
+    for index = 1,numBatch,1 do
+        local numRemain = dataset:size() - (index-1)*self.batchsize
+        if(numRemain >=self.batchsize) then
+            local indexBegin = (index-1)*self.batchsize + 1
+            local indexEnd = indexBegin + self.batchsize - 1
+            for k = 1,self.batchsize,1 do
+                imageSet[{index,k,{}}] = dataset.image[indexBegin]
+                depthSet[{index,k,{}}] = dataset.depth[indexBegin]
+                indexBegin = indexBegin + 1
+            end
         end
     end
 
-    local n = 0
-    local function loop()
-        enqueue()
-        if not threads:hasjob() then
-            return nil
-        end
-        threads:dojob()
-        if threads:haserror() then
-            threads:synchronize()
-        end
-        enqueue()
-        n = n + 1
-        return n, sample
+    local data = {
+        image = imageSet,
+        depth = depthSet,
+        size =  function() return imageSet:size(1) end
+    }
+
+    setmetatable(data,
+    {__index = function(t, i)
+        return {t.image[i], t.depth[i]}
+    end}
+    )
+
+    return data
+end
+
+
+function DataLoader:loadDatafromtable(indexstart)
+    if #self.trainImageTable == 0 then
+        error('trainSet doesn\'t contain any JPG files')
     end
 
-    return loop
+    local imageRemain = #self.trainImageTable - indexstart + 1
+    local sampleRealsize = self.size
+    print(imageRemain)
+    if imageRemain < self.size then
+        sampleRealsize = imageRemain
+    end
+    local imageSet = torch.Tensor(sampleRealsize,unpack(self.opt.inputSize))
+    local depthSet = torch.Tensor(sampleRealsize,unpack(self.opt.outputSize))
+    local mat = require 'matio'
+
+    for i = 1,sampleRealsize,1 do
+        local index = indexstart + i - 1
+        local m1 = image.loadJPG(self.trainImageTable[index])
+        local m2 = image.loadJPG(self.trainDepthTable[index])
+
+        imageSet[i] = m1
+        depthSet[i] = m2
+        
+    end
+    local dataset = {
+        image = imageSet,
+        depth = depthSet,
+        size =  function() return imageSet:size(1) end
+    }
+
+    setmetatable(dataset,
+    {__index = function(t, i)
+        return {t.image[i], t.depth[i]}
+    end}
+    )
+
+    local input = self:miniBatchload(dataset)
+
+    return input
 end
 
 return M.DataLoader
+
