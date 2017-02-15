@@ -4,7 +4,7 @@ local M = {}
 function M.create(opt, split)
     print(opt.dataset)
     local Dataset = require('datasets/' .. opt.dataset)
-    Dataset.preprocess()
+    Dataset.preprocess(opt)
     local gen = require('datasets/' .. opt.dataset .. '-gen')
     local cacheFile = paths.concat(opt.data, 'cache')
     local info = gen.exec(opt, cacheFile)
