@@ -110,7 +110,7 @@ function M.augmentation(imageDirOrigin, depthDirOrigin, opt, split, trainDataPor
     local imageScale = T.Scale(345, 460)
     local depthScale = T.Scale(192, 256)
 
-    for i = indexbegin, endIndex, 1 do
+    for i = startIndex, endIndex, 1 do
         local img = image.loadJPG(imagePathOrigin[i])
         img = imageScale(img)
 
