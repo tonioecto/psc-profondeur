@@ -16,10 +16,10 @@ function MaskMSECriterion:updateOutput(input, target)
 
     input:maskedFill(self.m, 0)
     target:maskedFill(self.m, 0)
-    
+
     self.nValid = torch.sum(self.mInverse)
     print(self.nValid)
-    
+
     self.output_tensor = self.output_tensor or input.new(1)
     input.THNN.MSECriterion_updateOutput(
     input:cdata(),
@@ -27,13 +27,13 @@ function MaskMSECriterion:updateOutput(input, target)
     self.output_tensor:cdata(),
     false
     )
-    
+
     if(self.sizeAverage) then
         self.output = self.output_tensor[1] / self.nValid
     else
         self.output = self.output_tensor[1]
     end
-    
+
     return self.output
 end
 
@@ -51,7 +51,7 @@ function MaskMSECriterion:updateGradInput(input, target)
     self.gradInput:cdata(),
     false
     )
-    
+
     if self.sizeAverage then
         return self.gradInput / self.nValid
     else

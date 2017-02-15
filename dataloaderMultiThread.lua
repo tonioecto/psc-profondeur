@@ -9,60 +9,59 @@ local M = {}
 local DataLoader = torch.class('resnetUnPooling.DataLoader', M)
 
 function M.load()
-    local trainSet
-    local validationSet
-    return trainSet, validationSet
 end
 
-
-function DataLoader:__init(imageset, depthset,opt)
-    self.imageset =imageset
-    self.depthset = depthset
+-- load dataset from path tables
+function DataLoader:__init(info, opt)
+    self.info = info
+    self.val = info.val
+    self.train = info.train
     self.size = opt.sampleSize
-    self.batchsize = opt.batchSize
+    self.batchSize = opt.batchSize
     self.opt = opt
 end
 
-function DataLoader:loadDataset(s)       --Load the images and depthMap, and generate dataset for trainning
-    local imagetable = {}
-    local depthtable = {}
-    if s=="val" then
-        print('loading validation dataset')
-        imagetable = self.valImageTable
-        depthtable = self.valDepthTable
-    elseif s=="test" then
-        print('loading test dataset')
-        imagetable = self.testImageTable
-        depthtable = self.testDepthTable
-    end
-    print('The number of image is:'..#imagetable)
-    print('The number of correponding depthmap is:'..#depthtable)
+--Load the images and depthMap, and generate dataset for training
+function DataLoader:loadDataset(split)
 
-    if #self.imagename == 0 then
-        error('given directory doesn\'t contain any JPG files')
-    end
+    local imagePath
+    local depthPath
 
-    local imageSet = torch.Tensor(#imagetable,unpack(self.opt.inputSize))
-    local depthSet = torch.Tensor(#depthtable,1,unpack(self.opt.outputSize))
-    --local mat = require 'matio'
-
-    for i,file in ipairs(imagetable) do
-        local m = image.loadJPG(file)
-        --m = image.scale(m,304,228,'bicubic')
-        imageSet[i] = m
+    if split == "val" then
+        print('=> load validation dataset')
+        imagePath = self.val.imagePath
+        depthPath = self.val.depthPath
+    elseif split == "test" then
+        print('=> load test dataset')
+        imagePath = self.test.imagePath
+        depthPath = self.test.depthPath
+    elseif s == "train" then
+        print('=> load train data set')
+        imagePath = self.train.imagePath
+        depthPath = self.train.depthPath
+    else
+        error('Invalid split input '..split)
     end
 
-    for i,file in ipairs(depthtable) do
-        --local m = mat.load(file,'depthMap')
-        --m = image.scale(m,128 ,160,'bicubic')
-        local m = image.loadJPG(file)
-        depthSet[i] = m
+    print('The number of image is:'..#imagePath)
+    print('The number of correponding depthmap is:'..#depthPath)
+
+    local imageSet = torch.Tensor(#imagePath, unpack(self.opt.inputSize))
+    local depthSet = torch.Tensor(#depthPath, unpack(self.opt.outputSize))
+
+    for i = 1, #imagePath, 1 do
+        local img = image.loadJPG(imagePath[i])
+        imageSet[i] = img
+        local dep = torch.load(depthPath[i])
+        depthSet[i] = dep
     end
 
     local dataset = {
         image = imageSet,
         depth = depthSet,
-        size =  function() return imageSet:size(1) end
+        size =  function()
+            return imageSet:size(1)
+        end
     }
 
     setmetatable(dataset,
@@ -72,27 +71,23 @@ function DataLoader:loadDataset(s)       --Load the images and depthMap, and gen
     )
 
     return dataset
-
 end
 
+--create mini batch
+function DataLoader:miniBatchload(dataset)
 
-function DataLoader:miniBatchload(dataset)   --create mini batch
-    --randomize the data firstly
-    --local shuffle = torch.randperm(dataset:size())
-    --local imageSize = dataset.image[1]:size()
-    --local depthSize = dataset.depth[1]:size()
+    local perm = torch.randperm(dataset:size())
 
-    local numBatch = math.floor(dataset:size()/self.batchsize)
-    --print(numBatch)
-    local imageSet = torch.Tensor(numBatch,self.batchsize,unpack(self.opt.inputSize))
-    local depthSet = torch.Tensor(numBatch,self.batchsize,unpack(self.opt.outputSize))
+    local numBatch = torch.round(dataset:size() / self.batchSize)
+    local imageSet = torch.Tensor(numBatch, self.batchSize, unpack(self.opt.inputSize))
+    local depthSet = torch.Tensor(numBatch, self.batchSize, unpack(self.opt.outputSize))
 
-    for index = 1,numBatch,1 do
-        local numRemain = dataset:size() - (index-1)*self.batchsize
-        if(numRemain >=self.batchsize) then
-            local indexBegin = (index-1)*self.batchsize + 1
+    for index = 1, numBatch, 1 do
+        local numRemain = dataset:size() - (index - 1) * self.batchSize
+        if(numRemain >= self.batchSize) then
+            local indexBegin = (index - 1) * self.batchsize + 1
             local indexEnd = indexBegin + self.batchsize - 1
-            for k = 1,self.batchsize,1 do
+            for k = 1, self.batchsize, 1 do
                 imageSet[{index,k,{}}] = dataset.image[indexBegin]
                 depthSet[{index,k,{}}] = dataset.depth[indexBegin]
                 indexBegin = indexBegin + 1
@@ -113,48 +108,6 @@ function DataLoader:miniBatchload(dataset)   --create mini batch
     )
 
     return data
-end
-
-
-function DataLoader:loadDatafromtable(indexstart)
-    if #self.trainImageTable == 0 then
-        error('trainSet doesn\'t contain any JPG files')
-    end
-
-    local imageRemain = #self.trainImageTable - indexstart + 1
-    local sampleRealsize = self.size
-    print(imageRemain)
-    if imageRemain < self.size then
-        sampleRealsize = imageRemain
-    end
-    local imageSet = torch.Tensor(sampleRealsize,unpack(self.opt.inputSize))
-    local depthSet = torch.Tensor(sampleRealsize,unpack(self.opt.outputSize))
-    local mat = require 'matio'
-
-    for i = 1,sampleRealsize,1 do
-        local index = indexstart + i - 1
-        local m1 = image.loadJPG(self.trainImageTable[index])
-        local m2 = image.loadJPG(self.trainDepthTable[index])
-
-        imageSet[i] = m1
-        depthSet[i] = m2
-        
-    end
-    local dataset = {
-        image = imageSet,
-        depth = depthSet,
-        size =  function() return imageSet:size(1) end
-    }
-
-    setmetatable(dataset,
-    {__index = function(t, i)
-        return {t.image[i], t.depth[i]}
-    end}
-    )
-
-    local input = self:miniBatchload(dataset)
-
-    return input
 end
 
 return M.DataLoader
