@@ -65,7 +65,7 @@ function M.exec(opt, cacheFile)
             depthPath = valDepthPath,
         },
         train = {
-            basedir = opt.concat(opt.data, 'train'),
+            basedir = paths.concat(opt.data, 'train'),
             imagePath = trainImagePath,
             depthPath = trainDepthPath,
         },
