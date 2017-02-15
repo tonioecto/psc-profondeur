@@ -25,7 +25,8 @@ local function findImageDepthMatches(imageDir, depthDir, opt)
         end
     end
 
-    print(#imagePath)
+    print('=> Generate image path file and depth path file with size '
+    ..#imagePath..' and '..#depthPath)
 
     return imagePath, depthPath
 end
@@ -71,9 +72,8 @@ function M.augmentation(imageDirOrigin, depthDirOrigin, opt)
     -- firstly we scale depth image 
     -- number of data to generate for  each origin image
     local num = opt.sizeAugmented/sizeOrigin
-    print(opt.sizeAugmented)
-    print(sizeOrigin)
-    print(num)
+    print('=> original size '..sizeOrigin)
+    print('=> after augmentation '..sizeAugmented)
     -- data augmentation compose
     -- create transform function table
     local trans = T.Compose({
@@ -100,6 +100,8 @@ function M.augmentation(imageDirOrigin, depthDirOrigin, opt)
 
         local tmpImg
         local tmpDep
+
+        print('=>processe image: '..basename)
 
         for j = 1, num, 1 do
             tmpImg, tmpDep = img,depth

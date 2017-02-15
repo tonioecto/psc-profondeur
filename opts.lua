@@ -61,7 +61,7 @@ function M.parse(arg)
     opt.imageOrigin = 'Train400Image'
     opt.testDepth = 'Test134Depth_t7'
     opt.testImage = 'Test134Image_t7'
-    opt.sizeAugmented = 1600
+    opt.sizeAugmented = 16000
 
     -- Default opt save and resume options 
     opt.save = 'model_trained'
