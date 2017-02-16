@@ -32,20 +32,14 @@ Precisely, we train against ground truth depth maps with masked out
 invalid pixels, where the depth is zero, as well as pixels that 
 correspond to distances over 70m.
 
+We create a MaskMSECriterion to avoid invalid pixels' effects. 
 ```lua
 MaskMSECriterion
 
 function MaskMSECriterion:__init(highMask, lowMask, sizeAverage)
-    parent.__init(self)
-    self.highMask = highMask
-    self.lowMask = lowMask
-    if sizeAverage ~= nil then
-        self.sizeAverage = sizeAverage
-    else
-        self.sizeAverage = true
-    end
+    -- highMask: mask out all pixels with value >= highMask
+    -- lowMask: mask out all pixels with vaule = highMask
+    -- sizeAverage: sign to divide the loss and gradient with number of valid pixels
 end
-
-
 
 ```
