@@ -31,3 +31,21 @@ excluding pixels i that have no depth value.
 Precisely, we train against ground truth depth maps with masked out 
 invalid pixels, where the depth is zero, as well as pixels that 
 correspond to distances over 70m.
+
+```lua
+MaskMSECriterion
+
+function MaskMSECriterion:__init(highMask, lowMask, sizeAverage)
+    parent.__init(self)
+    self.highMask = highMask
+    self.lowMask = lowMask
+    if sizeAverage ~= nil then
+        self.sizeAverage = sizeAverage
+    else
+        self.sizeAverage = true
+    end
+end
+
+
+
+```
