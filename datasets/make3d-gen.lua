@@ -37,6 +37,7 @@ local function findImageDepthMatches(imageDir, depthDir)
     return imagePath, depthPath
 end
 
+-- generate info file for val and train dataset
 function M.exec(opt, cacheFile)
     -- find the image and depth matches
     local trainImageDir = paths.concat(opt.data, 'train', 'image')
@@ -77,8 +78,10 @@ function M.exec(opt, cacheFile)
     return info
 end
 
+-- data augementation process for all inputs in the original directory
 function M.augmentation(imageDirOrigin, depthDirOrigin, opt, split, trainDataPortion, trans)
 
+    -- 
     local imagePath = paths.concat(opt.data, split, 'image')
     local depthPath = paths.concat(opt.data, split, 'depth')
     paths.mkdir(imagePath)
@@ -134,8 +137,7 @@ function M.augmentation(imageDirOrigin, depthDirOrigin, opt, split, trainDataPor
         print('=>process image: '..basename)
 
         for j = 1, num, 1 do
-            tmpImg, tmpDep = img,depth
-            tmpImg, tmpDep = trans(tmpImg, tmpDep)
+            tmpImg, tmpDep = trans(img, depth)
             image.save(paths.concat(imagePath, 'img'..basename..'-'..j..'.jpg'), img)
             torch.save(paths.concat(depthPath, 'depth'..basename..'-'..j..'.t7'), depth)
         end
@@ -147,10 +149,8 @@ function M.augOneMatch(pair, trans)
 
     local img = pair.image
     local depth = pair.depth
-
-    t = T.Compose(trans)
-
-    return t(img, depth)
+    
+    return trans(img, depth)
 end
 
 return M

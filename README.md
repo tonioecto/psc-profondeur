@@ -33,7 +33,8 @@ Precisely, we train against ground truth depth maps with masked out
 invalid pixels, where the depth is zero, as well as pixels that 
 correspond to distances over 70m.
 
-We create a MaskMSECriterion to avoid invalid pixels' effects. 
+We create a MaskMSECriterion to avoid invalid pixels' effects.
+ 
 ```lua
 local MaskMSECriterion, parent = torch.class('nn.MaskMSECriterion', 'nn.Criterion')
 
@@ -43,4 +44,38 @@ function MaskMSECriterion:__init(highMask, lowMask, sizeAverage)
     -- sizeAverage: sign to divide the loss and gradient with number of valid pixels
 end
 
+```
+
+##Dataset class
+
+```lua
+function Dataset:__init(info, opt, split)
+    -- info: data directory
+    -- opt: global option
+    -- split: 'val', 'train', 'test' label
+end
+
+function Dataset:get(i)
+    return image[i], depth[i]
+end
+
+function Dataset:__loadImageDepth(img, depth)
+    return depth, image
+end
+
+function Dataset:size()
+    return size
+end
+
+function Dataset.preprocess(opt, split)
+    -- perfom data augmentation process for dataset with label split
+end
+
+function Dataset.preprocessOnline(pair, split)
+    -- online preprocess for one input, target pair
+end
+
+function Dataset.info(opt, cache)
+    -- generate info file
+end
 ```

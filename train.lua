@@ -132,25 +132,27 @@ function Trainer:sampleTrainingLoss(num)
         print ('not a train dataset, cannot sample from '..self.split..' dataset.')
         return nil
     end
-    
+
     local setSize = #self.dataloader.dataset:size()
     local indexTable = torch.randperm(setSize)
-    local depthReal = torch.Tensor(num, unpack(self.opt.outputSize))
+    local depthSample = torch.Tensor(num, unpack(self.opt.outputSize))
     local imageSample = torch.Tensor(num, unpack(self.opt.inputSize))
 
     for i=1, num, 1 do
-        imageSample[i], depthReal[i] = self.dataset.get(indexTable[i])
+        imageSample[i], depthSample[i] = self.dataset.get(indexTable[i])
     end
-    
+
     local depthPred = self.model:forward(imageSample:cuda())
-    local loss = self.criterion:forward(depthPred, depthReal:cuda())
+    local loss = self.criterion:forward(depthPred, depthSample:cuda())
     return loss
 end
 
 -- compute score on validation set
 function Trainer:computeValScore(valLoader, num)
-    -- Compute error for validation set
+
+    -- load permutation table for val set
     valLoader:loadPerm(torch.randperm(valLoader.dataset:size()))
+    -- load images and depths
     local img, depth = valLoader:loadDataset(1, num)
     img = img:cuda()
     depth = depth:cuda()
@@ -162,13 +164,14 @@ end
 -- show the prediction of an image in the dataset 
 -- of the loader
 function Trainer:showDepth(loader)
-    
+
     local index = torch.random(loader.dataset:size())
     local img, depth = loader.dataset:get(index)
     img = img:cuda()
     depth = depth:cuda()
     local prediction = self.forward(img):reshape(unpack(opt.outputSize))
     return img, prediction, depth
+
 end
 
 -- decrease learning rate according to epoch

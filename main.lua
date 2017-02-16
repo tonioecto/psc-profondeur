@@ -29,7 +29,7 @@ local checkpoint, optimState = checkpoints.latest(opt)
 -- Create model
 print '==> create model'
 local net, criterion = model.setup(opt, checkpoint)
--- verify the structure of the neural network created
+-- print to verify the structure of the neural network created
 -- print('ResNet and up-projection \n' .. net:__tostring())
 
 print '==> configuring optimizer'
@@ -62,8 +62,7 @@ for epoch = opt.epochNumber+1, opt.nEpochs+opt.epochNumber, 1 do
     -- Run model on validation set
     net:evaluate()
 
-    local valSet = dataloader:loadDataset('val')
-    local valErr = trainer:computeScore(valSet)
+    local valErr = trainer:computeValScore(valLoader, 100)
     local trainErr = trainer:sampleTrainingLoss(2)
 
     trainer:showDepth('train',2)

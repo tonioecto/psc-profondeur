@@ -35,7 +35,7 @@ end
 function M.info(opt)
 
     local gen = require('datasets/' .. opt.dataset .. '-gen')
-    local cacheFile = paths.concat('data', 'cache')
+    local cacheFile = paths.concat('data', 'train-info-cache')
 
     self.info = gen.exec(opt, cache)
 

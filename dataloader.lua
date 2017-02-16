@@ -41,7 +41,7 @@ function DataLoader:__init(dataset, opt, split)
     self.opt = opt
 end
 
---transformation offline
+--after the transformation offline
 --Load the images and depthMap, and generate dataset for training
 --load a part of dataset from startIndex to endIndex randomly
 function DataLoader:loadDataset(startIndex, endIndex)

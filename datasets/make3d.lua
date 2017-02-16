@@ -45,6 +45,13 @@ end
 function Make3dDataset.preprocessOnline(pair, split)
     local img = image.loadJPG(pair.image)
     local depth = torch.load(pair.depth)
+
+    local imageScale = T.Scale(345, 460)
+    local depthScale = T.Scale(192, 256)
+
+    img = imageScale(img)
+    depth = depthScale(depth)
+
     local trans = T.Compose({
         T.RandomScale(1, 1.5),
         T.HorizontalFlip(0.5),
