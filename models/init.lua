@@ -2,6 +2,7 @@ require 'nn'
 require 'cudnn'
 require 'cutorch'
 -- require 'cunn'
+require 'models/modules/MaskMSECriterion'
 
 local model = require '/models/model'
 local upProjection = model.upProjection
@@ -22,7 +23,7 @@ function M.setup(opt, checkpoint)
     net = net:cuda()
 
     -- define criterion
-    local criterion = nn.MSECriterion()
+    local criterion = nn.MaskMSECriterion(70, 0)
     criterion = criterion:cuda()
     return net, criterion
 
@@ -71,7 +72,7 @@ function M.create()
     net = net:cuda()
 
     -- define criterion
-    local criterion = nn.MSECriterion()
+    local criterion = nn.MaskMSECriterion(70, 0)
     criterion = criterion:cuda()
 
     return net, criterion

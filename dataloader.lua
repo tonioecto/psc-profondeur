@@ -13,7 +13,7 @@ local M = {}
 local DataLoader = torch.class('resnetUnPooling.DataLoader', M)
 
 -- load permutation table
-function M.load(perms)
+function DataLoader:loadPerm(perms)
     self.perms = perms
 end
 
@@ -59,10 +59,7 @@ function DataLoader:loadDataset(startIndex, endIndex)
 
     for i = startIndex, endIndex, 1 do
         local index = self.perms[i]
-        local img = image.loadJPG(imagePath[index])
-        imageSet[i] = img
-        local dep = torch.load(depthPath[index])
-        depthSet[i] = dep
+        imageSet[i], depthSet[i] = self.dataset:get(index)
     end
 
     local datasetSample = {

@@ -124,16 +124,23 @@ function Trainer:saveLoss(epoch, trainErr, valErr)
     torch.save(lossFilePath, trainingTrack)
 end
 
+-- compute trainingd loss for a sample part of train dataset
 function Trainer:sampleTrainingLoss(num)
     -- sample of size num
-    local setSize = #self.dataloader.trainImageTable
-    local indexTable = torch.randperm(setSize)
-    local depthReal = torch.Tensor(num,unpack(self.opt.outputSize))
-    local imageSample = torch.Tensor(num,unpack(self.opt.inputSize))
-    for i=1,num,1 do
-        imageSample[i] = image.loadJPG(self.dataloader.trainImageTable[indexTable[i]])
-        depthReal[i] = image.loadJPG(self.dataloader.trainDepthTable[indexTable[i]])
+    if self.split ~= 'train' then
+        print ('not a train dataset, cannot sample from '..self.split..' dataset.')
+        return nil
     end
+    
+    local setSize = #self.dataloader.dataset:size()
+    local indexTable = torch.randperm(setSize)
+    local depthReal = torch.Tensor(num, unpack(self.opt.outputSize))
+    local imageSample = torch.Tensor(num, unpack(self.opt.inputSize))
+
+    for i=1, num, 1 do
+        imageSample[i], depthReal[i] = self.dataset.get(indexTable[i])
+    end
+    
     local depthPred = self.model:forward(imageSample:cuda())
     local loss = self.criterion:forward(depthPred, depthReal:cuda())
     return loss
@@ -147,39 +154,15 @@ function Trainer:computeScore(validationSet)
     return loss
 end
 
-function Trainer:showDepth(str,num)
-    if str == "train" then
-        for i=1,num,1 do
-            local rand = math.random(#self.dataloader.trainImageTable)
-            local depthPred = self.model:forward(image.loadJPG(self.dataloader.trainImageTable[rand]):cuda())
-            local depthReal = image.loadJPG(self.dataloader.trainDepthTable[rand])
-            local Pred = torch.reshape(depthPred,unpack(self.opt.outputSize))
-            local Real = torch.reshape(depthReal,unpack(self.opt.outputSize))
-            local preName = "depthPred"..i..".t7"
-            local realName = "depthReal"..i..".t7"
-            Pred = Pred:float()
-            Real = Real:float()
-            torch.save(preName,Pred)
-            torch.save(realName,Real)
+-- show the prediction of an image in the dataset 
+-- of the loader
+function Trainer:showDepth(loader)
+    
+    local index = torch.random(loader.dataset:size())
+    local img, depth = loader.dataset:get(index)
+    local prediction = self.forward(img):reshape(unpack(opt.outputSize))
 
-            --evaluate.Display(Pred,Real,preName,realName)
-        end
-    elseif str == "val" then
-        for i=1,num,1 do
-            local rand = math.random(#self.dataloader.valImageTable)
-            local depthPred = self.model:forward(image.loadJPG(self.dataloader.valImageTable[rand]):cuda())
-            local depthReal = image.loadJPG(self.dataloader.valDepthTable[rand])
-            local Pred = torch.reshape(depthPred,unpack(self.opt.outputSize))
-            local Real = torch.reshape(depthReal,unpack(self.opt.outputSize))
-            local preName = "depthPred"..i..".t7"
-            local realName = "depthReal"..i..".t7"
-            Pred = Pred:float()
-            Real = Real:float()
-            torch.save(preName,Pred)
-            torch.save(realName,Real)
-            --evaluate.Display(Pred,Real,preName,realName)
-        end
-    end
+    return img, prediction, depth
 end
 
 function Trainer:learningRate(epoch)

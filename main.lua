@@ -28,7 +28,7 @@ local checkpoint, optimState = checkpoints.latest(opt)
 
 -- Create model
 print '==> create model'
-local net, criterion = model.setup(opt)
+local net, criterion = model.setup(opt, checkpoint)
 -- verify the structure of the neural network created
 -- print('ResNet and up-projection \n' .. net:__tostring())
 
@@ -53,7 +53,10 @@ local trainer = Trainer(net, criterion, optimState, opt)
 -- Start or resume training precedure
 local bestValErr = math.huge
 for epoch = opt.epochNumber, opt.nEpochs+opt.epochNumber, 1 do
-    dataloader:tableShuffle('train')
+    
+    -- generate a new permutation table
+    local perms = torch.randperm(dataloader.dataset:size())
+    dataloader:loadPerm(perms)
     trainer:train(epoch, dataloader)
 
     -- Run model on validation set

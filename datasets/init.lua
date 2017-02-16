@@ -8,7 +8,9 @@ end
 function M.init(opt, set)
 
     local Dataset = require('datasets/' .. opt.dataset)
-
+    
+    -- if original dataset isn't yet preprocessed, we generate a new dataset using
+    -- data augmentation method
     if opt.resume == 'none' then
         for _,split in ipairs(set) do
             if not (
