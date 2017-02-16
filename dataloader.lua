@@ -49,10 +49,10 @@ function DataLoader:loadDataset(startIndex, endIndex)
     local imagePath = self.info.imagePath
     local depthPath = sefl.info.depthPath
 
-    print('=> load '..self.split..' dataset')
+    print('=> The total number of image is:'..#imagePath)
+    print('=> The total number of correponding depthmap is:'..#depthPath)
 
-    print('The number of image is:'..#imagePath)
-    print('The number of correponding depthmap is:'..#depthPath)
+    print('=> load '..self.split..' dataset from index '..startIndex..' to '..endIndex)
 
     local imageSet = torch.Tensor(#imagePath, unpack(self.opt.inputSize))
     local depthSet = torch.Tensor(#depthPath, unpack(self.opt.outputSize))

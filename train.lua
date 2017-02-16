@@ -146,11 +146,14 @@ function Trainer:sampleTrainingLoss(num)
     return loss
 end
 
-function Trainer:computeScore(validationSet)
+function Trainer:computeScore(valLoader, num)
     -- Compute error for validation set
-    local depthPred = self.model:forward(validationSet.image:cuda())
-    local loss = self.criterion:forward(depthPred,validationSet.depth:cuda())
-
+    valLoader:loadPerm(torch.randperm(valLoader.dataset:size()))
+    local img, depth = valLoader:loadDataset(1, num)
+    img = img:cuda()
+    depth = depth:cuda()
+    local pred = self.model:forward(img)
+    local loss = self.criterion:forward(pred, depth)
     return loss
 end
 
