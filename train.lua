@@ -13,6 +13,7 @@ function Trainer:__init(model, criterion, optimState, opt)
     self.optimState = optimState
     self.params, self.gradParams = model:getParameters()
     self.batchSize = opt.batchSize
+    self.sampleSize = opt.sampleSize
     self.opt = opt
 end
 
@@ -35,7 +36,7 @@ function Trainer:train(epoch, dataloader)
     end
 
     -- size of the input
-    local trainSize = #self.dataloader.trainImageTable
+    local trainSize = self.dataloader.dataset:size()
 
     -- training batch counter
     local N = 0
@@ -49,11 +50,13 @@ function Trainer:train(epoch, dataloader)
     self.model:training()
 
     local indexbegin = 1
-    while(indexbegin < trainSize+1) do
-        sample = self.dataloader:loadDatafromtable(indexbegin)
-        indexbegin = indexbegin + self.dataloader.size
+    while(indexbegin < trainSize) do
+        -- load part of the dataset 
+        local sample = self.dataloader:loadDataset(indexbegin, indexbegin + self.sampleSize - 1)
+        sample = self.dataloader:miniBatchload(sample)
+        indexbegin = indexbegin + sample.size
 
-        for i = 1, sample:size(), 1 do
+        for i = 1, sample.size, 1 do
             dataTime = dataTimer:time().real
 
             -- Copy input and target to the GPU
@@ -86,11 +89,25 @@ function Trainer:train(epoch, dataloader)
 
 end
 
-function Trainer:copyInputs(image,depth)
-    self.input = image:cuda()
-    self.target = depth:cuda()
+local function getCudaTensorType(tensorType)
+    if tensorType == 'torch.CudaHalfTensor' then
+        return cutorch.createCudaHostHalfTensor()
+    elseif tensorType == 'torch.CudaDoubleTensor' then
+        return cutorch.createCudaHostDoubleTensor()
+    else
+        return cutorch.createCudaHostTensor()
+    end
 end
 
+-- copy input as different tensor type
+function Trainer:copyInputs(image,depth)
+    self.input = getCudaTensorType(opt.tensorType)
+    self.input:resize(image:size()):copy(image)
+    self.target = getCudaTensorType(opt.tensorType)
+    self.target:resize(depth:size()):copy(depth)
+end
+
+-- save training and validation loss after every epoch
 function Trainer:saveLoss(epoch, trainErr, valErr)
     local lossFilePath = paths.concat((self.opt.lossFile), 'loss.t7')
     local trainingTrack
@@ -109,7 +126,6 @@ end
 
 function Trainer:sampleTrainingLoss(num)
     -- sample of size num
-    -- self.dataloader:tableShuffle('train')
     local setSize = #self.dataloader.trainImageTable
     local indexTable = torch.randperm(setSize)
     local depthReal = torch.Tensor(num,unpack(self.opt.outputSize))

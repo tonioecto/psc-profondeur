@@ -18,9 +18,10 @@ local opt = opts.parse()
 
 print '==> load dataset'
 -- Data loading
-datasetInit.__init(opt, {'train', 'val'})
-local info = datasetInit.info(opt)
-local dataloader = DataLoader(info,opt)
+datasetInit.init(opt, {'train', 'val'})
+local trainDataset, valDataset = DataLoader.create(opt)
+local dataloader = DataLoader(trainDataset, opt, 'train')
+local valLoader = DataLoader(valDataset, opt, 'val')
 
 -- Load previous checkpoint, if it exists
 local checkpoint, optimState = checkpoints.latest(opt)
@@ -34,15 +35,17 @@ local net, criterion = model.setup(opt)
 print '==> configuring optimizer'
 -- Create optimizer
 -- set parameters for optimized stochastic gradient descent method
-local optimState = {
-    learningRate = opt.LR,
-    weightDecay = opt.weightDecay,
-    momentum = opt.momentum,
-    learningRateDecay = 0,
-    precision = opt.precision,
-    nesterov = true,
-    dampening = 0.0,
-}
+if optimState == nil then
+    optimState = {
+        learningRate = opt.LR,
+        weightDecay = opt.weightDecay,
+        momentum = opt.momentum,
+        learningRateDecay = 0,
+        precision = opt.precision,
+        nesterov = true,
+        dampening = 0.0,
+    }
+end
 
 -- Create Trainer class
 local trainer = Trainer(net, criterion, optimState, opt)

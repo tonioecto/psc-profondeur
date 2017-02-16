@@ -143,4 +143,14 @@ function M.augmentation(imageDirOrigin, depthDirOrigin, opt, split, trainDataPor
 
 end
 
+function M.augOneMatch(pair, trans)
+
+    local img = pair.image
+    local depth = pair.depth
+
+    t = T.Compose(trans)
+
+    return t(img, depth)
+end
+
 return M
