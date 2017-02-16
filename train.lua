@@ -89,6 +89,7 @@ function Trainer:train(epoch, dataloader)
 
 end
 
+-- get tensor type to use
 local function getCudaTensorType(tensorType)
     if tensorType == 'torch.CudaHalfTensor' then
         return cutorch.createCudaHostHalfTensor()
@@ -146,7 +147,8 @@ function Trainer:sampleTrainingLoss(num)
     return loss
 end
 
-function Trainer:computeScore(valLoader, num)
+-- compute score on validation set
+function Trainer:computeValScore(valLoader, num)
     -- Compute error for validation set
     valLoader:loadPerm(torch.randperm(valLoader.dataset:size()))
     local img, depth = valLoader:loadDataset(1, num)
@@ -163,11 +165,13 @@ function Trainer:showDepth(loader)
     
     local index = torch.random(loader.dataset:size())
     local img, depth = loader.dataset:get(index)
+    img = img:cuda()
+    depth = depth:cuda()
     local prediction = self.forward(img):reshape(unpack(opt.outputSize))
-
     return img, prediction, depth
 end
 
+-- decrease learning rate according to epoch
 function Trainer:learningRate(epoch)
     -- Training schedule
     local decay = math.floor((epoch - 1) / 6)

@@ -21,17 +21,17 @@ function M.parse(arg)
     cmd:text()
     cmd:text('Options:')
     ------------ General options --------------------
-    cmd:option('-precision',       'double',    'Options: single | double | half')
+    cmd:option('-precision',       'single',    'Options: single | double | half')
     --------------- Training options --------------------
-    cmd:option('-nEpochs',         0,           'Number of total epochs to run')
+    cmd:option('-nEpochs',         10,           'Number of total epochs to run')
     cmd:option('-epochNumber',     1,           'Manual epoch number (useful on restarts)')
-    cmd:option('-batchSize',       32,          'mini-batch size (1 = pure stochastic)')
+    cmd:option('-batchSize',       16,          'mini-batch size (1 = pure stochastic)')
     cmd:option('-testOnly',        'false',     'Run on validation set only')
-    cmd:option('-sampleSize',      200,         'Number of datas to load to memory')
+    cmd:option('-sampleSize',      1600,         'Number of datas to load to memory')
     ------------- Checkpointing options ---------------
     cmd:option('-resume',          'none',      'Resume from the latest checkpoint in this directory')
     --------- Optimization options ----------------------
-    cmd:option('-LR',              0.1,         'initial learning rate')
+    cmd:option('-LR',              0.001,         'initial learning rate')
     cmd:option('-momentum',        0.9,         'momentum')
     cmd:option('-weightDecay',     1e-4,        'weight decay')
     cmd:text()
@@ -39,9 +39,6 @@ function M.parse(arg)
     local opt = cmd:parse(arg or {})
 
     opt.testOnly = opt.testOnly ~= 'false'
-
-    -- Default nEpochs=90
-    opt.nEpochs = opt.nEpochs == 0 and 90 or opt.nEpochs
 
     if opt.precision == nil or opt.precision == 'single' then
         opt.tensorType = 'torch.CudaTensor'
@@ -62,7 +59,7 @@ function M.parse(arg)
     opt.testDepth = 'Test134Depth_t7'
     opt.testImage = 'Test134Image_t7'
     opt.incre = 2
-    
+
     -- Defaut val and train repartition 
     opt.trainDataPortion = 0.8
 

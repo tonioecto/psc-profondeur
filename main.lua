@@ -47,13 +47,13 @@ if optimState == nil then
     }
 end
 
--- Create Trainer class
+-- create Trainer class
 local trainer = Trainer(net, criterion, optimState, opt)
 
--- Start or resume training precedure
+-- start or resume training precedure
 local bestValErr = math.huge
-for epoch = opt.epochNumber, opt.nEpochs+opt.epochNumber, 1 do
-    
+for epoch = opt.epochNumber+1, opt.nEpochs+opt.epochNumber, 1 do
+
     -- generate a new permutation table
     local perms = torch.randperm(dataloader.dataset:size())
     dataloader:loadPerm(perms)
