@@ -35,7 +35,7 @@ correspond to distances over 70m.
 
 We create a MaskMSECriterion to avoid invalid pixels' effects. 
 ```lua
-MaskMSECriterion
+local MaskMSECriterion, parent = torch.class('nn.MaskMSECriterion', 'nn.Criterion')
 
 function MaskMSECriterion:__init(highMask, lowMask, sizeAverage)
     -- highMask: mask out all pixels with value >= highMask
