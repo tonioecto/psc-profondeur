@@ -1,4 +1,4 @@
-# psc-profondeur
+# PSC - l'inférence de profondeur d'une image
 
 ## Data Augmentation Process
 We use the method indicated in the article of `Eigen et al`. 
@@ -14,12 +14,15 @@ need.
 `c` in `[0.8, 1.2]^3`. 
 - `Flips`: Input and target are horizontally flipped with 0.5 probability. 
 
+###Make3D dataset 
 For the Make3D dataset, we use mask method introduced in the article.
 
 Firstly, We resize all images to `345x460` and further reduce the resolution of
 the RGB inputs to the network by half `(173x230)` because of the large 
 architecture and hardware limitations. To get the output depth size, we resize 
 mapping depth image to `96x128`.
+
+##NYU dataset
 
 ##Mask out invalid pixels
 During training, most of the target depth maps will have some missing 
@@ -34,7 +37,7 @@ invalid pixels, where the depth is zero, as well as pixels that
 correspond to distances over 70m.
 
 We create a MaskMSECriterion to avoid invalid pixels' effects.
- 
+
 ```lua
 local MaskMSECriterion, parent = torch.class('nn.MaskMSECriterion', 'nn.Criterion')
 
