@@ -21,6 +21,7 @@ the RGB inputs to the network by half `(173x230)` because of the large
 architecture and hardware limitations. To get the output depth size, we resize 
 mapping depth image to `96x128`.
 
+##Mask out invalid pixels
 During training, most of the target depth maps will have some missing 
 values, particularly near object boundaries, windows and specular 
 surfaces. We deal with these simply by masking them out and evaluating 
