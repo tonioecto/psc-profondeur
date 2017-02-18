@@ -22,7 +22,7 @@ the RGB inputs to the network by half `(173x230)` because of the large
 architecture and hardware limitations. To get the output depth size, we resize 
 mapping depth image to `96x128`.
 
-##NYU dataset
+###NYU dataset
 
 ##Mask out invalid pixels
 During training, most of the target depth maps will have some missing 
@@ -51,7 +51,7 @@ end
 
 ##Dataset class
 
-```lua
+```Lua
 function Dataset:__init(info, opt, split)
     -- info: data directory
     -- opt: global option

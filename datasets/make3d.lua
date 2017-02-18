@@ -16,8 +16,12 @@ function Make3dDataset:__init(info, opt, split)
 end
 
 function Make3dDataset:get(i)
-    return self:__loadImageDepth(self.info.imagePath[i],
+    local elemement = {}
+    local img, depth = self:__loadImageDepth(self.info.imagePath[i], 
     self.info.depthPath[i])
+    element.image = img
+    element.depth = depth
+    return element
 end
 
 function Make3dDataset:__loadImageDepth(img, depth)
@@ -42,10 +46,7 @@ function Make3dDataset.preprocess(opt, split)
     split, opt.trainDataPortion, trans)
 end
 
-function Make3dDataset.preprocessOnline(pair, split)
-    local img = image.loadJPG(pair.image)
-    local depth = torch.load(pair.depth)
-
+function Make3dDataset.preprocessOnline(img, depth)
     local imageScale = T.Scale(345, 460)
     local depthScale = T.Scale(192, 256)
 
@@ -60,10 +61,7 @@ function Make3dDataset.preprocessOnline(pair, split)
         T.RandomCrop(173, 230, 96, 128)
     })
     
-    local p = {}
-    p.image = img
-    p.depth = depth
-    return G.augOneMatch(p, trans)
+    return G.augOneMatch(img, depth, trans)
 end
 
 function Make3dDataset.info(opt, cache)

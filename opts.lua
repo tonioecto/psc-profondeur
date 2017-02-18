@@ -23,11 +23,12 @@ function M.parse(arg)
     ------------ General options --------------------
     cmd:option('-precision',       'single',    'Options: single | double | half')
     --------------- Training options --------------------
-    cmd:option('-nEpochs',         10,           'Number of total epochs to run')
-    cmd:option('-epochNumber',     1,           'Manual epoch number (useful on restarts)')
-    cmd:option('-batchSize',       16,          'mini-batch size (1 = pure stochastic)')
-    cmd:option('-testOnly',        'false',     'Run on validation set only')
-    cmd:option('-sampleSize',      1600,         'Number of datas to load to memory')
+    cmd:option('-nEpochs',         10,            'Number of total epochs to run')
+    cmd:option('-epochNumber',     1,             'Manual epoch number (useful on restarts)')
+    cmd:option('-batchSize',       16,            'mini-batch size (1 = pure stochastic)')
+    cmd:option('-testOnly',        'false',       'Run on validation set only')
+    cmd:option('-sampleSize',      1600,          'Number of datas to load to memory')
+    cmd:option('-manualSeed',       2000,         'Manually set RNG seed')
     ------------- Checkpointing options ---------------
     cmd:option('-resume',          'none',      'Resume from the latest checkpoint in this directory')
     --------- Optimization options ----------------------

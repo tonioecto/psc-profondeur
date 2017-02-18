@@ -134,7 +134,7 @@ function M.augmentation(imageDirOrigin, depthDirOrigin, opt, split, trainDataPor
         local tmpImg
         local tmpDep
 
-        print('=>process image: '..basename)
+        -- print('=> process image: '..basename)
 
         for j = 1, num, 1 do
             tmpImg, tmpDep = trans(img, depth)
@@ -145,11 +145,7 @@ function M.augmentation(imageDirOrigin, depthDirOrigin, opt, split, trainDataPor
 
 end
 
-function M.augOneMatch(pair, trans)
-
-    local img = pair.image
-    local depth = pair.depth
-    
+function M.augOneMatch(img, depth, trans)
     return trans(img, depth)
 end
 
