@@ -21,7 +21,9 @@ function M.init(opt, set)
             end
         end
     end
-
+    
+    -- create path info file
+    self.info = self.info(opt)
 end
 
 function M.create(opt, split)
@@ -32,13 +34,17 @@ function M.create(opt, split)
 
 end
 
+-- generate a path info file
 function M.info(opt)
 
     local gen = require('datasets/' .. opt.dataset .. '-gen')
-    local cacheFile = paths.concat('data', 'train-info-cache')
+    local cache= paths.concat(opt.data, 'info-cache')
 
-    self.info = gen.exec(opt, cache)
-
+    self.info = {
+        val = gen.exec(opt, cache..'-val.t7', 'val'),
+        train = gen.exec(opt, cache'-tain.t7', 'train')
+    }
+    
     return self.info
 end
 

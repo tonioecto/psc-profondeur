@@ -12,6 +12,50 @@ local unpack = unpack or table.unpack
 local M = {}
 local DataLoader = torch.class('resnetUnPooling.DataLoader', M)
 
+local Threads = require 'threads'
+Threads.serialization('threads.sharedserialize')
+
+function DataLoader:__init(dataset, opt, split)
+
+    self.dataset = dataset
+    self.info = dataset.info
+    self.split = split
+    self.sampleSize = opt.sampleSize
+    self.batchSize = opt.batchSize
+    self.opt = opt
+
+    -- manually generate RNG
+    local manualSeed = opt.manualSeed
+    local function init()
+        require('datasets/' .. opt.dataset)
+    end
+    local function main(idx)
+        if manualSeed ~= 0 then
+            torch.manualSeed(manualSeed + idx)
+        end
+        torch.setnumthreads(1)
+        _G.dataset = dataset
+        _G.preprocess = dataset:preprocessOnline()
+        return dataset:size()
+    end
+
+    -- initialize threads
+    local threads, size = Threads(opt.nThreads, init, main)
+    self.threads = threads
+    self.__size = dataset:size()
+    self.batchSize = opt.batchSize
+    local function getCPUType(tensorType)
+        if tensorType == 'torch.CudaHalfTensor' then
+            return 'HalfTensor'
+        elseif tensorType == 'torch.CudaDoubleTensor' then
+            return 'DoubleTensor'
+        else
+            return 'FloatTensor'
+        end
+    end
+    self.cpuType = getCPUType(opt.tensorType)
+end
+
 -- load permutation table
 function DataLoader:loadPerm(perms)
     self.perms = perms
@@ -99,78 +143,40 @@ end
 -----------------Multithreads part-------------------
 -----------------------------------------------------
 
-local Threads = require 'threads'
-Threads.serialization('threads.sharedserialize')
-
-function DataLoader:__init(dataset, opt, split)
-
-    self.dataset = dataset
-    self.info = data.info
-    self.split = splis
-    self.sampleSize = opt.sampleSize
-    self.batchSize = opt.batchSize
-    self.opt = opt
-
-    -- manually generate RNG
-    local manualSeed = opt.manualSeed
-    local function init()
-        require('datasets/' .. opt.dataset)
-    end
-    local function main(idx)
-        if manualSeed ~= 0 then
-            torch.manualSeed(manualSeed + idx)
-        end
-        torch.setnumthreads(1)
-        _G.dataset = dataset
-        _G.preprocess = dataset:preprocessOnline()
-        return dataset:size()
-    end
-
-    local threads, size = Threads(opt.nThreads, init, main)
-    self.threads = threads
-    self.__size = size
-    self.batchSize = opt.batchSize
-    local function getCPUType(tensorType)
-        if tensorType == 'torch.CudaHalfTensor' then
-            return 'HalfTensor'
-        elseif tensorType == 'torch.CudaDoubleTensor' then
-            return 'DoubleTensor'
-        else
-            return 'FloatTensor'
-        end
-    end
-    self.cpuType = getCPUType(opt.tensorType)
-end
-
-
-function DataLoader:run()
+-- multi threads solution to get dataset batchs for start to end
+function DataLoader:run(starIndex, endIndexss)
     local threads = self.threads
     local size, batchSize = self.__size, self.batchSize
-    local perm = torch.randperm(size)
-
-    local idx, sample = 1, nil
+    local perm = self.perms
+    
+    local idx, sample = startIndex, nil
     local function enqueue()
-        while idx <= size and threads:acceptsjob() do
-            local indices = perm:narrow(1, idx, math.min(batchSize, size - idx + 1))
+        while idx <= endIndex and threads:acceptsjob() do
+            local indices = perm:narrow(1, idx, math.min(batchSize, endIndex - idx + 1))
 
             threads:addjob(
             function(indices, cpuType)
+                -- final batch size
                 local sz = indices:size(1)
-                local batch, imageSize
-                local depths = torch.CudaTensor(sz, table.unpack(self.opt.outputSize))
+                local images, depths
+                local imageSize, depthSize
                 for i, idx in ipairs(indices:totable()) do
                     local sample = _G.dataset:get(idx)
                     local input, output = _G.preprocess(sample.image, sample.depth)
-                    if not batch then
+                    if not images then
                         imageSize = input:size():totable()
-                        batch = torch[cpuType](sz, table.unpack(imageSize))
+                        images = torch[cpuType](sz, table.unpack(imageSize))
                     end
-                    batch[i]:copy(input)
+                    if not depths then
+                        depthSize = output:size():totable()
+                        depths = torch[cpuType](sz, table.unpack(depthSize))
+                    end
+                    images[i]:copy(input)
                     depths[i]:copy(output)
                 end
                 collectgarbage()
                 return {
-                    image = batch,
+                    image = images,
                     depth = depths,
                 }
             end,
@@ -185,6 +191,7 @@ function DataLoader:run()
         end
     end
 
+    -- why?
     local n = 0
     local function loop()
         enqueue()

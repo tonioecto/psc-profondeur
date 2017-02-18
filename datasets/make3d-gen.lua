@@ -38,38 +38,25 @@ local function findImageDepthMatches(imageDir, depthDir)
 end
 
 -- generate info file for val and train dataset
-function M.exec(opt, cacheFile)
+function M.exec(opt, cacheFile, split)
     -- find the image and depth matches
-    local trainImageDir = paths.concat(opt.data, 'train', 'image')
-    local trainDepthDir = paths.concat(opt.data, 'train', 'depth')
-    local valImageDir = paths.concat(opt.data, 'val', 'image')
-    local valDepthDir = paths.concat(opt.data, 'val', 'depth')
+    if split ~= 'train' and split ~= 'val' and split ~= 'test' then
+        error('not a valid split label: '..split)
+    end
+    
+    local imageDir = paths.concat(opt.data, split, 'image')
+    local depthDir = paths.concat(opt.data, split, 'depth')
 
-    assert(trainImageDir, 'train image directory not found: ' .. trainImageDir)
-    assert(trainDepthDir, 'train depth directory not found: ' .. trainDepthDir)
+    assert(paths.filep(imageDir), split..' image directory not found: ' .. imageDir)
+    assert(paths.filep(depthDir), split..'depth directory not found: ' .. depthDir)
 
-    assert(valImageDir, 'val image directory not found: ' .. valImageDir)
-    assert(valDepthDir, 'val depth directory not found: ' .. valDepthDir)
-
-    print("=> Generating list of images and corresponding depths for trainset and valset")
-    local trainImagePath, trainDepthPath = findImageDepthMatches(
-    trainImageDir, trainDepthDir
-    )
-    local valImagePath, valDepthPath = findImageDepthMatches(
-    valImageDir, valDepthDir
-    )
+    print("=> Generating list of images and corresponding depths for "..split..' set')
+    local imagePath, depthPath = findImageDepthMatches(imageDir, depthDir)
 
     local info = {
-        val = {
-            basedir = paths.concat(opt.data, 'val'),
-            imagePath = valImagePath,
-            depthPath = valDepthPath,
-        },
-        train = {
-            basedir = paths.concat(opt.data, 'train'),
-            imagePath = trainImagePath,
-            depthPath = trainDepthPath,
-        },
+        basedir = paths.concat(opt.data, split),
+        imagePath = imageDir,
+        depthPath = depthDir,
     }
 
     print(" | saving list of images and depths to " .. cacheFile)
