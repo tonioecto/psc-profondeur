@@ -87,8 +87,10 @@ function DataLoader:loadDataset(startIndex, endIndex)
     print('=> The total number of correponding depthmap is:'..#depthPath)
     print('=> load '..self.split..' dataset from index '..startIndex..' to '..endIndex)
 
-    local imageSet = torch.Tensor(#imagePath, unpack(self.opt.inputSize))
-    local depthSet = torch.Tensor(#depthPath, unpack(self.opt.outputSize))
+    local size = endIndex - startIndex + 1
+
+    local imageSet = torch.Tensor(size, unpack(self.opt.inputSize))
+    local depthSet = torch.Tensor(size, unpack(self.opt.outputSize))
 
     for i = startIndex, endIndex, 1 do
         local index = self.perms[i]
@@ -100,7 +102,7 @@ function DataLoader:loadDataset(startIndex, endIndex)
         image = imageSet,
         depth = depthSet,
         size =  function()
-            return imageSet:size(1)
+            return imageSet:size()[1]
         end
     }
 

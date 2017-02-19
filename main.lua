@@ -34,7 +34,8 @@ local net, criterion = model.setup(opt, checkpoint)
 
 print '==> configuring optimizer'
 -- Create optimizer
--- set parameters for optimized stochastic gradient descent method
+-- if there is no stored optim state file,
+-- set defaut parameters for optimized stochastic gradient descent method
 if optimState == nil then
     optimState = {
         learningRate = opt.LR,
@@ -65,7 +66,7 @@ for epoch = opt.epochNumber+1, opt.nEpochs+opt.epochNumber, 1 do
     local valErr = trainer:computeValScore(valLoader, 100)
     local trainErr = trainer:sampleTrainingLoss(2)
 
-    trainer:showDepth('train',2)
+    --trainer:showDepth(dataloader)
 
     local bestModel = false
 
@@ -77,5 +78,6 @@ for epoch = opt.epochNumber+1, opt.nEpochs+opt.epochNumber, 1 do
 
     trainer:saveLoss(epoch, valErr, trainErr)
 
+    -- save latest model
     checkpoints.saveCurrent(epoch, net, trainer.optimState, bestModel, opt)
 end

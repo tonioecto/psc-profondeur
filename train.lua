@@ -41,6 +41,7 @@ function Trainer:train(epoch, dataloader)
     -- training batch counter
     local N = 0
 
+    -- training loss
     local loss
     local dataTime
 
@@ -51,8 +52,9 @@ function Trainer:train(epoch, dataloader)
 
     local indexbegin = 1
     while(indexbegin < trainSize) do
-        -- load part of the dataset 
+        -- load part of the dataset
         local sample = self.dataloader:loadDataset(indexbegin, indexbegin + self.sampleSize - 1)
+        -- convert the dataset to mini batch
         sample = self.dataloader:miniBatchload(sample)
         indexbegin = indexbegin + sample.size
 
@@ -166,12 +168,15 @@ end
 function Trainer:showDepth(loader)
 
     local index = torch.random(loader.dataset:size())
-    local img, depth = loader.dataset:get(index)
-    img = img:cuda()
-    depth = depth:cuda()
+    local element = loader.dataset:get(index)
+    local img = element.image:cuda()
+    local depth = element.depth:cuda()
     local prediction = self.forward(img):reshape(unpack(opt.outputSize))
-    return img, prediction, depth
-
+    local res = {}
+    res.image = img:float()
+    res.pred = prediction:float()
+    res.groundTruth = depth:float()
+    return res
 end
 
 -- decrease learning rate according to epoch

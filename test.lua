@@ -47,11 +47,16 @@ local function loop()
         threads:synchronize()
     end
     enqueue()
+    --threads:dojob()
     n = n + 1
+    print (n)
+    print(sample)
     return n, sample
 end
 
+--[[
 for i, sample in loop do
     print(i)
     print(sample)
 end
+]]
