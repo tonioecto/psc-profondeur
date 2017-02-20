@@ -125,7 +125,7 @@ function DataLoader:miniBatchload(dataset)
     imageBatchs = imageBatchs:views(numBatch, self.batchSize, table.unpack(self.opt.inputSize))
     local depthBatchs = dataset.depth:narrow(1, 1, numBatch * self.batchSize)
     depthBatchs = depthBatchs:views(numBatch, self.batchSize, table.unpack(self.opt.outputSize))
-    
+
     local dataBatchSample = {
         image = imageBatchs,
         depth = depthBatchs,
@@ -150,7 +150,7 @@ function DataLoader:run(starIndex, endIndexss)
     local threads = self.threads
     local size, batchSize = self.__size, self.batchSize
     local perm = self.perms
-    
+
     local idx, sample = startIndex, nil
     local function enqueue()
         while idx <= endIndex and threads:acceptsjob() do

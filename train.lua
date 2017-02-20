@@ -163,7 +163,7 @@ function Trainer:computeValScore(valLoader, num)
     return loss
 end
 
--- show the prediction of an image in the dataset 
+-- show the prediction of a random image in the dataset 
 -- of the loader
 function Trainer:showDepth(loader)
 

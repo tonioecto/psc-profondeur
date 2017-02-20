@@ -40,7 +40,7 @@ end
 -- generate info file for val and train dataset
 function M.exec(opt, cacheFile, split)
     -- find the image and depth matches
-    if split ~= 'train' and split ~= 'val' and split ~= 'test' then
+    if split ~= 'train' and (split ~= 'val' and split ~= 'test') then
         error('not a valid split label: '..split)
     end
     
@@ -68,7 +68,7 @@ end
 -- data augementation process for all inputs in the original directory
 function M.augmentation(imageDirOrigin, depthDirOrigin, opt, split, trainDataPortion, trans)
 
-    -- 
+    -- whole data augmentation for all orginal path images
     local imagePath = paths.concat(opt.data, split, 'image')
     local depthPath = paths.concat(opt.data, split, 'depth')
     paths.mkdir(imagePath)

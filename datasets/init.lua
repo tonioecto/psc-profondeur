@@ -23,7 +23,7 @@ function M.init(opt, set)
     end
     
     -- create path info file
-    self.info = self.info(opt)
+    self.info = self.getInfo(opt)
 end
 
 function M.create(opt, split)
@@ -35,7 +35,7 @@ function M.create(opt, split)
 end
 
 -- generate a path info file
-function M.info(opt)
+function M.getInfo(opt)
 
     local gen = require('datasets/' .. opt.dataset .. '-gen')
     local cache= paths.concat(opt.data, 'info-cache')
