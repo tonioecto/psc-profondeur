@@ -4,23 +4,22 @@ require 'paths'
 local M = {}
 
 -- convert .mat file to torch tensor format
-function M.convertMatTensor(opt)
-    local loadPath = paths.concat(opt.data, opt.trainData)
-    local savePath = paths.concat(opt.data, opt.trainData..'_t7')
+--- depth is stored as Position3DGrid enty in a table
+function M.convertMatTensor(opt, path)
+    local loadPath = paths.concat(opt.data, path)
+    local savePath = paths.concat(opt.data, path..'_t7')    -- create new directory to store generated files
 
-    -- create new directory to store generated files
-    paths.mkdir(pathSave)
+    paths.mkdir(savePath)
 
     local tmp
     local fileToLoad
     local fileToSave
-    for file in paths.files() do
+    for file in paths.files(loadPath) do
         if file:find(".*(mat)$") then
             fileToLoad = paths.concat(loadPath, file)
-            fileToSave = file:match('(.*).mat$').."t7"
-            print(fileToSave)
-            tmp = matio.load(filePath)
-            torch.save(fileToSave, tmp)
+            fileToSave = paths.concat(savePath, file:match('(.*).mat$')..".t7")
+            tmp = matio.load(fileToLoad)
+            torch.save(fileToSave, tmp.Position3DGrid)
         end
     end
 end
