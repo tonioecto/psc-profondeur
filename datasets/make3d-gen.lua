@@ -121,12 +121,12 @@ function M.augmentation(imageDirOrigin, depthDirOrigin, opt, split, trainDataPor
         local tmpImg
         local tmpDep
 
-        -- print('=> process image: '..basename)
+        print('=> process image: '..basename)
 
         for j = 1, num, 1 do
             tmpImg, tmpDep = trans(img, depth)
-            image.save(paths.concat(imagePath, 'img'..basename..'-'..j..'.jpg'), img)
-            torch.save(paths.concat(depthPath, 'depth'..basename..'-'..j..'.t7'), depth)
+            image.save(paths.concat(imagePath, 'img'..basename..'-'..j..'.jpg'), tmpImg)
+            torch.save(paths.concat(depthPath, 'depth'..basename..'-'..j..'.t7'), tmpDep)
         end
     end
 

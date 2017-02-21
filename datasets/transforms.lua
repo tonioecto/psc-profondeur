@@ -43,6 +43,7 @@ end
 -- Random crop from larger image
 function M.RandomCrop(widthImage, heightImage, widthDepth, heightDepth)
     return function(img, depth)
+				
         local w, h = img:size(3), img:size(2)
         local wD, hD = depth:size(2), depth:size(1)
 
