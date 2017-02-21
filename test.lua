@@ -28,6 +28,7 @@ local function enqueue()
         end,
         function(_sample_)
             sample = _sample_
+            print(#sample)
         end,
         indices
         )
@@ -49,14 +50,9 @@ local function loop()
     enqueue()
     --threads:dojob()
     n = n + 1
-    print (n)
-    print(sample)
     return n, sample
 end
 
---[[
-for i, sample in loop do
-    print(i)
-    print(sample)
-end
-]]
+n, sample = loop()
+
+print(loop)

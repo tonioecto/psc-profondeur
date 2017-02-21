@@ -1,5 +1,6 @@
 --We import necessairy packages
 
+--[[
 require 'nn'
 require 'image'
 require 'paths'
@@ -9,6 +10,7 @@ require 'xlua'
 require 'cudnn'
 require 'cutorch'
 --require 'cunn'
+----]]
 
 local M = { }
 
@@ -57,7 +59,7 @@ function M.parse(arg)
     opt.format = 't7'
     opt.depthOrigin = 'Train400Depth_t7'
     opt.imageOrigin = 'Train400Image'
-    opt.testDepth = 'Test134Depth_t7'
+    opt.testDepth = 'Test134Depth'
     opt.testImage = 'Test134Image_t7'
     opt.incre = 2
 
