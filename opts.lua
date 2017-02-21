@@ -29,6 +29,7 @@ function M.parse(arg)
     cmd:option('-testOnly',        'false',       'Run on validation set only')
     cmd:option('-sampleSize',      1600,          'Number of datas to load to memory')
     cmd:option('-manualSeed',       2000,         'Manually set RNG seed')
+    cmd:option('-nThreads',       10,             'Number of threads')
     ------------- Checkpointing options ---------------
     cmd:option('-resume',          'none',      'Resume from the latest checkpoint in this directory')
     --------- Optimization options ----------------------

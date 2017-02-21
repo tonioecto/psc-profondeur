@@ -2,7 +2,7 @@
 local M = {}
 
 local function isValid(path)
-    return paths.filep(path)
+    return paths.dirp(path)
 end
 
 function M.init(opt, set)
@@ -21,16 +21,13 @@ function M.init(opt, set)
             end
         end
     end
-    
-    -- create path info file
-    self.info = self.getInfo(opt)
 end
 
-function M.create(opt, split)
+function M.create(opt, split, info)
 
     local Dataset = require('datasets/' .. opt.dataset)
-    assert(self.info ~= nil, 'info is not yet initialized!')
-    return Dataset(self.info, opt, split)
+    assert(info ~= nil, 'info is not yet initialized!')
+    return Dataset(info, opt, split)
 
 end
 
@@ -40,12 +37,12 @@ function M.getInfo(opt)
     local gen = require('datasets/' .. opt.dataset .. '-gen')
     local cache= paths.concat(opt.data, 'info-cache')
 
-    self.info = {
+    local info = {
         val = gen.exec(opt, cache..'-val.t7', 'val'),
-        train = gen.exec(opt, cache'-tain.t7', 'train')
+        train = gen.exec(opt, cache..'-tain.t7', 'train')
     }
     
-    return self.info
+    return info
 end
 
 return M

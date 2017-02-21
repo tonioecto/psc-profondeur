@@ -47,8 +47,8 @@ function M.exec(opt, cacheFile, split)
     local imageDir = paths.concat(opt.data, split, 'image')
     local depthDir = paths.concat(opt.data, split, 'depth')
 
-    assert(paths.filep(imageDir), split..' image directory not found: ' .. imageDir)
-    assert(paths.filep(depthDir), split..'depth directory not found: ' .. depthDir)
+    assert(paths.dirp(imageDir), split..' image directory not found: ' .. imageDir)
+    assert(paths.dirp(depthDir), split..'depth directory not found: ' .. depthDir)
 
     print("=> Generating list of images and corresponding depths for "..split..' set')
     local imagePath, depthPath = findImageDepthMatches(imageDir, depthDir)

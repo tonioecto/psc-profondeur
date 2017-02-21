@@ -62,13 +62,13 @@ function DataLoader:loadPerm(perms)
 end
 
 -- create val and train dataset path file
-function DataLoader.create(opt)
+function DataLoader.create(opt, info)
 
     -- The train and val loader
     local loaders = {}
 
     for i, split in ipairs{'train', 'val'} do
-        local dataset = datasets.create(opt, split)
+        local dataset = datasets.create(opt, split, info)
         loaders[i] = M.DataLoader(dataset, opt, split)
     end
 
