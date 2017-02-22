@@ -72,7 +72,8 @@ function M.create()
     net = net:cuda()
 
     -- define criterion
-    local criterion = nn.MaskMSECriterion(70, 0)
+    -- local criterion = nn.MaskMSECriterion(70, 0)
+    local criterion = nn.MSECriterion()
     criterion = criterion:cuda()
 
     return net, criterion

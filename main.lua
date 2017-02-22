@@ -29,7 +29,7 @@ local checkpoint, optimState = checkpoints.latest(opt)
 print '==> create model'
 local net, criterion = model.setup(opt, checkpoint)
 -- print to verify the structure of the neural network created
-print('ResNet and up-projection \n' .. net:__tostring())
+-- print('ResNet and up-projection \n' .. net:__tostring())
 
 print '==> configuring optimizer'
 -- Create optimizer
@@ -58,9 +58,8 @@ for epoch = opt.epochNumber, opt.nEpochs+opt.epochNumber, 1 do
     local perms = torch.randperm(dataloader.dataset:size())
     dataloader:loadPerm(perms)
     trainer:train(epoch, dataloader)
-    
+
     -- Run model on validation set
-    --[[
     net:evaluate()
 
     local valErr = trainer:computeValScore(valLoader, 100)
@@ -80,5 +79,4 @@ for epoch = opt.epochNumber, opt.nEpochs+opt.epochNumber, 1 do
 
     -- save latest model
     checkpoints.saveCurrent(epoch, net, trainer.optimState, bestModel, opt)
-    --]]
 end
