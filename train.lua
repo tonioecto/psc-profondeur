@@ -51,12 +51,13 @@ function Trainer:train(epoch, dataloader)
     self.model:training()
 
     local indexbegin = 1
-    while(indexbegin < trainSize) do
+    while(indexbegin <= trainSize) do
         -- load part of the dataset
-        local sample = self.dataloader:loadDataset(indexbegin, indexbegin + self.sampleSize - 1)
+        local sz = math.min(self.sampleSize, trainSize - indexbegin + 1)
+        local sample = self.dataloader:loadDataset(indexbegin, indexbegin + sz - 1)
         -- convert the dataset to mini batch
         sample = self.dataloader:miniBatchload(sample)
-        indexbegin = indexbegin + sample.size
+        indexbegin = indexbegin + sz
 
         for i = 1, sample.size, 1 do
             dataTime = dataTimer:time().real
@@ -103,11 +104,13 @@ local function getCudaTensorType(tensorType)
 end
 
 -- copy input as different tensor type
-function Trainer:copyInputs(image,depth)
-    self.input = getCudaTensorType(opt.tensorType)
+function Trainer:copyInputs(image, depth)
+    self.input = getCudaTensorType(self.opt.tensorType)
     self.input:resize(image:size()):copy(image)
-    self.target = getCudaTensorType(opt.tensorType)
+    self.input = self.input:cuda()
+    self.target = getCudaTensorType(self.opt.tensorType)
     self.target:resize(depth:size()):copy(depth)
+    self.target = self.target:cuda()
 end
 
 -- save training and validation loss after every epoch
@@ -176,6 +179,9 @@ function Trainer:showDepth(loader)
     res.image = img:float()
     res.pred = prediction:float()
     res.groundTruth = depth:float()
+    path = paths.concat('result')
+    torch.save(path,res)
+    
     return res
 end
 

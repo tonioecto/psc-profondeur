@@ -81,7 +81,7 @@ end
 function DataLoader:loadDataset(startIndex, endIndex)
 
     local imagePath = self.info.imagePath
-    local depthPath = sefl.info.depthPath
+    local depthPath = self.info.depthPath
 
     print('=> The total number of image is:'..#imagePath)
     print('=> The total number of correponding depthmap is:'..#depthPath)
@@ -92,10 +92,11 @@ function DataLoader:loadDataset(startIndex, endIndex)
     local imageSet = torch.Tensor(size, unpack(self.opt.inputSize))
     local depthSet = torch.Tensor(size, unpack(self.opt.outputSize))
 
-    for i = startIndex, endIndex, 1 do
+    for i = 1, size, 1 do
         local index = self.perms[i]
         local element = self.dataset:get(index)
-        imageSet[i], depthSet[i] = element.image, element.depth
+        imageSet[i]:copy(element.image)
+        depthSet[i]:copy(element.depth)
     end
 
     local datasetSample = {
@@ -122,14 +123,14 @@ function DataLoader:miniBatchload(dataset)
     local numBatch = math.floor(dataset:size() / self.batchSize)
 
     local imageBatchs = dataset.image:narrow(1, 1, numBatch * self.batchSize)
-    imageBatchs = imageBatchs:views(numBatch, self.batchSize, table.unpack(self.opt.inputSize))
+    imageBatchs = imageBatchs:view(numBatch, self.batchSize, table.unpack(self.opt.inputSize))
     local depthBatchs = dataset.depth:narrow(1, 1, numBatch * self.batchSize)
-    depthBatchs = depthBatchs:views(numBatch, self.batchSize, table.unpack(self.opt.outputSize))
+    depthBatchs = depthBatchs:view(numBatch, self.batchSize, table.unpack(self.opt.outputSize))
 
     local dataBatchSample = {
         image = imageBatchs,
         depth = depthBatchs,
-        size = dataset:size()
+        size = numBatch
     }
 
     setmetatable(dataBatchSample,

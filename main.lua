@@ -20,9 +20,7 @@ print '==> load dataset'
 -- Data loading
 datasetInit.init(opt, {'train', 'val'})
 local info = datasetInit.getInfo(opt)
-local trainDataset, valDataset = DataLoader.create(opt, info)
-local dataloader = DataLoader(trainDataset, opt, 'train')
-local valLoader = DataLoader(valDataset, opt, 'val')
+local dataloader, valLoader = DataLoader.create(opt, info)
 
 -- Load previous checkpoint, if it exists
 local checkpoint, optimState = checkpoints.latest(opt)
@@ -31,7 +29,7 @@ local checkpoint, optimState = checkpoints.latest(opt)
 print '==> create model'
 local net, criterion = model.setup(opt, checkpoint)
 -- print to verify the structure of the neural network created
--- print('ResNet and up-projection \n' .. net:__tostring())
+print('ResNet and up-projection \n' .. net:__tostring())
 
 print '==> configuring optimizer'
 -- Create optimizer
@@ -54,14 +52,15 @@ local trainer = Trainer(net, criterion, optimState, opt)
 
 -- start or resume training precedure
 local bestValErr = math.huge
-for epoch = opt.epochNumber+1, opt.nEpochs+opt.epochNumber, 1 do
+for epoch = opt.epochNumber, opt.nEpochs+opt.epochNumber, 1 do
 
     -- generate a new permutation table
     local perms = torch.randperm(dataloader.dataset:size())
     dataloader:loadPerm(perms)
     trainer:train(epoch, dataloader)
-
+    
     -- Run model on validation set
+    --[[
     net:evaluate()
 
     local valErr = trainer:computeValScore(valLoader, 100)
@@ -81,4 +80,5 @@ for epoch = opt.epochNumber+1, opt.nEpochs+opt.epochNumber, 1 do
 
     -- save latest model
     checkpoints.saveCurrent(epoch, net, trainer.optimState, bestModel, opt)
+    --]]
 end

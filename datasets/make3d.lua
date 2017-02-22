@@ -16,7 +16,7 @@ function Make3dDataset:__init(info, opt, split)
 end
 
 function Make3dDataset:get(i)
-    local elemement = {}
+    local element = {}
     local img, depth = self:__loadImageDepth(self.info.imagePath[i], 
     self.info.depthPath[i])
     element.image = img
@@ -46,13 +46,7 @@ function Make3dDataset.preprocess(opt, split)
     split, opt.trainDataPortion, trans)
 end
 
-function Make3dDataset.preprocessOnline(img, depth)
-    local imageScale = T.Scale(345, 460)
-    local depthScale = T.Scale(192, 256)
-
-    img = imageScale(img)
-    depth = depthScale(depth)
-
+function Make3dDataset.preprocessOnline()
     local trans = T.Compose({
         T.RandomScale(1, 1.5),
         T.HorizontalFlip(0.5),
@@ -61,7 +55,7 @@ function Make3dDataset.preprocessOnline(img, depth)
         T.RandomCrop(173, 230, 96, 128)
     })
     
-    return G.augOneMatch(img, depth, trans)
+    return G.augOneMatch(trans)
 end
 
 function Make3dDataset.info(opt, cache)

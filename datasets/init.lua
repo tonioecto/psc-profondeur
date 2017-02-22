@@ -39,7 +39,7 @@ function M.getInfo(opt)
 
     local info = {
         val = gen.exec(opt, cache..'-val.t7', 'val'),
-        train = gen.exec(opt, cache..'-tain.t7', 'train')
+        train = gen.exec(opt, cache..'-train.t7', 'train')
     }
     
     return info

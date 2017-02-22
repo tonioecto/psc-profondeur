@@ -25,15 +25,15 @@ function M.parse(arg)
     --------------- Training options --------------------
     cmd:option('-nEpochs',         10,            'Number of total epochs to run')
     cmd:option('-epochNumber',     1,             'Manual epoch number (useful on restarts)')
-    cmd:option('-batchSize',       16,            'mini-batch size (1 = pure stochastic)')
+    cmd:option('-batchSize',       10,            'mini-batch size (1 = pure stochastic)')
     cmd:option('-testOnly',        'false',       'Run on validation set only')
-    cmd:option('-sampleSize',      1600,          'Number of datas to load to memory')
+    cmd:option('-sampleSize',      1000,          'Number of datas to load to memory')
     cmd:option('-manualSeed',       2000,         'Manually set RNG seed')
     cmd:option('-nThreads',       10,             'Number of threads')
     ------------- Checkpointing options ---------------
     cmd:option('-resume',          'none',      'Resume from the latest checkpoint in this directory')
     --------- Optimization options ----------------------
-    cmd:option('-LR',              0.001,         'initial learning rate')
+    cmd:option('-LR',              0.005,         'initial learning rate')
     cmd:option('-momentum',        0.9,         'momentum')
     cmd:option('-weightDecay',     1e-4,        'weight decay')
     cmd:text()
@@ -60,7 +60,7 @@ function M.parse(arg)
     opt.imageOrigin = 'Train400Image'
     opt.testDepth = 'Test134Depth'
     opt.testImage = 'Test134Image_t7'
-    opt.incre = 1
+    opt.incre = 40
 
     -- Defaut val and train repartition 
     opt.trainDataPortion = 0.8
@@ -70,8 +70,8 @@ function M.parse(arg)
     opt.lossFile = 'loss_track'
 
     -- Default input and output size informations
-    opt.inputSize = {3, 228, 304}
-    opt.outputSize = {128, 160}
+    opt.inputSize = {3, 230, 173}
+    opt.outputSize = {128, 96}
 
     return opt
 end

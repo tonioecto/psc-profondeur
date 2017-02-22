@@ -51,7 +51,7 @@ function M.exec(opt, cacheFile, split)
     assert(paths.dirp(depthDir), split..'depth directory not found: ' .. depthDir)
 
     print("=> Generating list of images and corresponding depths for "..split..' set')
-    local imagePath, depthPath = findImageDepthMatches(imageDir, depthDir)
+    local imageDir, depthDir = findImageDepthMatches(imageDir, depthDir)
 
     local info = {
         basedir = paths.concat(opt.data, split),
@@ -132,8 +132,15 @@ function M.augmentation(imageDirOrigin, depthDirOrigin, opt, split, trainDataPor
 
 end
 
-function M.augOneMatch(img, depth, trans)
-    return trans(img, depth)
+function M.augOneMatch(trans)
+
+    return function(img, depth)
+					local imageScale = T.Scale(345, 460)
+					local depthScale = T.Scale(192, 256)
+					img = imageScale(img)
+					depth = depthScale(depth)
+					return trans(img, depth)
+			end
 end
 
 return M
