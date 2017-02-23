@@ -1,5 +1,7 @@
 local matio = require 'matio'
 require 'paths'
+local image = require 'image'
+local unpack = unpack or table.unpack
 
 local M = {}
 
@@ -11,18 +13,20 @@ function M.convertMatTensor(opt, path)
 
     paths.mkdir(savePath)
 
-    local tmp
+    --local tmp
     local fileToLoad
     local fileToSave
     for file in paths.files(loadPath) do
         if file:find(".*(mat)$") then
             fileToLoad = paths.concat(loadPath, file)
             fileToSave = paths.concat(savePath, file:match('(.*).mat$')..".t7")
-            tmp = matio.load(fileToLoad,opt.depthName)
+            local tmp = matio.load(fileToLoad,opt.depthName)
             if opt.depthName=='Position3DGrid' then
               tmp = tmp:select(3,4)
             end
             if opt.depthRotation then
+              --print(tmp)
+              tmp = image.scale(tmp,192,256,'bicubic')
               tmp = image.hflip(tmp)
               tmp = tmp:transpose(1,2)
             end
