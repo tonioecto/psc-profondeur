@@ -18,8 +18,15 @@ function M.convertMatTensor(opt, path)
         if file:find(".*(mat)$") then
             fileToLoad = paths.concat(loadPath, file)
             fileToSave = paths.concat(savePath, file:match('(.*).mat$')..".t7")
-            tmp = matio.load(fileToLoad)
-            torch.save(fileToSave, tmp.Position3DGrid)
+            tmp = matio.load(fileToLoad,opt.depthName)
+            if opt.depthName=='Position3DGrid' then
+              tmp = tmp:select(3,4)
+            end
+            if opt.depthRotation then
+              tmp = image.hflip(tmp)
+              tmp = tmp:transpose(1,2)
+            end
+            torch.save(fileToSave,tmp)
         end
     end
 end

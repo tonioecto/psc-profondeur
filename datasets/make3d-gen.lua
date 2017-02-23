@@ -6,7 +6,7 @@ local unpack = unpack or table.unpack
 local M = {}
 
 local function findImageDepthMatches(imageDir, depthDir)
-    
+
     local dirsImage = paths.dir(imageDir)
     table.sort(dirsImage)
     local imagePath = {}
@@ -43,7 +43,7 @@ function M.exec(opt, cacheFile, split)
     if split ~= 'train' and (split ~= 'val' and split ~= 'test') then
         error('not a valid split label: '..split)
     end
-    
+
     local imageDir = paths.concat(opt.data, split, 'image')
     local depthDir = paths.concat(opt.data, split, 'depth')
 
@@ -61,7 +61,7 @@ function M.exec(opt, cacheFile, split)
 
     print(" | saving list of images and depths to " .. cacheFile)
     torch.save(cacheFile, info)
-    
+
     return info
 end
 
@@ -97,7 +97,7 @@ function M.augmentation(imageDirOrigin, depthDirOrigin, opt, split, trainDataPor
     size = endIndex - startIndex + 1
     local targetSize =size * opt.incre
 
-    -- firstly we scale depth image 
+    -- firstly we scale depth image
     -- number of data to generate for  each origin image
     local num = opt.incre
     print('=> original size of '..split..' '..size)
@@ -112,7 +112,7 @@ function M.augmentation(imageDirOrigin, depthDirOrigin, opt, split, trainDataPor
         img = imageScale(img)
 
         local depth = torch.load(depthPathOrigin[i])
-        depth = depth:select(3, 4)
+        --depth = depth:select(3, 4)
         depth = depthScale(depth)
 
         local basename = paths.basename(imagePathOrigin[i])

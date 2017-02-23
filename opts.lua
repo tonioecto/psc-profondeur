@@ -56,16 +56,18 @@ function M.parse(arg)
     opt.dataset = 'make3d'
     opt.data = 'data'
     opt.format = 't7'
+    opt.depthRotation = 'true'  --'false'
+    opt.depthName = 'depthMap' --'Position3DGrid'
     opt.depthOrigin = 'Train400Depth'
     opt.imageOrigin = 'Train400Image'
     opt.testDepth = 'Test134Depth'
     opt.testImage = 'Test134Image_t7'
     opt.incre = 40
 
-    -- Defaut val and train repartition 
+    -- Defaut val and train repartition
     opt.trainDataPortion = 0.8
 
-    -- Default opt save and resume options 
+    -- Default opt save and resume options
     opt.save = 'model_trained'
     opt.lossFile = 'loss_track'
 
