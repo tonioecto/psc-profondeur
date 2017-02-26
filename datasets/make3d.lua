@@ -17,7 +17,7 @@ end
 
 function Make3dDataset:get(i)
     local element = {}
-    local img, depth = self:__loadImageDepth(self.info.imagePath[i], 
+    local img, depth = self:__loadImageDepth(self.info.imagePath[i],
     self.info.depthPath[i])
     element.image = img
     element.depth = depth
@@ -39,8 +39,8 @@ function Make3dDataset.preprocess(opt, split)
         T.HorizontalFlip(0.5),
         T.Rotation(5),
         T.Color(0.8, 1,2),
-        T.RandomCrop(173, 230, 96, 128)
-        -- T.RandomCrop(230, 173, 128, 96)
+        --T.RandomCrop(173, 230, 96, 128)
+        T.RandomCrop(230, 173, 128, 96)
     })
     -- from the original dataset, generate val and train set
     G.augmentation('Dataset2_Images', 'depthMapData2Trans_t7', opt,
@@ -55,7 +55,7 @@ function Make3dDataset.preprocessOnline()
         T.Color(0.8, 1,2),
         T.RandomCrop(173, 230, 96, 128)
     })
-    
+
     return G.augOneMatch(trans)
 end
 

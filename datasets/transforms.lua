@@ -32,10 +32,10 @@ function M.RandomScale(minRatio, maxRatio)
         local targetWDepth = torch.round(wDepth / ratio)
         local targetHDepth = torch.round(hDepth / ratio)
 
-        -- divide depth by the ratio 
+        -- divide depth by the ratio
         depth = depth / ratio
 
-        return image.scale(img, targetW, targetH, 'bicubic'), 
+        return image.scale(img, targetW, targetH, 'bicubic'),
         image.scale(depth, targetWDepth, targetHDepth, 'bicubic')
     end
 end
@@ -43,7 +43,7 @@ end
 -- Random crop from larger image
 function M.RandomCrop(widthImage, heightImage, widthDepth, heightDepth)
     return function(img, depth)
-				
+
         local w, h = img:size(3), img:size(2)
         local wD, hD = depth:size(2), depth:size(1)
 
