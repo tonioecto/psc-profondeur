@@ -72,8 +72,10 @@ function M.parse(arg)
     opt.lossFile = 'loss_track'
 
     -- Default input and output size informations
-    opt.inputSize = {3, 230, 173}
-    opt.outputSize = {128, 96}
+    -- opt.inputSize = {3, 230, 173}
+    opt.inputSize = {3, 173, 230}
+    -- opt.outputSize = {128, 96}
+    opt.outputSize = {96, 128}
 
     return opt
 end
