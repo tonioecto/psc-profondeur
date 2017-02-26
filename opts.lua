@@ -6,8 +6,8 @@ require 'paths'
 require 'os'
 require 'math'
 require 'xlua'
---require 'cudnn'
---require 'cutorch'
+require 'cudnn'
+require 'cutorch'
 --require 'cunn'
 
 local M = { }
@@ -60,9 +60,9 @@ function M.parse(arg)
     opt.depthName = 'depthMap' --'Position3DGrid'
     opt.depthOrigin = 'Train400Depth'
     opt.imageOrigin = 'Train400Image'
-    opt.testDepth = 'Test128Depth'--'Test134Depth'
+    opt.testDepth = 'depthMapData2Trans'--'Test134Depth'
     opt.testImage = 'Test128Depth_t7'--'Test134Image_t7'
-    opt.incre = 40
+    opt.incre = 10
 
     -- Defaut val and train repartition
     opt.trainDataPortion = 0.8
