@@ -25,9 +25,9 @@ function M.parse(arg)
     --------------- Training options --------------------
     cmd:option('-nEpochs',         10,            'Number of total epochs to run')
     cmd:option('-epochNumber',     1,             'Manual epoch number (useful on restarts)')
-    cmd:option('-batchSize',       10,            'mini-batch size (1 = pure stochastic)')
+    cmd:option('-batchSize',       15,            'mini-batch size (1 = pure stochastic)')
     cmd:option('-testOnly',        'false',       'Run on validation set only')
-    cmd:option('-sampleSize',      1000,          'Number of datas to load to memory')
+    cmd:option('-sampleSize',      1500,          'Number of datas to load to memory')
     cmd:option('-manualSeed',       2000,         'Manually set RNG seed')
     cmd:option('-nThreads',       10,             'Number of threads')
     ------------- Checkpointing options ---------------
