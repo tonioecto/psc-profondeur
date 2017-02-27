@@ -5,8 +5,6 @@ local M = {}
 function M.Compose(transforms)
     return function(img, depth)
         for _, transform in ipairs(transforms) do
-            print(#img)
-            print(#depth)
             img, depth = transform(img, depth)
         end
         return img, depth
