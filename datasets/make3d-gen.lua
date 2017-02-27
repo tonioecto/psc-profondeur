@@ -115,6 +115,7 @@ function M.augmentation(imageDirOrigin, depthDirOrigin, opt, split, trainDataPor
         
         -- size of tensor of the depth map: 
         local depth = torch.load(depthPathOrigin[i])
+        depth = depth:select(3, 4)
         depth = depthScale(depth)
 
         local basename = paths.basename(imagePathOrigin[i])
