@@ -5,6 +5,8 @@ local M = {}
 function M.Compose(transforms)
     return function(img, depth)
         for _, transform in ipairs(transforms) do
+            print(#img)
+            print(#depth)
             img, depth = transform(img, depth)
         end
         return img, depth
@@ -47,8 +49,8 @@ function M.RandomCrop(widthImage, heightImage, widthDepth, heightDepth)
         local w, h = img:size(3), img:size(2)
         local wD, hD = depth:size(2), depth:size(1)
 
-        assert(w >= widthImage and h >= heightImage, 'wrong crop size for image'..w..' '..h)
-        assert(wD >= widthDepth and hD >= heightDepth, 'wrong crop size for depth'..wD..' '..hD)
+        assert(w >= widthImage and h >= heightImage, 'wrong crop size for image '..w..' '..h)
+        assert(wD >= widthDepth and hD >= heightDepth, 'wrong crop size for depth '..wD..' '..hD)
 
         if w == widthImage and h == heightImage then
             return img, depth
