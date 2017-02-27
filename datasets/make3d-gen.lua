@@ -105,12 +105,15 @@ function M.augmentation(imageDirOrigin, depthDirOrigin, opt, split, trainDataPor
 
     -- data augmentation compose
     local imageScale = T.Scale(345, 460)
+    -- image scale function rotates width and heigth
     local depthScale = T.Scale(192, 256)
 
     for i = startIndex, endIndex, 1 do
+        -- size of tensor of the load image: 3x2272x1704
         local img = image.loadJPG(imagePathOrigin[i])
         img = imageScale(img)
-
+        
+        -- size of tensor of the depth map: 
         local depth = torch.load(depthPathOrigin[i])
         depth = depthScale(depth)
 
