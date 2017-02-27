@@ -73,7 +73,7 @@ function M.parse(arg)
 
     -- Default input and output size informations
     opt.inputSize = {3, 230, 173}
-    opt.outputSize = {96, 128, 98}
+    opt.outputSize = {128, 96}
 
     return opt
 end
