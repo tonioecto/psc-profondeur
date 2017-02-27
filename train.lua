@@ -66,7 +66,6 @@ function Trainer:train(epoch, dataloader)
             self:copyInputs(sample.image[i],sample.depth[i])
 
             local output = self.model:forward(self.input):float()
-            print(#output)
             local batchSize = output:size(1)
             loss = self.criterion:forward(self.model.output, self.target)
 
