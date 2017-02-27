@@ -62,7 +62,7 @@ function M.parse(arg)
     opt.imageOrigin = 'Train400Image'
     opt.testDepth = 'depthMapData2Trans'--'Test134Depth'
     opt.testImage = 'Test128Depth_t7'--'Test134Image_t7'
-    opt.incre = 10
+    opt.incre = 1
 
     -- Defaut val and train repartition
     opt.trainDataPortion = 0.8
