@@ -60,9 +60,9 @@ function M.parse(arg)
     opt.depthName = 'depthMap' --'Position3DGrid'
     opt.depthOrigin = 'Train400Depth_t7'
     opt.imageOrigin = 'Train400Image'
-    opt.testDepth = 'depthMapData2Trans'--'Test134Depth'
-    opt.testImage = 'Test128Depth_t7'--'Test134Image_t7'
-    opt.incre = 1
+    opt.testDepth = 'Test134Image'--'Test134Depth'
+    opt.testImage = 'Test134Depth_t7'--'Test134Image_t7'
+    opt.incre = 40
 
     -- Defaut val and train repartition
     opt.trainDataPortion = 0.8
