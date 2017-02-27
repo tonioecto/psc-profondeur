@@ -33,7 +33,7 @@ function M.parse(arg)
     ------------- Checkpointing options ---------------
     cmd:option('-resume',          'none',      'Resume from the latest checkpoint in this directory')
     --------- Optimization options ----------------------
-    cmd:option('-LR',              0.005,         'initial learning rate')
+    cmd:option('-LR',              0.05,         'initial learning rate')
     cmd:option('-momentum',        0.9,         'momentum')
     cmd:option('-weightDecay',     1e-4,        'weight decay')
     cmd:text()
@@ -72,9 +72,7 @@ function M.parse(arg)
     opt.lossFile = 'loss_track'
 
     -- Default input and output size informations
-    -- opt.inputSize = {3, 230, 173}
     opt.inputSize = {3, 173, 230}
-    -- opt.outputSize = {128, 96}
     opt.outputSize = {96, 128}
 
     return opt

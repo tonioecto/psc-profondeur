@@ -59,13 +59,14 @@ for epoch = opt.epochNumber, opt.nEpochs+opt.epochNumber, 1 do
     dataloader:loadPerm(perms)
     trainer:train(epoch, dataloader)
 
+    --[[
     -- Run model on validation set
     net:evaluate()
 
     local valErr = trainer:computeValScore(valLoader, 100)
     local trainErr = trainer:sampleTrainingLoss(2)
 
-    --trainer:showDepth(dataloader)
+    trainer:showDepth(dataloader)
 
     local bestModel = false
 
@@ -79,4 +80,5 @@ for epoch = opt.epochNumber, opt.nEpochs+opt.epochNumber, 1 do
 
     -- save latest model
     checkpoints.saveCurrent(epoch, net, trainer.optimState, bestModel, opt)
+    --]]
 end

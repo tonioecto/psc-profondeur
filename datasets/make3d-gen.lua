@@ -104,17 +104,14 @@ function M.augmentation(imageDirOrigin, depthDirOrigin, opt, split, trainDataPor
     print('=> after augmentation '..split..' '..targetSize)
 
     -- data augmentation compose
-    -- local imageScale = T.Scale(345, 460)
-    -- local depthScale = T.Scale(192, 256)
-    local imageScale = T.Scale(460, 345)
-    local depthScale = T.Scale(256, 192)
+    local imageScale = T.Scale(345, 460)
+    local depthScale = T.Scale(192, 256)
 
     for i = startIndex, endIndex, 1 do
         local img = image.loadJPG(imagePathOrigin[i])
         img = imageScale(img)
 
         local depth = torch.load(depthPathOrigin[i])
-        --depth = depth:select(3, 4)
         depth = depthScale(depth)
 
         local basename = paths.basename(imagePathOrigin[i])
@@ -143,6 +140,7 @@ function M.augOneMatch(trans)
         depth = depthScale(depth)
         return trans(img, depth)
     end
+    
 end
 
 return M
