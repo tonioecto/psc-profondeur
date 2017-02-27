@@ -58,7 +58,7 @@ function M.parse(arg)
     opt.format = 't7'
     opt.depthRotation = 'true'  --'false'
     opt.depthName = 'depthMap' --'Position3DGrid'
-    opt.depthOrigin = 'Train400Depth'
+    opt.depthOrigin = 'Train400Depth_t7'
     opt.imageOrigin = 'Train400Image'
     opt.testDepth = 'depthMapData2Trans'--'Test134Depth'
     opt.testImage = 'Test128Depth_t7'--'Test134Image_t7'
