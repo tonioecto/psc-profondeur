@@ -53,22 +53,22 @@ function loadDataset(imageSet,depthSet)       --Load the images and depthMap, an
         error('given directory doesn\'t contain any JPG files')
     end
 
-    local imageSet = torch.Tensor(#imagename,3,456,608)  -- On peut adapter la taille pour avoir une coupe plus ou moins grande
+    local imageSet = torch.Tensor(#imagename,3,346,460)  -- On peut adapter la taille pour avoir une coupe plus ou moins grande 173 230
     --local depthSet = torch.Tensor(#depthname,160,128)
-    local depthSet = torch.Tensor(#depthname,456,608)
+    local depthSet = torch.Tensor(#depthname,346,460)
     local mat = require 'matio'
 
     for i,file in ipairs(imagename) do
         --local m = image.loadJPG(file)
         --print(file)
         local m = image.load(file)
-        m = image.scale(m,608,456,'bicubic')
+        m = image.scale(m,460,346,'bicubic')
         imageSet[i] = m
     end
 
     for i,file in ipairs(depthname) do
         local m = mat.load(file,'depthMap')
-        m = image.scale(m,456,608,'bicubic')
+        m = image.scale(m,346,460,'bicubic')
 
         m = image.hflip(m)
         m = m:transpose(1,2)
@@ -88,11 +88,11 @@ function boot(image1, image2,i, nombre)
 
         local symh = (math.random(1, 10) > 5);
         local symv = (math.random(1, 10) > 5);
-        local x = math.random(1,303)
-        local y = math.random(1,227)
+        local x = math.random(1,230)
+        local y = math.random(1,173)
 
-        image3 = image.crop(image1, x,y, x+304,y+228)
-        image4 = image.crop(image2, x,y ,x+304,y+228)
+        image3 = image.crop(image1, x,y, x+230,y+173)
+        image4 = image.crop(image2, x,y ,x+128,y+96)
 
 
         if symh then
@@ -110,7 +110,7 @@ function boot(image1, image2,i, nombre)
         --image.display(image3)
 
         path = '/home/niva/Desktop/psc/bootstrapDepth/'..i..'-'..j..'.jpeg'
-        image4=image.scale(image4,160,128,'bicubic')
+        image4=image.scale(image4,128,96,'bicubic')
         --image.display(image4)
 
         image.save(path, image4)  -- A changer si vous voulez un .mat
