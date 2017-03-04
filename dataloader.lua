@@ -143,9 +143,11 @@ function DataLoader:miniBatchload(dataset)
     return dataBatchSample
 end
 
------------------------------------------------------
------------------Multithreads part-------------------
------------------------------------------------------
+function DataLoader:normalisation(dataset, coef)
+    return dataset / coef
+end
+
+-----------------------Multithreads part-------------------------
 
 -- multi threads solution to get dataset batchs for start to end
 function DataLoader:run(starIndex, endIndexss)

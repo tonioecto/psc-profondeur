@@ -36,8 +36,9 @@ function Trainer:train(epoch, dataloader)
     end
 
     -- size of the input
-    local trainSize = self.dataloader.dataset:size()
-
+    -- local trainSize = self.dataloader.dataset:size()
+    local trainSize = 10
+    
     -- training batch counter
     local N = 0
 
