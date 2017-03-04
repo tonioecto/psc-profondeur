@@ -1,6 +1,7 @@
 require 'paths'
 local optim = require 'optim'
 require 'image'
+require 'cutorch'
 
 local evaluate = require 'evaluate'
 local M = {}
