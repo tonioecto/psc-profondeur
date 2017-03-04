@@ -132,7 +132,7 @@ end
 -- compute trainingd loss for a sample part of train dataset
 function Trainer:sampleTrainingLoss(num)
     -- sample of size num
-    if self.split ~= 'train' then
+    if self.dataloader.split ~= 'train' then
         print ('not a train dataset, cannot sample from '..self.split..' dataset.')
         return nil
     end
