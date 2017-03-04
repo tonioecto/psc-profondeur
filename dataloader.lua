@@ -145,8 +145,8 @@ function DataLoader:miniBatchload(dataset)
 end
 
 -- normalise data
-function DataLoader:normalise(dataset, coef)
-    return dataset / coef
+function DataLoader:normalise(data, coef)
+    return data / coef
 end
 
 -----------------------Multithreads part-------------------------
