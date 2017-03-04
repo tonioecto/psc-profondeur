@@ -160,8 +160,8 @@ function Trainer:computeValScore(valLoader, num)
     valLoader:loadPerm(torch.randperm(valLoader.dataset:size()))
     -- load images and depths
     local valSample = valLoader:loadDataset(1, num)
-    local img = valSample.imageSet
-    local depth = valSample.depthSet
+    local img = valSample.image
+    local depth = valSample.depth
     -- normalise depth map
     
     img = img:cuda()
