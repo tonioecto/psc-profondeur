@@ -14,7 +14,7 @@ end
 function M.w_init(net)
 
     local mu = 0
-    local sigma = 0.001
+    local sigma = 0.01
     local gen = torch.Generator()
 
     for i,m in ipairs(net:listModules()) do

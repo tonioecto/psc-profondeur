@@ -4,9 +4,9 @@ require 'paths'
 require 'os'
 require 'math'
 --require 'matio'
-require 'xlua'
-require 'cudnn'
-require 'cutorch'
+-- require 'xlua'
+-- require 'cudnn'
+-- require 'cutorch'
 --require 'cunn'
 
 function loadDataset(imageSet,depthSet)       --Load the images and depthMap, and generate dataset for trainning
@@ -83,6 +83,7 @@ end
 function boot(image1, image2,i, nombre)
 
     --print(#image2)
+    --image.display(image2)
 
     for j=1,nombre,1 do
 
@@ -92,7 +93,7 @@ function boot(image1, image2,i, nombre)
         local y = math.random(1,173)
 
         image3 = image.crop(image1, x,y, x+230,y+173)
-        image4 = image.crop(image2, x,y ,x+128,y+96)
+        image4 = image.crop(image2, x,y ,x+230,y+173)
 
 
         if symh then
@@ -105,23 +106,30 @@ function boot(image1, image2,i, nombre)
             image4 =  image.vflip(image4)
         end
 
-        path = '/home/niva/Desktop/psc/bootstrap/'..i..'-'..j..'.jpeg'
+        path = paths.concat('data', 'train', 'image', 'img'..i..'-'..j..'.jpg')
+
+        --print(#image3)
+        --print(path)
         image.save(path, image3)
         --image.display(image3)
 
-        path = '/home/niva/Desktop/psc/bootstrapDepth/'..i..'-'..j..'.jpeg'
+        path = paths.concat('data', 'train', 'depth', 'depth'..i..'-'..j..'.t7')
         image4=image.scale(image4,128,96,'bicubic')
         --image.display(image4)
 
-        image.save(path, image4)  -- A changer si vous voulez un .mat
+        torch.save(path, image4)  -- A changer si vous voulez un .mat
     end
 end
 
 
 
-imageSet, depthSet, taille = loadDataset("minibatch", "depthTest")
+imageSet, depthSet, taille = loadDataset("Train100Image", "Train100Depth")
 
 print(taille)
+
+        paths.mkdir(paths.concat('data', 'train', 'image'))
+        paths.mkdir(paths.concat('data', 'train', 'depth'))
+
 for i=1, taille, 1 do
     boot(imageSet[i], depthSet[i],i,20)
     print(i)
