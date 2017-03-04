@@ -117,12 +117,10 @@ end
 -- save training and validation loss after every epoch
 function Trainer:saveLoss(epoch, trainErr, valErr)
     local lossFilePath = paths.concat((self.opt.lossFile), 'loss.t7')
-    local trainingTrack
+    local trainingTrack = torch.load(lossFilePath)
 
-    if self.opt.resume == 'none' then
+    if trainingTrack == nil then
         trainingTrack = {}
-    else
-        trainingTrack = torch.load(lossFilePath)
     end
 
     local loss = {epoch, trainErr, valErr}
@@ -139,17 +137,21 @@ function Trainer:sampleTrainingLoss(num)
         return nil
     end
 
-    local setSize = #self.dataloader.dataset:size()
-    local indexTable = torch.randperm(setSize)
-    local depthSample = torch.Tensor(num, unpack(self.opt.outputSize))
-    local imageSample = torch.Tensor(num, unpack(self.opt.inputSize))
+    -- load images and depths
+    local trainSample = self.dataloader:loadDataset(1, num)
+    local img = trainSample.image
+    local depth = trainSample.depth
 
+    img = img:cuda()
+    depth = depth:cuda()
+
+    local loss = 0
+    
     for i=1, num, 1 do
-        imageSample[i], depthSample[i] = self.dataset.get(indexTable[i])
+        local pred = self.model:forward(img[i])
+        loss = loss + self.criterion:forward(pred, depth)
     end
-
-    local depthPred = self.model:forward(imageSample:cuda())
-    local loss = self.criterion:forward(depthPred, depthSample:cuda())
+    
     return loss
 end
 
@@ -162,30 +164,32 @@ function Trainer:computeValScore(valLoader, num)
     local valSample = valLoader:loadDataset(1, num)
     local img = valSample.image
     local depth = valSample.depth
-    -- normalise depth map
-    
+
     img = img:cuda()
     depth = depth:cuda()
+
+    local loss = 0
     
-    local pred = self.model:forward(img)
-    local loss = self.criterion:forward(pred, depth)
+    for i=1, num, 1 do
+        --local pred = self.model:forward(img[i])
+        --loss = loss + self.criterion:forward(pred, depth[i])
+    end
+    
     return loss
 end
 
 -- show the prediction of a random image in the dataset 
 -- of the loader
-function Trainer:showDepth(loader)
+function Trainer:predict(epoch, img, depth)
 
-    local index = torch.random(loader.dataset:size())
-    local element = loader.dataset:get(index)
-    local img = element.image:cuda()
-    local depth = element.depth:cuda()
-    local prediction = self.forward(img):reshape(unpack(opt.outputSize))
     local res = {}
     res.image = img:float()
+    img = img:cuda()
+    local prediction = self.model:forward(img)
+    prediction = self.dataloader:denormalise(prediction, 70)
     res.pred = prediction:float()
     res.groundTruth = depth:float()
-    path = paths.concat('result')
+    path = paths.concat('result', 'visual-r-'..epoch..'.t7')
     torch.save(path,res)
     
     return res
