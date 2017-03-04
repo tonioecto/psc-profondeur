@@ -75,7 +75,7 @@ function checkpoint.saveCurrent(epoch, model, optimState, isBestModel, opt)
     -- create a clean copy on the CPU without modifying the original network
     model = deepCopy(model):float():clearState()
 
-    local modelFile = 'model_' .. 'last' .. '.t7'
+    local modelFile = 'model_last' .. '.t7'
     local optimFile = 'optimState_' .. epoch .. '.t7'
     local optFile = 'opt'..'.t7'
 
