@@ -72,6 +72,11 @@ function checkpoint.saveCurrent(epoch, model, optimState, isBestModel, opt)
         model = model:get(1)
     end
 
+    local root = paths.concat(opt.save)
+    if not paths.dirp(root) then
+        paths.mkdir(root)
+    end
+
     -- create a clean copy on the CPU without modifying the original network
     model = deepCopy(model):float():clearState()
 
