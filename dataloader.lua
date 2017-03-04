@@ -96,8 +96,8 @@ function DataLoader:loadDataset(startIndex, endIndex)
         local index = self.perms[i]
         local element = self.dataset:get(index)
         -- scale image with 255
-        imageSet[i]:copy(element.image * 255)
-        depthSet[i]:copy(element.depth)
+        imageSet[i]:copy(element.image)
+        depthSet[i]:copy(element.depth/80)
     end
 
     local datasetSample = {
