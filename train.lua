@@ -171,8 +171,8 @@ function Trainer:computeValScore(valLoader, num)
     local loss = 0
     
     for i=1, num, 1 do
-        local pred = self.model:forward(img[i])
-        loss = loss + self.criterion:forward(pred, depth[i])
+        --local pred = self.model:forward(img[i])
+        --loss = loss + self.criterion:forward(pred, depth[i])
     end
     
     return loss
