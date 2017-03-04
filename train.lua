@@ -163,7 +163,6 @@ function Trainer:computeValScore(valLoader, num)
     local img = valSample.imageSet
     local depth = valSample.depthSet
     -- normalise depth map
-    depth = valLoader:normalise(depth, 70)
     
     img = img:cuda()
     depth = depth:cuda()
