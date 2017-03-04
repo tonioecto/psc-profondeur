@@ -95,9 +95,10 @@ function DataLoader:loadDataset(startIndex, endIndex)
     for i = 1, size, 1 do
         local index = self.perms[i]
         local element = self.dataset:get(index)
-        -- scale image with 255
+        -- image is automaticaly normalise to [0, 1]
         imageSet[i]:copy(element.image)
-        depthSet[i]:copy(element.depth/80)
+        -- normalise depth map
+        depthSet[i]:copy(self:normalise(element.depth, 70))
     end
 
     local datasetSample = {
@@ -143,7 +144,8 @@ function DataLoader:miniBatchload(dataset)
     return dataBatchSample
 end
 
-function DataLoader:normalisation(dataset, coef)
+-- normalise data
+function DataLoader:normalise(dataset, coef)
     return dataset / coef
 end
 

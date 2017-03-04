@@ -1,7 +1,6 @@
 require 'paths'
 local optim = require 'optim'
 require 'image'
-require 'cutorch'
 
 local evaluate = require 'evaluate'
 local M = {}
@@ -160,9 +159,15 @@ function Trainer:computeValScore(valLoader, num)
     -- load permutation table for val set
     valLoader:loadPerm(torch.randperm(valLoader.dataset:size()))
     -- load images and depths
-    local img, depth = valLoader:loadDataset(1, num)
+    local valSample = valLoader:loadDataset(1, num)
+    local img = valSample.imageSet
+    local depth = valSample.depthSet
+    -- normalise depth map
+    depth = valLoader:normalise(depth, 70)
+    
     img = img:cuda()
     depth = depth:cuda()
+    
     local pred = self.model:forward(img)
     local loss = self.criterion:forward(pred, depth)
     return loss
