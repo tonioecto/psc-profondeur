@@ -75,6 +75,8 @@ function M.parse(arg)
     opt.inputSize = {3, 230, 173}
     opt.outputSize = {128, 96}
 
+    opt.example = 100
+
     return opt
 end
 

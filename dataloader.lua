@@ -149,6 +149,11 @@ function DataLoader:normalise(data, coef)
     return data / coef
 end
 
+-- denormalise data
+function DataLoader:denormalise(data, coef)
+    return data * coef
+end
+
 -----------------------Multithreads part-------------------------
 
 -- multi threads solution to get dataset batchs for start to end

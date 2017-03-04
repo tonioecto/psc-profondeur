@@ -62,10 +62,10 @@ for epoch = opt.epochNumber, opt.nEpochs+opt.epochNumber, 1 do
     -- Run model on validation set
     net:evaluate()
 
-    local valErr = trainer:computeValScore(valLoader, 100)
+    local valErr = trainer:computeValScore(valLoader, 10)
     local trainErr = trainer:sampleTrainingLoss(2)
 
-    trainer:showDepth(dataloader)
+    -- trainer:showDepth(dataloader, opt.example)
 
     local bestModel = false
 
