@@ -19,7 +19,7 @@ function M.setup(opt, checkpoint)
     -- load latest models
     local modelPath = paths.concat(opt.resume, checkpoint.modelFile)
     print('=> Resuming model from ' .. modelPath)
-    model = torch.load(modelPath)
+    net = torch.load(modelPath)
     net = net:cuda()
 
     -- define criterion
