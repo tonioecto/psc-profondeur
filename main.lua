@@ -15,7 +15,6 @@ local datasetInit = require 'datasets/init'
 -- and resume flag
 print '==> set up training options'
 local opt = opts.parse(arg)
-print(opt)
 
 print '==> load dataset'
 -- Data loading
@@ -25,9 +24,6 @@ local dataloader, valLoader = DataLoader.create(opt, info)
 
 -- Load previous checkpoint, if it exists
 local checkpoint, optimState = checkpoints.latest(opt)
-
-print(opt.resume)
-print(checkpoint)
 
 -- Create model
 print '==> create model'

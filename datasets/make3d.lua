@@ -19,9 +19,6 @@ function Make3dDataset:get(i)
     local element = {}
     local img, depth = self:__loadImageDepth(self.info.imagePath[i],
     self.info.depthPath[i])
-    --[[ rotate the image input
-    img = image.hflip(img)
-    img = img:transpose(2, 3)--]]
     element.image = img
     element.depth = depth
     return element
