@@ -26,7 +26,6 @@ function MaskMSECriterion:updateOutput(input, target)
     target:cdata(),
     self.output_tensor:cdata(),
     false
-    --self.sizeAverage
     )
 
     if(self.sizeAverage) then
