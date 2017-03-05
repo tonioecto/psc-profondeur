@@ -19,7 +19,6 @@ function MaskMSECriterion:updateOutput(input, target)
     target:maskedFill(self.m, 0)
 
     self.nValid = torch.sum(self.mInverse)
-    print(self.nValid)
 
     self.output = self.mse:updateOutput(input, target)
 
