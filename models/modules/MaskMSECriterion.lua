@@ -4,7 +4,10 @@ function MaskMSECriterion:__init(highMask, lowMask, sizeAverage)
     parent.__init(self)
     self.highMask = highMask
     self.lowMask = lowMask
-    self.mse = nn.MSECriterion(false)
+    
+    -- convert intern criterion to cuda type
+    self.mse = nn.MSECriterion(false):cuda()
+    
     if sizeAverage ~= nil then
         self.sizeAverage = sizeAverage
     else
