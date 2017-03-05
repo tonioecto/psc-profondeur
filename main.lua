@@ -62,8 +62,8 @@ for epoch = opt.epochNumber, opt.nEpochs+opt.epochNumber, 1 do
     -- Run model on validation set
     net:evaluate()
 
-    local valErr = trainer:computeValScore(valLoader, 10)
-    local trainErr = trainer:sampleTrainingLoss(2)
+    local valErr = trainer:computeValScore(valLoader, 20)
+    local trainErr = trainer:sampleTrainingLoss(15)
 
     -- trainer:showDepth(dataloader, opt.example)
 
