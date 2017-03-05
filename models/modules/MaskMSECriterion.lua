@@ -24,11 +24,9 @@ function MaskMSECriterion:updateOutput(input, target)
     self.output = self.mse:updateOutput(input, target)
 
     if(self.sizeAverage) then
-        self.output = self.output_tensor[1] / self.nValid
-    else
-        self.output = self.output_tensor[1]
+        self.output = self.output / self.nValid
     end
-
+    
     return self.output
 end
 
