@@ -116,9 +116,11 @@ end
 -- save training and validation loss after every epoch
 function Trainer:saveLoss(epoch, trainErr, valErr)
     local lossFilePath = paths.concat((self.opt.lossFile), 'loss.t7')
-    local trainingTrack = torch.load(lossFilePath)
+    local trainingTrack
 
-    if trainingTrack == nil then
+    if paths.filep(lossFilePath) then
+        trainingTrack = torch.load(lossFilePath)
+    else
         trainingTrack = {}
     end
 
