@@ -4,6 +4,7 @@ function MaskMSECriterion:__init(highMask, lowMask, sizeAverage)
     parent.__init(self)
     self.highMask = highMask
     self.lowMask = lowMask
+    self.mse = nn.MSECriterion(false)
     if sizeAverage ~= nil then
         self.sizeAverage = sizeAverage
     else
@@ -20,13 +21,7 @@ function MaskMSECriterion:updateOutput(input, target)
     self.nValid = torch.sum(self.mInverse)
     print(self.nValid)
 
-    self.output_tensor = self.output_tensor or input.new(1)
-    input.THNN.MSECriterion_updateOutput(
-    input:cdata(),
-    target:cdata(),
-    self.output_tensor:cdata(),
-    false
-    )
+    self.output = mse:updateOutput(input, target)
 
     if(self.sizeAverage) then
         self.output = self.output_tensor[1] / self.nValid
@@ -45,18 +40,13 @@ function MaskMSECriterion:updateGradInput(input, target)
 
     self.nValid = torch.sum(self.mInverse)
 
-    input.THNN.MSECriterion_updateGradInput(
-    input:cdata(),
-    target:cdata(),
-    self.gradInput:cdata(),
-    false
-    )
+    self.gradInput = mse:updataGradInput(input, target)
 
     if self.sizeAverage then
-        return self.gradInput / self.nValid
-    else
-        return self.gradInput
+        self.gradInput = self.gradInput / nValid
     end
+    
+    return self.gradInput
 end
 
 function MaskMSECriterion:mask(target)
