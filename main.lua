@@ -25,6 +25,8 @@ local dataloader, valLoader = DataLoader.create(opt, info)
 -- Load previous checkpoint, if it exists
 local checkpoint, optimState = checkpoints.latest(opt)
 
+print(checkpoint)
+
 -- Create model
 print '==> create model'
 local net, criterion = model.setup(opt, checkpoint)
