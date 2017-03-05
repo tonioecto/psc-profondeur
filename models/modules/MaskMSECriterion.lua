@@ -38,7 +38,7 @@ function MaskMSECriterion:updateGradInput(input, target)
 
     self.nValid = torch.sum(self.mInverse)
 
-    self.gradInput = self.mse:updataGradInput(input, target)
+    self.gradInput = self.mse:updateGradInput(input, target)
 
     if self.sizeAverage then
         self.gradInput = self.gradInput / nValid
