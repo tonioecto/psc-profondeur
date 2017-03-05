@@ -131,6 +131,7 @@ end
 
 -- compute trainingd loss for a sample part of train dataset
 function Trainer:sampleTrainingLoss(num)
+    print('==> calculate loss of a trainset sample randomly of size '..num)
     -- sample of size num
     if self.dataloader.split ~= 'train' then
         print ('not a train dataset, cannot sample from '..self.split..' dataset.')
@@ -157,6 +158,8 @@ end
 
 -- compute score on validation set
 function Trainer:computeValScore(valLoader, num)
+
+    print('==> calculate val loss from a val sample randomly of size '..num)
 
     -- load permutation table for val set
     valLoader:loadPerm(torch.randperm(valLoader.dataset:size()))

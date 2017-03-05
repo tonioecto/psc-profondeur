@@ -84,7 +84,7 @@ function DataLoader:loadDataset(startIndex, endIndex)
     local depthPath = self.info.depthPath
 
     print('=> The total number of image is:'..#imagePath)
-    print('=> The total number of correponding depthmap is:'..#depthPath)
+    print('=> The total number of correponding depth map is:'..#depthPath)
     print('=> load '..self.split..' dataset from index '..startIndex..' to '..endIndex)
 
     local size = endIndex - startIndex + 1
