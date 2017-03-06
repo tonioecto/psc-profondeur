@@ -31,7 +31,7 @@ function checkpoint.latest(opt)
     print('=> Loading checkpoint ' .. latestPath)
     local latest = torch.load(latestPath)
     local optimState = torch.load(paths.concat(opt.resume, latest.optimFile))
-    opt.epochNumber = latest.epoch
+    opt.epochNumber = latest.epoch + 1
 
     return latest, optimState
 end
