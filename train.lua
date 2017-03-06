@@ -201,10 +201,10 @@ end
 
 -- decrease learning rate according to epoch
 function Trainer:learningRate(epoch)
-    -- Training schedule
+    -- Training schedule recipe
     local decay = math.floor((epoch - 1) / 6)
 
-    return self.opt.LR * math.pow(0.1, decay)
+    return self.opt.LR * math.pow(0.5, decay)
 end
 
 return M.Trainer
