@@ -21,21 +21,23 @@ function M.parse(arg)
     cmd:text()
     cmd:text('Options:')
     ------------ General options --------------------
-    cmd:option('-precision',       'single',    'Options: single | double | half')
+    cmd:option('-precision',       'single',        'Options: single | double | half')
     --------------- Training options --------------------
-    cmd:option('-nEpochs',         10,            'Number of total epochs to run')
-    cmd:option('-epochNumber',     1,             'Manual epoch number (useful on restarts)')
-    cmd:option('-batchSize',       10,            'mini-batch size (1 = pure stochastic)')
-    cmd:option('-testOnly',        'false',       'Run on validation set only')
-    cmd:option('-sampleSize',      1000,          'Number of datas to load to memory')
-    cmd:option('-manualSeed',      2000,         'Manually set RNG seed')
-    cmd:option('-nThreads',        10,             'Number of threads')
+    cmd:option('-nEpochs',         10,              'Number of total epochs to run')
+    cmd:option('-epochNumber',     1,               'Manual epoch number (useful on restarts)')
+    cmd:option('-batchSize',       10,              'mini-batch size (1 = pure stochastic)')
+    cmd:option('-testOnly',        'false',         'Run on validation set only')
+    cmd:option('-sampleSize',      1000,            'Number of datas to load to memory')
+    cmd:option('-manualSeed',      2000,            'Manually set RNG seed')
+    cmd:option('-nThreads',        10,              'Number of threads')
     ------------- Checkpointing options ---------------
-    cmd:option('-resume',          'none',      'Resume from the latest checkpoint in this directory')
+    cmd:option('-resume',          'none',          'Resume from the latest checkpoint in this directory')
     --------- Optimization options ----------------------
-    cmd:option('-LR',              0.05,         'initial learning rate')
-    cmd:option('-momentum',        0.9,         'momentum')
-    cmd:option('-weightDecay',     1e-4,        'weight decay')
+    cmd:option('-LR',              0.005,           'initial learning rate')
+    cmd:option('-momentum',        0.9,             'momentum')
+    cmd:option('-weightDecay',     1e-4,            'weight decay')
+    --------- Dataset options ----------------------
+    cmd:option('-dataset',         'make3d',        'dataset to train, make3d or nyu')
     cmd:text()
 
     local opt = cmd:parse(arg or {})
@@ -52,8 +54,15 @@ function M.parse(arg)
         cmd:error('unknown precision: ' .. opt.precision)
     end
 
+    if opt.dataset == 'make3d' then
+        opt.LR = 0.005
+    elseif opt.dataset == 'nyu' then
+        opt.LR = 0.01
+    else
+        cmd:error('unknown dataset: '..opt.dataset)
+    end
+
     -- Defaut dataset options
-    opt.dataset = 'make3d'
     opt.data = 'data'
     opt.format = 't7'
     opt.depthRotation = 'true'  --'false'
