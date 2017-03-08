@@ -66,7 +66,7 @@ for epoch = opt.epochNumber, opt.nEpochs+opt.epochNumber, 1 do
     local depth = pair.depth:cuda()
 
     -- Run model on validation set
-    trainer:predict(epoch, img, depth)
+    trainer:predict(epoch, img, depth, dataloder)
 
     local bestModel = false
 

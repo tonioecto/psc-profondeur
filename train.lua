@@ -37,7 +37,7 @@ function Trainer:train(epoch, dataloader)
 
     -- size of the input
     local trainSize = self.dataloader.dataset:size()
-    
+
     -- training batch counter
     local N = 0
 
@@ -148,12 +148,12 @@ function Trainer:sampleTrainingLoss(num)
     depth = depth:cuda()
 
     local loss = 0
-    
+
     for i=1, num, 1 do
         local pred = self.model:forward(img[i])
         loss = loss + self.criterion:forward(pred, depth[i])
     end
-    
+
     return loss
 end
 
@@ -173,29 +173,29 @@ function Trainer:computeValScore(valLoader, num)
     depth = depth:cuda()
 
     local loss = 0
-    
+
     for i=1, num, 1 do
         local pred = self.model:forward(img[i])
         loss = loss + self.criterion:forward(pred, depth[i])
     end
-    
+
     return loss
 end
 
--- show the prediction of a random image in the dataset 
+-- show the prediction of a random image in the dataset
 -- of the loader
-function Trainer:predict(epoch, img, depth)
+function Trainer:predict(epoch, img, depth, dataloader)
 
     local res = {}
     res.image = img:float()
     img = img:cuda()
     local prediction = self.model:forward(img)
-    prediction = self.dataloader:denormalise(prediction, 70)
+    prediction = dataloader:denormalise(prediction, 70)
     res.pred = prediction:float()
     res.groundTruth = depth:float()
     path = paths.concat('result', 'visual-r-'..epoch..'.t7')
     torch.save(path,res)
-    
+
     return res
 end
 
