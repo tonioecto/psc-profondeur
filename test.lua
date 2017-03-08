@@ -62,7 +62,7 @@ for epoch = opt.epochNumber, opt.nEpochs+opt.epochNumber, 1 do
     net:evaluate()
 
     local pair = dataloader.dataset:get(1)
-    local img = pair.img:cuda()
+    local img = pair.image:cuda()
     local depth = pair.depth:cuda()
 
     -- Run model on validation set
