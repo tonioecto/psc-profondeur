@@ -55,7 +55,7 @@ function M.parse(arg)
     end
 
     if opt.dataset == 'make3d' then
-        opt.LR = 0.005
+        opt.LR = 0.02
     elseif opt.dataset == 'nyu' then
         opt.LR = 0.01
     else
@@ -83,8 +83,6 @@ function M.parse(arg)
     -- Default input and output size informations
     opt.inputSize = {3, 230, 173}
     opt.outputSize = {128, 96}
-
-    opt.example = 100
 
     return opt
 end
