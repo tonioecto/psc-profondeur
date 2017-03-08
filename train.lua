@@ -194,6 +194,9 @@ function Trainer:predict(epoch, img, depth, dataloader)
     res.pred = prediction:float()
     res.groundTruth = depth:float()
     path = paths.concat('result', 'visual-r-'..epoch..'.t7')
+    if not paths.dirp(paths.concat('result')) then
+      paths.mkdir(paths.concat('result'))
+    end
     torch.save(path,res)
 
     return res
