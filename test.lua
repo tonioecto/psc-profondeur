@@ -1,12 +1,73 @@
-require 'cudnn'
+-- import packages
+require 'torch'
+require 'paths'
+require 'optim'
 require 'nn'
-require 'cunn'
-require 'cutorch'
-local model = require '/models/init/'
+local DataLoader = require 'dataloader'
+local model = require '/models/init'
+local Trainer = require 'train'
+local checkpoints = require 'checkpoints'
+local opts = require 'opts'
+local datasetInit = require 'datasets/init'
 
-local net, criterion = model.create()
+-- Create options
+-- define batch-size, data-set to load, learning rate, max iteration times
+-- and resume flag
+print '==> set up training options'
+local opt = opts.parse(arg)
 
-local input = torch.Tensor(3, 3, 173, 230)
-input = input:cuda()
-local output = net:forward(input)
-print(#output)
+print '==> load dataset'
+-- Data loading
+datasetInit.init(opt, {'train', 'val'})
+local info = datasetInit.getInfo(opt)
+local dataloader, valLoader = DataLoader.create(opt, info)
+
+-- Load previous checkpoint, if it exists
+local checkpoint, optimState = checkpoints.latest(opt)
+
+-- Create model
+print '==> create model'
+local net, criterion = model.setup(opt, checkpoint)
+-- print to verify the structure of the neural network created
+-- print('ResNet and up-projection \n' .. net:__tostring())
+
+print '==> configuring optimizer'
+-- Create optimizer
+-- if there is no stored optim state file,
+-- set defaut parameters for optimized stochastic gradient descent method
+if optimState == nil then
+    optimState = {
+        learningRate = opt.LR,
+        weightDecay = opt.weightDecay,
+        momentum = opt.momentum,
+        learningRateDecay = 0,
+        precision = opt.precision,
+        nesterov = true,
+        dampening = 0.0,
+    }
+end
+
+-- create Trainer class
+local trainer = Trainer(net, criterion, optimState, opt)
+
+-- start or resume training precedure
+local bestValErr = math.huge
+for epoch = opt.epochNumber, opt.nEpochs+opt.epochNumber, 1 do
+
+    -- generate a new permutation table
+
+    local perms = torch.randperm(dataloader.dataset:size())
+    dataloader:loadPerm(perms)
+
+    net:evaluate()
+
+    local pair = dataloader.dataset:get(1)
+    local img = pair.img:cuda()
+    local depth = pair.depth:cuda()
+
+    -- Run model on validation set
+    trainer:predict(epoch, img, depth)
+
+    local bestModel = false
+
+end
