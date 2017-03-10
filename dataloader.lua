@@ -204,7 +204,6 @@ function DataLoader:run(starIndex, endIndexss)
         end
     end
 
-    -- why?
     local n = 0
     local function loop()
         enqueue()
