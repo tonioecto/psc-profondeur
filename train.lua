@@ -17,7 +17,7 @@ function Trainer:__init(model, criterion, optimState, opt)
     self.opt = opt
 end
 
-function Trainer:train(epoch, dataloader)
+function Trainer:train(epoch, dataloader,L1)
     -- Trains the model for a single epoch
 
     self.dataloader = dataloader
@@ -58,6 +58,8 @@ function Trainer:train(epoch, dataloader)
         -- convert the dataset to mini batch
         sample = self.dataloader:miniBatchload(sample)
         indexbegin = indexbegin + sz
+        
+        tmpo=0
 
         for i = 1, sample.size, 1 do
             dataTime = dataTimer:time().real
@@ -68,6 +70,16 @@ function Trainer:train(epoch, dataloader)
             local output = self.model:forward(self.input):float()
             local batchSize = output:size(1)
             loss = self.criterion:forward(self.model.output, self.target)
+            
+            tmpo=tmpo+loss
+            
+            if(i%10==0) then 
+            
+				table.insert(L1,tmpo/10)
+				T=torch.Tensor(L1)
+				gnuplot.plot(T)
+				tmpo=0
+			end
 
             self.model:zeroGradParameters()
             self.criterion:backward(self.model.output, self.target)

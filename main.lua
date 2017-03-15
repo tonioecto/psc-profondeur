@@ -52,14 +52,22 @@ local trainer = Trainer(net, criterion, optimState, opt)
 
 -- start or resume training precedure
 local bestValErr = math.huge
+
+--Test affichage
+L1={}
+
+
 for epoch = opt.epochNumber, opt.nEpochs+opt.epochNumber, 1 do
 
     -- generate a new permutation table
     local perms = torch.randperm(dataloader.dataset:size())
     dataloader:loadPerm(perms)
-    trainer:train(epoch, dataloader)
-
-    -- Run model on validation set
+    trainer:train(epoch, dataloader,L1)
+    
+    --T=torch.Tensor(L1)
+	--gnuplot.plot(T)
+	
+    --Run model on validation set
     net:evaluate()
 
     local valErr = trainer:computeValScore(valLoader, 20)
