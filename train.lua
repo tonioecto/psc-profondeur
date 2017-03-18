@@ -18,6 +18,13 @@ function Trainer:__init(model, criterion, optimState, opt)
     self.opt = opt
 end
 
+local function plot(n, loss, frequence, lossTrace, toShow)
+    lossTrace[torch.floor(n/frequence)] = loss / frequence
+    if toShow then
+        gnuplot.plot(lossTrace)
+    end
+end
+
 function Trainer:train(epoch, dataloader, lossTrace, frequence)
     -- Trains the model for a single epoch
 
@@ -215,13 +222,6 @@ function Trainer:predict(epoch, img, depth, dataloader)
     torch.save(path,res)
 
     return res
-end
-
-function plot(n, loss, frequence, lossTrace, toShow)
-    lossTrace[n/frequence] = loss / frequence
-    if toShow then
-        gnuplot.plot(lossTrace)
-    end
 end
 
 -- decrease learning rate according to epoch
