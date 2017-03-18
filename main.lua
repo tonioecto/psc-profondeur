@@ -69,7 +69,7 @@ for epoch = opt.epochNumber, opt.nEpochs+opt.epochNumber, 1 do
 
     net:evaluate()
 
-    local valErr = trainer:computeValScore(valLoader, 1000)
+    local valErr = trainer:computeValScore(valLoader, 100)
 
     local bestModel = false
 
