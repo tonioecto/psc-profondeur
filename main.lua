@@ -53,27 +53,23 @@ local trainer = Trainer(net, criterion, optimState, opt)
 -- start or resume training precedure
 local bestValErr = math.huge
 
---Test affichage
-L1={}
-
+-- frequence to register the batch training loss
+local frequence = 10
+local sizeTrace = torch.floor(torch.floor(dataloader.__size/opt.batchSize) / frequence)
 
 for epoch = opt.epochNumber, opt.nEpochs+opt.epochNumber, 1 do
 
     -- generate a new permutation table
     local perms = torch.randperm(dataloader.dataset:size())
     dataloader:loadPerm(perms)
-    trainer:train(epoch, dataloader,L1)
     
-    --T=torch.Tensor(L1)
-	--gnuplot.plot(T)
-	
-    --Run model on validation set
+    local lossTrace = cutorch.createCudaHostDoubleTensor()
+    lossTrace:resize(sizeTrace)
+    trainer:train(epoch, dataloader, lossTrace, frequence)
+
     net:evaluate()
 
-    local valErr = trainer:computeValScore(valLoader, 20)
-    local trainErr = trainer:sampleTrainingLoss(15)
-
-    -- trainer:showDepth(dataloader, opt.example)
+    local valErr = trainer:computeValScore(valLoader, 1000)
 
     local bestModel = false
 
@@ -83,9 +79,9 @@ for epoch = opt.epochNumber, opt.nEpochs+opt.epochNumber, 1 do
         print(' * Best model ', valErr)
     end
 
-    trainer:saveLoss(epoch, valErr, trainErr)
-
+    trainer:saveLoss(epoch, valErr, lossTrace)
     -- save latest model
     checkpoints.saveCurrent(epoch, net, trainer.optimState, bestModel, opt)
-    
+    -- collect rubbish
+    collectgarbage()
 end

@@ -38,11 +38,15 @@ function M.parse(arg)
     cmd:option('-weightDecay',     1e-4,            'weight decay')
     --------- Dataset options ----------------------
     cmd:option('-dataset',         'make3d',        'dataset to train, make3d or nyu')
+    --------- Visulization options ----------------------
+    cmd:option('-plot',            'true',          'plot online s')
     cmd:text()
 
     local opt = cmd:parse(arg or {})
 
     opt.testOnly = opt.testOnly ~= 'false'
+
+    opt.plot = opt.plot == 'true'
 
     if opt.precision == nil or opt.precision == 'single' then
         opt.tensorType = 'torch.CudaTensor'
@@ -65,12 +69,11 @@ function M.parse(arg)
     -- Defaut dataset options
     opt.data = 'data'
     opt.format = 't7'
-    opt.depthRotation = 'true'  --'false'
-    opt.depthName = 'depthMap' --'Position3DGrid'
+    opt.depthRotation = 'true'
     opt.depthOrigin = 'Train400Depth_t7'
     opt.imageOrigin = 'Train400Image'
-    opt.testDepth = 'Test134Image'--'Test134Depth'
-    opt.testImage = 'Test134Depth_t7'--'Test134Image_t7'
+    opt.testDepth = 'Test134Depth_t7'
+    opt.testImage = 'Test134Image'
     opt.incre = 40
 
     -- Defaut val and train repartition

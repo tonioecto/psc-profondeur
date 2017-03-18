@@ -1,6 +1,7 @@
 require 'paths'
 local optim = require 'optim'
 require 'image'
+require 'gnuplot'
 
 local evaluate = require 'evaluate'
 local M = {}
@@ -17,7 +18,7 @@ function Trainer:__init(model, criterion, optimState, opt)
     self.opt = opt
 end
 
-function Trainer:train(epoch, dataloader,L1)
+function Trainer:train(epoch, dataloader, lossTrace, frequence)
     -- Trains the model for a single epoch
 
     self.dataloader = dataloader
@@ -40,10 +41,12 @@ function Trainer:train(epoch, dataloader,L1)
 
     -- training batch counter
     local N = 0
+    local n = 0
 
     -- training loss
     local loss
     local dataTime
+    local lossAverage = 0
 
     print('=> Training epoch # ' .. epoch)
 
@@ -58,8 +61,8 @@ function Trainer:train(epoch, dataloader,L1)
         -- convert the dataset to mini batch
         sample = self.dataloader:miniBatchload(sample)
         indexbegin = indexbegin + sz
-        
-        tmpo=0
+
+        lossAverage = loss + lossAverage
 
         for i = 1, sample.size, 1 do
             dataTime = dataTimer:time().real
@@ -70,16 +73,7 @@ function Trainer:train(epoch, dataloader,L1)
             local output = self.model:forward(self.input):float()
             local batchSize = output:size(1)
             loss = self.criterion:forward(self.model.output, self.target)
-            
-            tmpo=tmpo+loss
-            
-            if(i%10==0) then 
-            
-				table.insert(L1,tmpo/10)
-				T=torch.Tensor(L1)
-				gnuplot.plot(T)
-				tmpo=0
-			end
+
 
             self.model:zeroGradParameters()
             self.criterion:backward(self.model.output, self.target)
@@ -88,6 +82,13 @@ function Trainer:train(epoch, dataloader,L1)
             optim.sgd(feval, self.params, self.optimState)
 
             N = N + batchSize
+            n = n + 1
+            lossAverage = lossAverage + loss
+
+            if n%frequence==0 then
+                plot(n, lossAverage, frequence, lossTrace, self.opt.plot)
+                lossAverage = 0
+            end
 
             -- print training infos
             print((' | Epoch: [%d][%d/%d]    Time %.3f  Data %.3f  Err %1.4f '):format(
@@ -126,7 +127,7 @@ function Trainer:copyInputs(image, depth)
 end
 
 -- save training and validation loss after every epoch
-function Trainer:saveLoss(epoch, trainErr, valErr)
+function Trainer:saveLoss(__epoch, __valErr, __lossTrace)
     local lossFilePath = paths.concat((self.opt.lossFile), 'loss.t7')
     local trainingTrack
 
@@ -136,7 +137,11 @@ function Trainer:saveLoss(epoch, trainErr, valErr)
         trainingTrack = {}
     end
 
-    local loss = {epoch, trainErr, valErr}
+    local loss = {
+        epoch = __epoch,
+        valErr = __valErr,
+        lossTrace = __lossTrace
+    }
 
     table.insert(trainingTrack, loss)
     torch.save(lossFilePath, trainingTrack)
@@ -166,7 +171,7 @@ function Trainer:sampleTrainingLoss(num)
         loss = loss + self.criterion:forward(pred, depth[i])
     end
 
-    return loss
+    return loss/num
 end
 
 -- compute score on validation set
@@ -191,7 +196,7 @@ function Trainer:computeValScore(valLoader, num)
         loss = loss + self.criterion:forward(pred, depth[i])
     end
 
-    return loss
+    return loss / num
 end
 
 -- show the prediction of a random image in the dataset
@@ -207,11 +212,18 @@ function Trainer:predict(epoch, img, depth, dataloader)
     res.groundTruth = depth:float()
     path = paths.concat('result', 'visual-r-'..epoch..'.t7')
     if not paths.dirp(paths.concat('result')) then
-      paths.mkdir(paths.concat('result'))
+        paths.mkdir(paths.concat('result'))
     end
     torch.save(path,res)
 
     return res
+end
+
+local function plot(n, loss, frequence, lossTrace, toShow)
+    lossTrace[n] = loss / frequence
+    if toShow then
+        gnuplot.plot(lossTrace)
+    end
 end
 
 -- decrease learning rate according to epoch
