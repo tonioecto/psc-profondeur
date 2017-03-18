@@ -54,7 +54,7 @@ local trainer = Trainer(net, criterion, optimState, opt)
 local bestValErr = math.huge
 
 -- frequence to register the batch training loss
-local frequence = 10
+local frequence = 2
 local sizeTrace = torch.floor(torch.floor(dataloader.__size/opt.batchSize) / frequence)
 
 for epoch = opt.epochNumber, opt.nEpochs+opt.epochNumber, 1 do

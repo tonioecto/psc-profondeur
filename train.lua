@@ -62,8 +62,6 @@ function Trainer:train(epoch, dataloader, lossTrace, frequence)
         sample = self.dataloader:miniBatchload(sample)
         indexbegin = indexbegin + sz
 
-        lossAverage = loss + lossAverage
-
         for i = 1, sample.size, 1 do
             dataTime = dataTimer:time().real
 
