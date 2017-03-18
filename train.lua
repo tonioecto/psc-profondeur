@@ -138,7 +138,7 @@ function Trainer:saveLoss(__epoch, __valErr, __lossTrace)
     local loss = {
         epoch = __epoch,
         valErr = __valErr,
-        lossTrace = __lossTrace
+        lossTrace = __lossTrace:float()
     }
 
     table.insert(trainingTrack, loss)
