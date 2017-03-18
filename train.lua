@@ -217,7 +217,7 @@ function Trainer:predict(epoch, img, depth, dataloader)
     return res
 end
 
-local function plot(n, loss, frequence, lossTrace, toShow)
+function plot(n, loss, frequence, lossTrace, toShow)
     lossTrace[n] = loss / frequence
     if toShow then
         gnuplot.plot(lossTrace)
