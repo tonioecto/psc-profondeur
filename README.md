@@ -27,7 +27,7 @@ need.
 `c` in `[0.8, 1.2]^3`. 
 - `Flips`: Input and target are horizontally flipped with 0.5 probability. 
 
-###Make3D dataset 
+### Make3D dataset 
 For the Make3D dataset, we use mask method introduced in the article.
 
 Firstly, We resize all images to `345x460` and further reduce the resolution of
@@ -35,9 +35,9 @@ the RGB inputs to the network by half `(173x230)` because of the large
 architecture and hardware limitations. To get the output depth size, we resize 
 mapping depth image to `96x128`.
 
-###NYU dataset
+### NYU dataset
 
-##Mask out invalid pixels
+## Mask out invalid pixels
 During training, most of the target depth maps will have some missing 
 values, particularly near object boundaries, windows and specular 
 surfaces. We deal with these simply by masking them out and evaluating 
@@ -62,7 +62,7 @@ end
 
 ```
 
-##Dataset class
+## Dataset class
 
 ```Lua
 function Dataset:__init(info, opt, split)
