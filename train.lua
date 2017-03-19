@@ -133,6 +133,11 @@ end
 
 -- save training and validation loss after every epoch
 function Trainer:saveLoss(__epoch, __valErr, __lossTrace)
+
+    if not paths.dirp(paths.concat(self.opt.lossFile)) then
+        paths.mkdir(paths.concat(self.opt.lossFile))
+    end
+
     local lossFilePath = paths.concat((self.opt.lossFile), 'loss.t7')
     local trainingTrack
 
