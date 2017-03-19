@@ -180,9 +180,11 @@ function Trainer:sampleTrainingLoss(num)
 end
 
 -- compute score on validation set
-function Trainer:computeValScore(valLoader, num)
+function Trainer:computeValScore(epoch, valLoader, num)
 
-    print('==> calculate val loss from a val sample randomly of size '..num)
+    print('==> calculate val loss from a val sample randomly of size # '..num)
+
+    local PROGRESS_INDICATOR = 10
 
     -- load permutation table for val set
     valLoader:loadPerm(torch.randperm(valLoader.dataset:size()))
@@ -199,6 +201,11 @@ function Trainer:computeValScore(valLoader, num)
     for i=1, num, 1 do
         local pred = self.model:forward(img[i])
         loss = loss + self.criterion:forward(pred, depth[i])
+        -- print val error infos
+        if i % PROGRESS_INDICATOR == 0 then
+            print((' | Epoch: [%d][%d/%d] accumulated validation error:  %1.6f '):format(
+            epoch, i, num, loss))
+        end
     end
 
     return loss / num
