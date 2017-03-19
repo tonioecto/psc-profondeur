@@ -39,7 +39,7 @@ function M.parse(arg)
     --------- Dataset options ----------------------
     cmd:option('-dataset',         'make3d',        'dataset to train, make3d or nyu')
     --------- Visulization options ----------------------
-    cmd:option('-plot',            'true',          'plot online s')
+    cmd:option('-plot',            'false',          'plot online show option')
     cmd:text()
 
     local opt = cmd:parse(arg or {})
