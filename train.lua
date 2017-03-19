@@ -190,11 +190,8 @@ function Trainer:computeValScore(epoch, valLoader, num)
     valLoader:loadPerm(torch.randperm(valLoader.dataset:size()))
     -- load images and depths
     local valSample = valLoader:loadDataset(1, num)
-    local img = valSample.image
-    local depth = valSample.depth
-
-    img = img:cuda()
-    depth = depth:cuda()
+    local img = valSample.image:cuda()
+    local depth = valSample.depth:cuda()
 
     local loss = 0
 
@@ -207,6 +204,8 @@ function Trainer:computeValScore(epoch, valLoader, num)
             epoch, i, num, loss))
         end
     end
+
+    collectgarbage()
 
     return loss / num
 end
