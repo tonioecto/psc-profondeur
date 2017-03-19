@@ -194,9 +194,10 @@ function Trainer:computeValScore(epoch, valLoader, num)
     local depth = valSample.depth:cuda()
 
     local loss = 0
+    local pred
 
     for i=1, num, 1 do
-        local pred = self.model:forward(img[i])
+        pred = self.model:forward(img[i])
         loss = loss + self.criterion:forward(pred, depth[i])
         -- print val error infos
         if i % PROGRESS_INDICATOR == 0 then
