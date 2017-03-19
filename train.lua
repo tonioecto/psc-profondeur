@@ -195,23 +195,23 @@ function Trainer:computeValScore(epoch, valLoader, num)
     valLoader:loadPerm(torch.randperm(valLoader.dataset:size()))
     -- load images and depths
     local valSample = valLoader:loadDataset(1, num)
-    local img = valSample.image:cuda()
-    local depth = valSample.depth:cuda()
+    local img = valSample.image
+    local depth = valSample.depth
 
     local loss = 0
     local pred
 
     for i=1, num, 1 do
-        pred = self.model:forward(img[i])
-        loss = loss + self.criterion:forward(pred, depth[i])
+        pred = self.model:forward(img[i]:cuda())
+        loss = loss + self.criterion:forward(pred, depth[i]:cuda())
         -- print val error infos
         if i % PROGRESS_INDICATOR == 0 then
             print((' | Epoch: [%d][%d/%d] accumulated validation error:  %1.6f '):format(
             epoch, i, num, loss))
         end
-
-        collectgarbage()
     end
+
+    collectgarbage()
 
     return loss / num
 end
