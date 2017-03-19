@@ -59,9 +59,9 @@ function M.parse(arg)
     end
 
     if opt.dataset == 'make3d' then
-        opt.LR = 0.01
+        opt.LR = 0.05
     elseif opt.dataset == 'nyu' then
-        opt.LR = 0.01
+        opt.LR = 0.05
     else
         cmd:error('unknown dataset: '..opt.dataset)
     end
