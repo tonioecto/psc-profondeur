@@ -1,5 +1,18 @@
 # PSC - l'inférence de profondeur d'une image
 
+## Training
+
+See the training recipes for addition examples.
+
+The training scripts come with several options, which can be listed with the --help flag.
+
+`th main.lua --help`
+
+To run the training, simply run main.lua. By default, the script runs ResNet-50 with up projection blocks on Make3D.
+
+To resume the training process with trained models, type
+`th main.lua -resume directory_of_checkpoints`
+
 ## Data Augmentation Process
 We use the method indicated in the article of `Eigen et al`. 
 
