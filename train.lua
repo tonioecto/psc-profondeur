@@ -204,9 +204,9 @@ function Trainer:computeValScore(epoch, valLoader, num)
             print((' | Epoch: [%d][%d/%d] accumulated validation error:  %1.6f '):format(
             epoch, i, num, loss))
         end
-    end
 
-    collectgarbage()
+        collectgarbage()
+    end
 
     return loss / num
 end
