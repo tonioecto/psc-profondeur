@@ -215,7 +215,7 @@ end
 
 -- show the prediction of a random image in the dataset
 -- of the loader
-function Trainer:predict(epoch, img, depth, dataloader)
+function Trainer:predict(num, img, depth, dataloader)
 
     local res = {}
     res.image = img:float()
@@ -224,7 +224,7 @@ function Trainer:predict(epoch, img, depth, dataloader)
     prediction = dataloader:denormalise(prediction, 70)
     res.pred = prediction:float()
     res.groundTruth = depth:float()
-    path = paths.concat('result', 'visual-r-'..epoch..'.t7')
+    path = paths.concat('result', 'visual-epoch-'..self.opt.epochNumber..'-example'..num..'.t7')
     if not paths.dirp(paths.concat('result')) then
         paths.mkdir(paths.concat('result'))
     end

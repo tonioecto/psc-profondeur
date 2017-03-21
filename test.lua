@@ -49,25 +49,18 @@ end
 
 -- create Trainer class
 local trainer = Trainer(net, criterion, optimState, opt)
+local perms = torch.randperm(dataloader.dataset:size())
+dataloader:loadPerm(perms)
 
--- start or resume training precedure
-local bestValErr = math.huge
-for epoch = opt.epochNumber, opt.nEpochs+opt.epochNumber, 1 do
+net:evaluate()
+for num = 1, opt.exampleNum, 1 do
 
     -- generate a new permutation table
 
-    local perms = torch.randperm(dataloader.dataset:size())
-    dataloader:loadPerm(perms)
-
-    net:evaluate()
-
-    local pair = dataloader.dataset:get(perms[1])
+    local pair = dataloader.dataset:get(self.perms[num])
     local img = pair.image:cuda()
     local depth = pair.depth:cuda()
 
-    -- Run model on validation set
-    trainer:predict(epoch, img, depth, dataloader)
-
-    local bestModel = false
-
+    -- get predicted results
+    trainer:predict(num, img, depth, dataloader)
 end
