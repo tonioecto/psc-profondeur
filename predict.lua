@@ -57,7 +57,7 @@ for num = 1, opt.exampleNum, 1 do
 
     -- generate a new permutation table
 
-    local pair = dataloader.dataset:get(self.perms[num])
+    local pair = dataloader.dataset:get(dataloader.perms[num])
     local img = pair.image:cuda()
     local depth = pair.depth:cuda()
 
