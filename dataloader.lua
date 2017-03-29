@@ -152,6 +152,10 @@ function DataLoader:miniBatchload(dataset)
 end
 
 function DataLoader:computeNormInfo()
+
+    -- pick a temporary permutation table
+    self:loadPerm(torch.randperm(dataloader.dataset:size()))
+
     -- load entire dataset
     local data = self:loadDataset(1, self.__size)
     local img = data.image:cuda()
