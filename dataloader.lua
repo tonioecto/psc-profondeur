@@ -114,7 +114,7 @@ function DataLoader:loadDataset(startIndex, endIndex, flag)
 
     -- normalise image and depth map
     -- depth map is normalised in [0, 1]
-    if flag ~= 'norm'
+    if flag ~= 'norm' then
         self:normalise(dataSetSample, 70)
     end
 
