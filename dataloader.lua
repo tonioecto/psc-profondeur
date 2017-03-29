@@ -166,10 +166,10 @@ function DataLoader:computeNormInfo()
     imgStd  = {} -- store the standard-deviation for the future
     for i=1,3 do -- over each image channel
         imgMean[i] = data.image[{ {}, {i}, {}, {}  }]:mean() -- mean estimation
-        print('Channel ' .. i .. ', Mean: ' .. mean[i])
+        print('Channel ' .. i .. ', Mean: ' .. imgMean[i])
         
         imgStd[i] = data.image[{ {}, {i}, {}, {}  }]:std() -- std estimation
-        print('Channel ' .. i .. ', Standard Deviation: ' .. stdv[i])
+        print('Channel ' .. i .. ', Standard Deviation: ' .. imgStd[i])
     end
 
     local normInfo = {}
