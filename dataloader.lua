@@ -83,7 +83,7 @@ end
 --after the transformation offline
 --Load the images and depthMap, and generate dataset for training
 --load a part of dataset from startIndex to endIndex randomly
-function DataLoader:loadDataset(startIndex, endIndex)
+function DataLoader:loadDataset(startIndex, endIndex, flag)
 
     local imagePath = self.info.imagePath
     local depthPath = self.info.depthPath
@@ -114,7 +114,9 @@ function DataLoader:loadDataset(startIndex, endIndex)
 
     -- normalise image and depth map
     -- depth map is normalised in [0, 1]
-    self:normalise(dataSetSample, 70)
+    if flag ~= 'norm'
+        self:normalise(dataSetSample, 70)
+    end
 
     setmetatable(datasetSample,
     {__index = function(t, i)
@@ -158,7 +160,7 @@ function DataLoader:computeNormInfo()
     self:loadPerm(torch.randperm(self.dataset:size()))
 
     -- load entire dataset
-    local data = self:loadDataset(1, self.__size)
+    local data = self:loadDataset(1, self.__size, 'norm')
 
     imgMean = {} -- store the mean, to normalize the test set in the future
     imgStd  = {} -- store the standard-deviation for the future
@@ -202,8 +204,8 @@ function DataLoader:denormalise(data, coef)
     local mean = self.normInfo.imgMean
     local stdv  = self.normInfo.imgStd
     for i=1, 3 do -- over each image channel
-        data.image[{ {}, {i}, {}, {}  }]:add(mean[i]) -- mean subtraction
-        data.image[{ {}, {i}, {}, {}  }]:mul(stdv[i]) -- std scaling
+        data.image[{ {}, {i}, {}, {}  }]:add(mean[i]) -- add mean
+        data.image[{ {}, {i}, {}, {}  }]:mul(stdv[i]) -- std multiplication
     end
 
     data.depth:mul(coef)
