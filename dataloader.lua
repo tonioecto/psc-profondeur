@@ -62,7 +62,7 @@ function DataLoader:loadPerm(perms)
 end
 
 -- load normalisation info
-function Dataloader:loadNormInfo(normInfo)
+function DataLoader:loadNormInfo(normInfo)
     self.normInfo = normInfo
 end
 
