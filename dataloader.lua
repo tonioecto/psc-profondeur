@@ -153,20 +153,20 @@ end
 
 function DataLoader:computeNormInfo()
 
+    print('=> start to compute norm info')
     -- pick a temporary permutation table
     self:loadPerm(torch.randperm(self.dataset:size()))
 
     -- load entire dataset
     local data = self:loadDataset(1, self.__size)
-    local img = data.image:cuda()
 
-    mean = {} -- store the mean, to normalize the test set in the future
-    stdv  = {} -- store the standard-deviation for the future
+    imgMean = {} -- store the mean, to normalize the test set in the future
+    imgStd  = {} -- store the standard-deviation for the future
     for i=1,3 do -- over each image channel
-        mean[i] = data.image[{ {}, {i}, {}, {}  }]:mean() -- mean estimation
+        imgMean[i] = data.image[{ {}, {i}, {}, {}  }]:mean() -- mean estimation
         print('Channel ' .. i .. ', Mean: ' .. mean[i])
         
-        stdv[i] = data.image[{ {}, {i}, {}, {}  }]:std() -- std estimation
+        imgStd[i] = data.image[{ {}, {i}, {}, {}  }]:std() -- std estimation
         print('Channel ' .. i .. ', Standard Deviation: ' .. stdv[i])
     end
 
