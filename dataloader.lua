@@ -154,7 +154,7 @@ end
 function DataLoader:computeNormInfo()
 
     -- pick a temporary permutation table
-    self:loadPerm(torch.randperm(dataloader.dataset:size()))
+    self:loadPerm(torch.randperm(self.dataset:size()))
 
     -- load entire dataset
     local data = self:loadDataset(1, self.__size)
