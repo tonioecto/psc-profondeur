@@ -61,6 +61,11 @@ function DataLoader:loadPerm(perms)
     self.perms = perms
 end
 
+-- load normalisation info
+function Dataloader:loadNormInfo(normInfo)
+    self.normInfo = normInfo
+end
+
 -- create val and train dataset path file
 function DataLoader.create(opt, info)
 
@@ -95,10 +100,8 @@ function DataLoader:loadDataset(startIndex, endIndex)
     for i = 1, size, 1 do
         local index = self.perms[i]
         local element = self.dataset:get(index)
-        -- image is automaticaly normalise to [0, 1]
         imageSet[i]:copy(element.image)
-        -- normalise depth map
-        depthSet[i]:copy(self:normalise(element.depth, 70))
+        depthSet[i]:copy(element.depth)
     end
 
     local datasetSample = {
@@ -108,6 +111,10 @@ function DataLoader:loadDataset(startIndex, endIndex)
             return imageSet:size()[1]
         end
     }
+
+    -- normalise image and depth map
+    -- depth map is normalised in [0, 1]
+    self:normalise(dataSetSample, 70)
 
     setmetatable(datasetSample,
     {__index = function(t, i)
@@ -144,14 +151,59 @@ function DataLoader:miniBatchload(dataset)
     return dataBatchSample
 end
 
+function DataLoader:computeNormInfo()
+    -- load entire dataset
+    local data = self:loadDataset(1, self.__size)
+    local img = data.image:cuda()
+
+    mean = {} -- store the mean, to normalize the test set in the future
+    stdv  = {} -- store the standard-deviation for the future
+    for i=1,3 do -- over each image channel
+        mean[i] = data.image[{ {}, {i}, {}, {}  }]:mean() -- mean estimation
+        print('Channel ' .. i .. ', Mean: ' .. mean[i])
+        
+        stdv[i] = data.image[{ {}, {i}, {}, {}  }]:std() -- std estimation
+        print('Channel ' .. i .. ', Standard Deviation: ' .. stdv[i])
+    end
+
+    local normInfo = {}
+    normInfo.imgMean = imgMean
+    normInfo.imgStd = imgStd
+
+    return normInfo
+end
+
 -- normalise data
 function DataLoader:normalise(data, coef)
-    return data / coef
+
+    assert(self.normInfo ~= nil, 'normalisation info is not yet computed')
+
+    local mean = self.normInfo.imgMean
+    local stdv  = self.normInfo.imgStd
+    for i=1, 3 do -- over each image channel
+        data.image[{ {}, {i}, {}, {}  }]:add(-mean[i]) -- mean subtraction
+        data.image[{ {}, {i}, {}, {}  }]:div(stdv[i]) -- std scaling
+    end
+
+    data.depth:div(coef)
+
+    return data
 end
 
 -- denormalise data
 function DataLoader:denormalise(data, coef)
-    return data * coef
+
+    assert(self.normInfo ~= nil, 'normalisation info is not yet computed')
+
+    local mean = self.normInfo.imgMean
+    local stdv  = self.normInfo.imgStd
+    for i=1, 3 do -- over each image channel
+        data.image[{ {}, {i}, {}, {}  }]:add(mean[i]) -- mean subtraction
+        data.image[{ {}, {i}, {}, {}  }]:mul(stdv[i]) -- std scaling
+    end
+
+    data.depth:mul(coef)
+    return data
 end
 
 -----------------------Multithreads part-------------------------
@@ -168,36 +220,36 @@ function DataLoader:run(starIndex, endIndexss)
             local indices = perm:narrow(1, idx, math.min(batchSize, endIndex - idx + 1))
 
             threads:addjob(
-            function(indices, cpuType)
-                -- final batch size
-                local sz = indices:size(1)
-                local images, depths
-                local imageSize, depthSize
-                for i, idx in ipairs(indices:totable()) do
-                    local sample = _G.dataset:get(idx)
-                    local input, output = _G.preprocess(sample.image, sample.depth)
-                    if not images then
-                        imageSize = input:size():totable()
-                        images = torch[cpuType](sz, table.unpack(imageSize))
+                function(indices, cpuType)
+                    -- final batch size
+                    local sz = indices:size(1)
+                    local images, depths
+                    local imageSize, depthSize
+                    for i, idx in ipairs(indices:totable()) do
+                        local sample = _G.dataset:get(idx)
+                        local input, output = _G.preprocess(sample.image, sample.depth)
+                        if not images then
+                            imageSize = input:size():totable()
+                            images = torch[cpuType](sz, table.unpack(imageSize))
+                        end
+                        if not depths then
+                            depthSize = output:size():totable()
+                            depths = torch[cpuType](sz, table.unpack(depthSize))
+                        end
+                        images[i]:copy(input)
+                        depths[i]:copy(output)
                     end
-                    if not depths then
-                        depthSize = output:size():totable()
-                        depths = torch[cpuType](sz, table.unpack(depthSize))
-                    end
-                    images[i]:copy(input)
-                    depths[i]:copy(output)
-                end
-                collectgarbage()
-                return {
-                    image = images,
-                    depth = depths,
-                }
-            end,
-            function(_sample_)
-                sample = _sample_
-            end,
-            indices,
-            self.cpuType
+                    collectgarbage()
+                    return {
+                        image = images,
+                        depth = depths,
+                    }
+                end,
+                function(_sample_)
+                    sample = _sample_
+                end,
+                indices,
+                self.cpuType
             )
 
             idx = idx + batchSize

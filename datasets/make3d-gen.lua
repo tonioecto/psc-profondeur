@@ -5,7 +5,15 @@ local unpack = unpack or table.unpack
 
 local M = {}
 
-local function findImageDepthMatches(imageDir, depthDir)
+local function findImageDepthMatches(imageDir, depthDir, imageFormat)
+
+    local format
+
+    if imageFormat == nil then
+        format = '.t7'
+    else
+        format = imageFormat
+    end
 
     local dirsImage = paths.dir(imageDir)
     table.sort(dirsImage)
@@ -14,8 +22,8 @@ local function findImageDepthMatches(imageDir, depthDir)
 
     -- Generate a list of all the images and their depths
     for _,img in ipairs(dirsImage) do
-        if not (img:find('.jpg') == nil) then
-            local basename = img:match('img(.*).jpg$')
+        if not (img:find(formate) == nil) then
+            local basename = img:match('img(.*)'..format..'$')
             -- create possible corresponding depth name
             local depth = {
                 'depth_sph_corr'..basename..'.t7',

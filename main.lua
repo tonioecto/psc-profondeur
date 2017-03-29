@@ -23,7 +23,14 @@ local info = datasetInit.getInfo(opt)
 local dataloader, valLoader = DataLoader.create(opt, info)
 
 -- Load previous checkpoint, if it exists
-local checkpoint, optimState = checkpoints.latest(opt)
+local checkpoint, optimState, normInfo = checkpoints.latest(opt)
+
+if normInfo == nil then
+    normInfo = dataloader:computeNormInfo()
+end
+
+dataloader:loadNormInfo(normInfo)
+valLoader:loadNormInfo(normInfo)
 
 -- Create model
 print '==> create model'
@@ -81,7 +88,7 @@ for epoch = opt.epochNumber, opt.nEpochs+opt.epochNumber, 1 do
 
     trainer:saveLoss(epoch, valErr, lossTrace)
     -- save latest model
-    checkpoints.saveCurrent(epoch, net, trainer.optimState, bestModel, opt)
+    checkpoints.saveCurrent(epoch, net, trainer.optimState, bestModel, opt, normInfo)
     -- collect rubbish
     collectgarbage()
 end
