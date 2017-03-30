@@ -27,6 +27,7 @@ local checkpoint, optimState, normInfo = checkpoints.latest(opt)
 
 if normInfo == nil then
     normInfo = dataloader:computeNormInfo()
+    torch.save(paths.concat(opt.save, 'norm.t7'), normInfo)
 end
 
 dataloader:loadNormInfo(normInfo)
