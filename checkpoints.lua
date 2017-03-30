@@ -32,7 +32,11 @@ function checkpoint.latest(opt)
     local latest = torch.load(latestPath)
     local optimState = torch.load(paths.concat(opt.resume, latest.optimFile))
     opt.epochNumber = latest.epoch + 1
-    local normInfo = torch.load(paths.concat(opt.resume, latest.normInfo))
+    if not paths.filep(paths.concat(opt.resume, latest.normInfo)) then
+        print('norm info will be re-computed further')
+    else
+        local normInfo = torch.load(paths.concat(opt.resume, latest.normInfo))
+    end
 
     return latest, optimState, normInfo
 end
