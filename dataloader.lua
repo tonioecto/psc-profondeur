@@ -167,7 +167,7 @@ function DataLoader:computeNormInfo()
     for i=1,3 do -- over each image channel
         imgMean[i] = data.image[{ {}, {i}, {}, {}  }]:mean() -- mean estimation
         print('Channel ' .. i .. ', Mean: ' .. imgMean[i])
-        
+
         imgStd[i] = data.image[{ {}, {i}, {}, {}  }]:std() -- std estimation
         print('Channel ' .. i .. ', Standard Deviation: ' .. imgStd[i])
     end
@@ -226,36 +226,36 @@ function DataLoader:run(starIndex, endIndexss)
             local indices = perm:narrow(1, idx, math.min(batchSize, endIndex - idx + 1))
 
             threads:addjob(
-                function(indices, cpuType)
-                    -- final batch size
-                    local sz = indices:size(1)
-                    local images, depths
-                    local imageSize, depthSize
-                    for i, idx in ipairs(indices:totable()) do
-                        local sample = _G.dataset:get(idx)
-                        local input, output = _G.preprocess(sample.image, sample.depth)
-                        if not images then
-                            imageSize = input:size():totable()
-                            images = torch[cpuType](sz, table.unpack(imageSize))
-                        end
-                        if not depths then
-                            depthSize = output:size():totable()
-                            depths = torch[cpuType](sz, table.unpack(depthSize))
-                        end
-                        images[i]:copy(input)
-                        depths[i]:copy(output)
+            function(indices, cpuType)
+                -- final batch size
+                local sz = indices:size(1)
+                local images, depths
+                local imageSize, depthSize
+                for i, idx in ipairs(indices:totable()) do
+                    local sample = _G.dataset:get(idx)
+                    local input, output = _G.preprocess(sample.image, sample.depth)
+                    if not images then
+                        imageSize = input:size():totable()
+                        images = torch[cpuType](sz, table.unpack(imageSize))
                     end
-                    collectgarbage()
-                    return {
-                        image = images,
-                        depth = depths,
-                    }
-                end,
-                function(_sample_)
-                    sample = _sample_
-                end,
-                indices,
-                self.cpuType
+                    if not depths then
+                        depthSize = output:size():totable()
+                        depths = torch[cpuType](sz, table.unpack(depthSize))
+                    end
+                    images[i]:copy(input)
+                    depths[i]:copy(output)
+                end
+                collectgarbage()
+                return {
+                    image = images,
+                    depth = depths,
+                }
+            end,
+            function(_sample_)
+                sample = _sample_
+            end,
+            indices,
+            self.cpuType
             )
 
             idx = idx + batchSize
