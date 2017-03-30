@@ -91,6 +91,7 @@ function checkpoint.saveCurrent(epoch, model, optimState, isBestModel, opt)
     local modelFile = 'model_last' .. '.t7'
     local optimFile = 'optimState_' .. epoch .. '.t7'
     local optFile = 'opt'..'.t7'
+    local normInfo = 'norm'..'.t7'
 
     torch.save(paths.concat(opt.save, modelFile), model)
     torch.save(paths.concat(opt.save, optimFile), optimState)
@@ -99,6 +100,7 @@ function checkpoint.saveCurrent(epoch, model, optimState, isBestModel, opt)
         epoch = epoch,
         modelFile = modelFile,
         optimFile = optimFile,
+        normInfo = normInfo
     })
 
     if isBestModel then
