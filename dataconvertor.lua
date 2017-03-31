@@ -22,15 +22,32 @@ function M.convertMatTensor(opt, path)
             fileToSave = paths.concat(savePath, file:match('(.*).mat$')..".t7")
             local tmp = matio.load(fileToLoad,opt.depthName)
             if opt.depthName=='Position3DGrid' then
-              tmp = tmp:select(3,4)
+                tmp = tmp:select(3,4)
             end
             if opt.depthRotation then
-              --print(tmp)
-              tmp = image.scale(tmp,192,256,'bicubic')
-              tmp = image.hflip(tmp)
-              tmp = tmp:transpose(1,2)
+                tmp = image.scale(tmp,192,256,'bicubic')
+                tmp = image.hflip(tmp)
+                tmp = tmp:transpose(1,2)
             end
             torch.save(fileToSave,tmp)
+        end
+    end
+end
+
+-- converts .t7 file to mat file
+function M.convertTensorMat(loadPath, savePath)
+    
+    loadPath = paths.concat('result', loadPath)
+    savePath = paths.concat('result', savePath)
+    
+    assert(paths.dirp(loadPath), 'load path does not exist !')
+
+    for file in paths.files(loadPath) do
+        if file:file(".*(t7)$") then
+            local fileToLoad = paths.concat(loadPath, file)
+            local fileToSave = paths.concat(savepath, file:match('(.*).t7$')..".mat")
+            local tmp = torch.load(fileToload)
+            matio.save(fileToSave, tmp)
         end
     end
 end

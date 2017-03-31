@@ -224,9 +224,9 @@ function Trainer:predict(num, img, depth, dataloader)
     prediction = dataloader:denormalise(prediction, 70)
     res.pred = prediction:float()
     res.groundTruth = depth:float()
-    path = paths.concat('result', 'visual-epoch-'..self.opt.epochNumber..'-example'..num..'.t7')
-    if not paths.dirp(paths.concat('result')) then
-        paths.mkdir(paths.concat('result'))
+    path = paths.concat('result','version_t7', 'visual-epoch-'..self.opt.epochNumber..'-example'..num..'.t7')
+    if not paths.dirp(paths.concat('result', 'version_t7')) then
+        paths.mkdir(paths.concat('result', 'version_t7'))
     end
     torch.save(path,res)
 
@@ -236,7 +236,7 @@ end
 -- decrease learning rate according to epoch
 function Trainer:learningRate(epoch)
     -- Training schedule recipe
-    local decay = math.floor((epoch - 1) / 4)
+    local decay = math.floor((epoch - 1) / 5)
 
     return self.opt.LR * math.pow(0.5, decay)
 end
