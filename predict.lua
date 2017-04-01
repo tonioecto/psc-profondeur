@@ -23,7 +23,15 @@ local info = datasetInit.getInfo(opt)
 local dataloader, valLoader = DataLoader.create(opt, info)
 
 -- Load previous checkpoint, if it exists
-local checkpoint, optimState = checkpoints.latest(opt)
+local checkpoint, optimState, normInofo = checkpoints.latest(opt)
+
+if normInfo == nil then
+    normInfo = dataloader:computeNormInfo()
+    torch.save(paths.concat(opt.save, 'norm.t7'), normInfo)
+end
+
+dataloader:loadNormInfo(normInfo)
+valLoader:loadNormInfo(normInfo)
 
 -- Create model
 print '==> create model'
