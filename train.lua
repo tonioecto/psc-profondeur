@@ -215,15 +215,18 @@ end
 
 -- show the prediction of a random image in the dataset
 -- of the loader
-function Trainer:predict(num, img, depth, dataloader)
+function Trainer:predict(num, pair, dataloader)
 
     local res = {}
-    res.image = img:float()
-    img = img:cuda()
-    local prediction = self.model:forward(img)
-    prediction = dataloader:denormalise(prediction, 70)
-    res.pred = prediction:float()
-    res.groundTruth = depth:float()
+    res.image = pair.image:float()
+    res.groundTruth = pair.depth:float()
+
+    pair = dataloader:normalise(pair, 70)
+    pair.depth = self.model:forward(pair.image:cuda()):float()
+    pair = dataloader:denormalise(pair, 70)
+    
+    res.pred = pair.depth:float()
+    
     path = paths.concat('result','version_t7', 'visual-epoch-'..self.opt.epochNumber..'-example'..num..'.t7')
     if not paths.dirp(paths.concat('result', 'version_t7')) then
         paths.mkdir(paths.concat('result', 'version_t7'))

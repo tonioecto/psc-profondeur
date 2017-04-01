@@ -66,9 +66,7 @@ for num = 1, opt.exampleNum, 1 do
     -- generate a new permutation table
 
     local pair = dataloader.dataset:get(dataloader.perms[num])
-    local img = pair.image:cuda()
-    local depth = pair.depth:cuda()
-
+    
     -- get predicted results
-    trainer:predict(num, img, depth, dataloader)
+    trainer:predict(num, pair, dataloader)
 end
