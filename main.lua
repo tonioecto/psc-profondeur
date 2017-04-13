@@ -87,9 +87,15 @@ for epoch = opt.epochNumber, opt.nEpochs+opt.epochNumber, 1 do
         print(' * Best model ', valErr)
     end
 
+    local info = {
+        epoch = epoch,
+        learningRate = trainer:learningRate(epoch),
+        weightDecay = optimState.weightDecay
+    }
+
     trainer:saveLoss(epoch, valErr, lossTrace)
     -- save latest model
-    checkpoints.saveCurrent(epoch, net, trainer.optimState, bestModel, opt, normInfo)
+    checkpoints.saveCurrent(epoch, net, trainer.optimState, bestModel, opt, info)
     -- collect rubbish
     collectgarbage()
 end

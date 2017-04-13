@@ -73,7 +73,7 @@ function checkpoint.save(epoch, model, optimState, isBestModel, opt)
 
 end
 
-function checkpoint.saveCurrent(epoch, model, optimState, isBestModel, opt)
+function checkpoint.saveCurrent(epoch, model, optimState, isBestModel, opt, info)
     -- we store only the last and best epoch model in trained model file
     -- don't save the DataParallelTable for easier loading on other machines
     if torch.type(model) == 'nn.DataParallelTable' then
@@ -92,10 +92,12 @@ function checkpoint.saveCurrent(epoch, model, optimState, isBestModel, opt)
     local optimFile = 'optimState_' .. epoch .. '.t7'
     local optFile = 'opt'..'.t7'
     local normInfo = 'norm'..'.t7'
+    local trainOpt = 'trainOpt_'..epoch..'t7'
 
     torch.save(paths.concat(opt.save, modelFile), model)
     torch.save(paths.concat(opt.save, optimFile), optimState)
     torch.save(paths.concat(opt.save, optFile), opt)
+    torch.save(paths.concat(opt.save, trainOpt), info)
     torch.save(paths.concat(opt.save, 'latest.t7'), {
         epoch = epoch,
         modelFile = modelFile,
