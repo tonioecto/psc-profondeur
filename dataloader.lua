@@ -212,6 +212,35 @@ function DataLoader:denormalise(data, coef)
     return data
 end
 
+function DataLoader:normaliseSingle(data, coef)
+    assert(self.normInfo ~= nil, 'normalisation info is not yet computed')
+
+    local mean = self.normInfo.imgMean
+    local stdv  = self.normInfo.imgStd
+    for i=1, 3 do -- over each image channel
+        data.image[{ {i}, {}, {}  }]:add(-mean[i]) -- mean subtraction
+        data.image[{ {i}, {}, {}  }]:div(stdv[i]) -- std scaling
+    end
+
+    data.depth:div(coef)
+
+    return data
+end
+
+function DataLoader:denormaliseSingle(data, coef)
+    assert(self.normInfo ~= nil, 'normalisation info is not yet computed')
+
+    local mean = self.normInfo.imgMean
+    local stdv  = self.normInfo.imgStd
+    for i=1, 3 do -- over each image channel
+        data.image[{ {i}, {}, {}  }]:add(mean[i]) -- add mean
+        data.image[{ {i}, {}, {}  }]:mul(stdv[i]) -- std multiplication
+    end
+
+    data.depth:mul(coef)
+    return data
+end
+
 -----------------------Multithreads part-------------------------
 
 -- multi threads solution to get dataset batchs for start to end

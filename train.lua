@@ -221,9 +221,9 @@ function Trainer:predict(num, pair, dataloader)
     res.image = pair.image:float()
     res.groundTruth = pair.depth:float()
 
-    pair = dataloader:normalise(pair, 70)
+    pair = dataloader:normaliseSingle(pair, 70)
     pair.depth = self.model:forward(pair.image:cuda()):float()
-    pair = dataloader:denormalise(pair, 70)
+    pair = dataloader:denormaliseSingle(pair, 70)
     
     res.pred = pair.depth:float()
     
