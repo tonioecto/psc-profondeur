@@ -216,7 +216,6 @@ end
 
 function DataLoader:denormaliseDepth(depth,coef)
     return depth:mul(coef)
-    return depth
 end
 
 
