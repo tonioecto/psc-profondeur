@@ -73,7 +73,7 @@ net:evaluate()
     trainer:predict(num, pair, dataloader)
 end]]
 
-local res = trainer:getPredictResult(testloader,10)
+local res = trainer:getPredictResult(testloader,1)
 local Evaluate = require 'evaluate.lua'
 local rel = Evaluate.Relerror(res.pred,res.groundTruth)
 print('relLoss'..rel)
