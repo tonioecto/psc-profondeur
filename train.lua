@@ -249,7 +249,7 @@ end
 function Trainer:getPredictResult(testLoader,num)
     local imageSet = torch.Tensor(num,unpack(self.opt.inputSize));
     local depthSet = torch.Tensor(num,unpack(self.opt.outputSize));
-    local predSet = tprch.Tensor(num,unpack(self.opt.outputSize));
+    local predSet = torch.Tensor(num,unpack(self.opt.outputSize));
 
     --local res={}
     -- load permutation table for test set
