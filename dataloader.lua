@@ -83,8 +83,8 @@ end
 function DataLoader.createTest(opt)
     -- The train and val loader
     local info = datasets.getTestInfo(opt)
-    local dataset = datasets.create(opt, split, info)
-    local loader = M.DataLoader(dataset, opt, split)
+    local dataset = datasets.create(opt, 'test', info)
+    local loader = M.DataLoader(dataset, opt, 'test')
     return loader
 end
 
