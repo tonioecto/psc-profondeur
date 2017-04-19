@@ -43,9 +43,9 @@ function M.Relerror(predicted, groundtruth)
             predicted[i] - groundtruth[i]
             )
         dis:cdiv(groundtruth[i])
-        err:add(torch.sum(dis))
+        err = err + torch.sum(dis)
     end
-    err:div(Tsize)
+    err = err / (Tsize * 1.0)
     return err
 end
 
