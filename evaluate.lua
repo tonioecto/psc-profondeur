@@ -34,7 +34,7 @@ end
 
 function M.Relerror(predicted, groundtruth)
     --print(predicted:size())
-    print(groundtruth:size())
+    print(groundtruth)
     print('------------------------------------')
     print('------------------------------------')
     print('------------------------------------')
