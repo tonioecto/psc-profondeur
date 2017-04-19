@@ -217,6 +217,8 @@ end
 -- of the loader
 function Trainer:predict(num, pair, dataloader)
 
+    print('=> prediction for image'..num)
+
     local res = {}
     res.image = pair.image:float()
     res.groundTruth = pair.depth:float()
