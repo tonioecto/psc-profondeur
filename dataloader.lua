@@ -80,6 +80,14 @@ function DataLoader.create(opt, info)
     return table.unpack(loaders)
 end
 
+function DataLoader.createTest(opt)
+    -- The train and val loader
+    local info = datasets.getTestInfo(opt)
+    local dataset = datasets.create(opt, split, info)
+    local loader = M.DataLoader(dataset, opt, split)
+    return loader
+end
+
 --after the transformation offline
 --Load the images and depthMap, and generate dataset for training
 --load a part of dataset from startIndex to endIndex randomly
@@ -208,7 +216,6 @@ end
 
 function DataLoader:denormaliseDepth(depth,coef)
     return depth:mul(coef)
-    return depth
 end
 
 

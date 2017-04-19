@@ -21,6 +21,7 @@ print '==> load dataset'
 datasetInit.init(opt, {'train', 'val'})
 local info = datasetInit.getInfo(opt)
 local dataloader, valLoader = DataLoader.create(opt, info)
+local testloader = DataLoader.createTest(opt)
 
 -- Load previous checkpoint, if it exists
 local checkpoint, optimState, normInfo = checkpoints.latest(opt)
@@ -32,6 +33,7 @@ end
 
 dataloader:loadNormInfo(normInfo)
 valLoader:loadNormInfo(normInfo)
+testloader:loadNormInfo(normInfo)
 
 -- Create model
 print '==> create model'

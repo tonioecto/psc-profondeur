@@ -247,7 +247,6 @@ function Trainer:learningRate(epoch)
 end
 
 function Trainer:getPredictResult(testLoader,num,dataloader)
-
     local imageSet = torch.Tensor(num,unpack(self.opt.inputSize));
     local depthSet = torch.Tensor(num,unpack(self.opt.outputSize));
     local predSet = tprch.Tensor(num,unpack(self.opt.outputSize));
@@ -280,7 +279,10 @@ function Trainer:getPredictResult(testLoader,num,dataloader)
         paths.mkdir(paths.concat('result','test'))
     end
     torch.save(path,res)
+<<<<<<< HEAD
     return res
+=======
+>>>>>>> d5e6de6b24dca6b717b9fce3ad2e3562e6e63e0b
 end
 
 return M.Trainer
