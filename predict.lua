@@ -63,12 +63,17 @@ local perms = torch.randperm(dataloader.dataset:size())
 dataloader:loadPerm(perms)
 
 net:evaluate()
-for num = 1, opt.exampleNum, 1 do
+--[[for num = 1, opt.exampleNum, 1 do
 
     -- generate a new permutation table
 
     local pair = dataloader.dataset:get(dataloader.perms[num])
-    
+
     -- get predicted results
     trainer:predict(num, pair, dataloader)
-end
+end]]
+
+local res = trainer:getPredictResult(testloader,100)
+local Evaluate = require 'evaluate.lua'
+local rel = Evaluate.Relerror(res.pred,res.groundTruth)
+print 'relLoss'..rel

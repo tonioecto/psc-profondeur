@@ -246,7 +246,7 @@ function Trainer:learningRate(epoch)
     return self.opt.LR * math.pow(0.6, decay)
 end
 
-function Trainer:getPredictResult(testLoader,num,dataloader)
+function Trainer:getPredictResult(testLoader,num)
     local imageSet = torch.Tensor(num,unpack(self.opt.inputSize));
     local depthSet = torch.Tensor(num,unpack(self.opt.outputSize));
     local predSet = tprch.Tensor(num,unpack(self.opt.outputSize));
@@ -258,9 +258,10 @@ function Trainer:getPredictResult(testLoader,num,dataloader)
     for i=1,num,1 do
       imageSet[i] = testSample.image[i];
       depthSet[i] = testSample.depth[i];
-      imageData = dataloader:normaliseImage(imageSet[i])
+      --imageData = testLoader:normaliseImage(imageSet[i])
+      imageData = testSample.image[i];
       predData = self.model:forward(imageData:cuda()):float();
-      predSet[i] = dataloader:denormaliseDepth(predData);
+      predSet[i] = testLoader:denormaliseDepth(predData);
     end
 
     local res = {
