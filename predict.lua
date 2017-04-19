@@ -76,4 +76,4 @@ end]]
 local res = trainer:getPredictResult(testloader,100)
 local Evaluate = require 'evaluate.lua'
 local rel = Evaluate.Relerror(res.pred,res.groundTruth)
-print 'relLoss'..rel
+print(relLoss'..rel)
