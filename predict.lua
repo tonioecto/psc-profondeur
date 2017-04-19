@@ -18,7 +18,7 @@ local opt = opts.parse(arg)
 
 print '==> load dataset'
 -- Data loading
-datasetInit.init(opt, {'train', 'val'})
+datasetInit.init(opt, {'train', 'val', 'test'})
 local info = datasetInit.getInfo(opt)
 local dataloader, valLoader = DataLoader.create(opt, info)
 
