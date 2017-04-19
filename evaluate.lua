@@ -33,8 +33,8 @@ end
 
 
 function M.Relerror(predicted, groundtruth)
-    print(predicted)
-    print(groundtruth)
+    print(predicted:size())
+    print(groundtruth:size())
     local err = 0
     local Tsize = predicted:size(1)*predicted:size(2)
     Tsize = Tsize * predicted:size(3)
