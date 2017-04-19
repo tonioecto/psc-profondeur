@@ -42,8 +42,13 @@ function Make3dDataset.preprocess(opt, split)
         T.RandomCrop(173, 230, 96, 128)
     })
     -- from the original dataset, generate val and train set
-    G.augmentation(opt.imageOrigin, opt.depthOrigin, opt,
-    split, opt.trainDataPortion, trans)
+    if split == 'test' then
+        G.augmentation(opt.testImage, opt.testDepth, opt,
+        split, opt.trainDataPortion, trans)
+    else
+        G.augmentation(opt.imageOrigin, opt.depthOrigin, opt,
+        split, opt.trainDataPortion, trans)
+    end
 end
 
 function Make3dDataset.preprocessOnline()

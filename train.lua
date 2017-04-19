@@ -217,23 +217,25 @@ end
 -- of the loader
 function Trainer:predict(num, pair, dataloader)
 
-    local res = {}
-    res.image = pair.image:float()
-    res.groundTruth = pair.depth:float()
+      print('=> prediction for image'..num)
 
-    pair = dataloader:normalise(pair, 70)
-    pair.depth = self.model:forward(pair.image:cuda()):float()
-    pair = dataloader:denormalise(pair, 70)
+      local res = {}
+      res.image = pair.image:float()
+      res.groundTruth = pair.depth:float()
 
-    res.pred = pair.depth:float()
+      pair = dataloader:normaliseSingle(pair, 70)
+      pair.depth = self.model:forward(pair.image:cuda()):float()
+      pair = dataloader:denormaliseSingle(pair, 70)
 
-    path = paths.concat('result','version_t7', 'visual-epoch-'..self.opt.epochNumber..'-example'..num..'.t7')
-    if not paths.dirp(paths.concat('result', 'version_t7')) then
-        paths.mkdir(paths.concat('result', 'version_t7'))
-    end
-    torch.save(path,res)
+      res.pred = pair.depth:float()
 
-    return res
+      path = paths.concat('result','version_t7', 'visual-epoch-'..self.opt.epochNumber..'-example'..num..'.t7')
+      if not paths.dirp(paths.concat('result', 'version_t7')) then
+          paths.mkdir(paths.concat('result', 'version_t7'))
+      end
+      torch.save(path,res)
+
+      return res
 end
 
 -- decrease learning rate according to epoch
@@ -241,7 +243,7 @@ function Trainer:learningRate(epoch)
     -- Training schedule recipe
     local decay = math.floor((epoch - 1) / 5)
 
-    return self.opt.LR * math.pow(0.7, decay)
+    return self.opt.LR * math.pow(0.6, decay)
 end
 
 function Trainer:getPredictResult(testLoader,num,dataloader){
@@ -260,8 +262,6 @@ function Trainer:getPredictResult(testLoader,num,dataloader){
       predData = self.model:forward(imageData:cuda()):float();
       predSet[i] = dataloader:denormaliseDepth(predData);
     end
-
-
 
     local res = {
         image = imageSet,

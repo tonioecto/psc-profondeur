@@ -23,7 +23,7 @@ local info = datasetInit.getInfo(opt)
 local dataloader, valLoader = DataLoader.create(opt, info)
 
 -- Load previous checkpoint, if it exists
-local checkpoint, optimState, normInofo = checkpoints.latest(opt)
+local checkpoint, optimState, normInfo = checkpoints.latest(opt)
 
 if normInfo == nil then
     normInfo = dataloader:computeNormInfo()
