@@ -49,7 +49,9 @@ function M.getTestInfo(opt)
     local gen = require('datasets/' .. opt.dataset .. '-gen')
     local cache= paths.concat(opt.data, 'info-cache')
 
-    local info = gen.exec(opt, cache..'-test.t7', 'test')
+    local info = {
+        test = gen.exec(opt, cache..'-test.t7', 'test')
+    }
     
     return info
 end

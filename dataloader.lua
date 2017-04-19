@@ -40,8 +40,8 @@ function DataLoader:__init(dataset, opt, split)
     end
 
     -- initialize threads
-    --local threads, size = Threads(opt.nThreads, init, main)
-    --self.threads = threads
+    local threads, size = Threads(opt.nThreads, init, main)
+    self.threads = threads
     self.__size = dataset:size()
     self.batchSize = opt.batchSize
     local function getCPUType(tensorType)
