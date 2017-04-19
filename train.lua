@@ -224,9 +224,9 @@ function Trainer:predict(num, pair, dataloader)
     pair = dataloader:normalise(pair, 70)
     pair.depth = self.model:forward(pair.image:cuda()):float()
     pair = dataloader:denormalise(pair, 70)
-    
+
     res.pred = pair.depth:float()
-    
+
     path = paths.concat('result','version_t7', 'visual-epoch-'..self.opt.epochNumber..'-example'..num..'.t7')
     if not paths.dirp(paths.concat('result', 'version_t7')) then
         paths.mkdir(paths.concat('result', 'version_t7'))
@@ -243,5 +243,42 @@ function Trainer:learningRate(epoch)
 
     return self.opt.LR * math.pow(0.7, decay)
 end
+
+function Trainer:getPredictResult(testLoader,num,dataloader){
+    local imageSet = torch.Tensor(num,unpack(self.opt.inputSize));
+    local depthSet = torch.Tensor(num,unpack(self.opt.outputSize));
+    local predSet = tprch.Tensor(num,unpack(self.opt.outputSize));
+
+    --local res={}
+    -- load permutation table for test set
+    testLoader:loadPerm(torch.randperm(testLoader.dataset:size()));
+    local testSample = testLoader:loadDataset(1,num);
+    for i=1,num,1 do
+      imageSet[i] = testSample.image[i];
+      depthSet[i] = testSample.depth[i];
+      imageData = dataloader:normaliseImage(imageSet[i])
+      predData = self.model:forward(imageData:cuda()):float();
+      predSet[i] = dataloader:denormaliseDepth(predData);
+    end
+
+
+
+    local res = {
+        image = imageSet,
+        groundTruth = depthSet,
+        pred = predSet
+    }
+
+    setmetatable(res,
+    {__index = function(t, i)
+        return {t.image[i], t.groundTruth[i],t.pred[i]}
+    end}
+
+    path = paths.concat('result','test','testEvaluate'..num..'.t7')
+    if not paths.dirp(paths.concat('result','test')) then
+        paths.mkdir(paths.concat('result','test'))
+    end
+    torch.save(path,res)
+}
 
 return M.Trainer

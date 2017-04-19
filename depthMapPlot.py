@@ -7,7 +7,7 @@ import torchfile
 #depth = np.random.random((128,64));
 #np.savetxt('depthTest.txt',depth);
 
-result = torchfile.load('result/visual-r-22.t7');
+result = torchfile.load('result/visual-r-18.t7');
 image = result[b'image'];
 
 
