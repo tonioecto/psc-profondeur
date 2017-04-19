@@ -89,13 +89,15 @@ function M.augmentation(imageDirOrigin, depthDirOrigin, opt, split, trainDataPor
     if split == 'train' then
         startIndex = 1
         endIndex = torch.round(sizeOrigin * trainDataPortion)
-    else if split == 'val' then
+    end
+    if split == 'val' then
         startIndex = torch.round(sizeOrigin * trainDataPortion) + 1
         endIndex = sizeOrigin
-    else if split == 'test' then
+    end
+    if split == 'test' then
         startIndex = 1
         endIndex = sizeOrigin
-    else end
+    end
 
     size = endIndex - startIndex + 1
     local targetSize =size * opt.incre
