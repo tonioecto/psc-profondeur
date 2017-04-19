@@ -80,6 +80,17 @@ function DataLoader.create(opt, info)
     return table.unpack(loaders)
 end
 
+function DataLoader.createTest(opt)
+    -- The train and val loader
+    local info = 
+    for i, split in ipairs{'train', 'val'} do
+        local dataset = datasets.create(opt, split, info)
+        loaders[i] = M.DataLoader(dataset, opt, split)
+    end
+
+    return table.unpack(loaders)
+end
+
 --after the transformation offline
 --Load the images and depthMap, and generate dataset for training
 --load a part of dataset from startIndex to endIndex randomly
