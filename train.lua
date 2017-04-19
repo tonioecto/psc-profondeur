@@ -217,25 +217,25 @@ end
 -- of the loader
 function Trainer:predict(num, pair, dataloader)
 
-      print('=> prediction for image'..num)
+    print('=> prediction for image'..num)
 
-      local res = {}
-      res.image = pair.image:float()
-      res.groundTruth = pair.depth:float()
+    local res = {}
+    res.image = pair.image:float()
+    res.groundTruth = pair.depth:float()
 
-      pair = dataloader:normaliseSingle(pair, 70)
-      pair.depth = self.model:forward(pair.image:cuda()):float()
-      pair = dataloader:denormaliseSingle(pair, 70)
+    pair = dataloader:normaliseSingle(pair, 70)
+    pair.depth = self.model:forward(pair.image:cuda()):float()
+    pair = dataloader:denormaliseSingle(pair, 70)
 
-      res.pred = pair.depth:float()
+    res.pred = pair.depth:float()
 
-      path = paths.concat('result','version_t7', 'visual-epoch-'..self.opt.epochNumber..'-example'..num..'.t7')
-      if not paths.dirp(paths.concat('result', 'version_t7')) then
-          paths.mkdir(paths.concat('result', 'version_t7'))
-      end
-      torch.save(path,res)
+    path = paths.concat('result','version_t7', 'visual-epoch-'..self.opt.epochNumber..'-example'..num..'.t7')
+    if not paths.dirp(paths.concat('result', 'version_t7')) then
+        paths.mkdir(paths.concat('result', 'version_t7'))
+    end
+    torch.save(path,res)
 
-      return res
+    return res
 end
 
 -- decrease learning rate according to epoch
@@ -255,13 +255,15 @@ function Trainer:getPredictResult(testLoader,num)
     -- load permutation table for test set
     testLoader:loadPerm(torch.randperm(testLoader.dataset:size()));
     local testSample = testLoader:loadDataset(1,num);
+    print('=> begin to compute evaluation errors.')
     for i=1,num,1 do
-      imageSet[i] = testSample.image[i];
-      depthSet[i] = testSample.depth[i];
-      --imageData = testLoader:normaliseImage(imageSet[i])
-      imageData = testSample.image[i];
-      predData = self.model:forward(imageData:cuda()):float();
-      predSet[i] = testLoader:denormaliseDepth(predData,70);
+        print('compute sample index '..i)
+        imageSet[i] = testSample.image[i];
+        depthSet[i] = testSample.depth[i];
+        --imageData = testLoader:normaliseImage(imageSet[i])
+        imageData = testSample.image[i];
+        predData = self.model:forward(imageData:cuda()):float();
+        predSet[i] = testLoader:denormaliseDepth(predData,70);
     end
 
     local res = {
