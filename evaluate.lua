@@ -11,6 +11,19 @@ local gnu = require 'gnuplot'
 
 local M = {}
 
+-- highmask = 70
+-- lowmask = 0
+local function mask(prediction, groundtruth)
+    local g = torch.ge(groundtruth, 70)
+    local l = torch.eq(groundtruth, 0)
+    local m = l + g
+    local mInverse = 1 - (l+g)
+    prediction:maskedFill(self.m, -1)
+    groundtruth:maskedFill(self.m, -1)
+    local nValid = torch.sum(mInverse)
+    return prediction, groundtruth, nValid
+end
+
 function M.plotTrainLoss(opt)
     local lossFilePath = paths.concat(opt.lossFile, 'loss.t7')
     local loss = torch.load(lossFile)
@@ -41,17 +54,19 @@ function M.Relerror(predicted, groundtruth)
     print('------------------------------------')
     print('------------------------------------')
     local err = 0
-    local Tsize = predicted:size(1)*predicted:size(2)
-    Tsize = Tsize * predicted:size(3)
+    local Tsize = 0 --= predicted:size(1)*predicted:size(2)
+    --Tsize = Tsize * predicted:size(3)
     for i =1,predicted:size(1) do
+        local p, gt, nvalid = mask(predicted[i],groundtruth[i])
         local dis = torch.abs(
-            predicted[i] - groundtruth[i]
+            p - gt
             )
         print(dis)
-        dis:cdiv(groundtruth[i])
-        --print(dis)
+        dis:cdiv(gt)
+        print(dis)
         err = err + torch.sum(dis)
-        --print(err)
+        Tsize = Tsize + nvalid
+        print(err)
     end
     err = err / (Tsize * 1.0)
     return err
