@@ -95,7 +95,7 @@ function M.augmentation(imageDirOrigin, depthDirOrigin, opt, split, trainDataPor
     else if split == 'test' then
         startIndex = 1
         endIndex = sizeOrigin
-    end
+    else end
 
     size = endIndex - startIndex + 1
     local targetSize =size * opt.incre
