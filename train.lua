@@ -261,7 +261,7 @@ function Trainer:getPredictResult(testLoader,num)
       --imageData = testLoader:normaliseImage(imageSet[i])
       imageData = testSample.image[i];
       predData = self.model:forward(imageData:cuda()):float();
-      predSet[i] = testLoader:denormaliseDepth(predData);
+      predSet[i] = testLoader:denormaliseDepth(predData,70);
     end
 
     local res = {
