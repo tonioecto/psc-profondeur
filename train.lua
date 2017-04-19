@@ -246,7 +246,8 @@ function Trainer:learningRate(epoch)
     return self.opt.LR * math.pow(0.6, decay)
 end
 
-function Trainer:getPredictResult(testLoader,num,dataloader){
+function Trainer:getPredictResult(testLoader,num,dataloader)
+
     local imageSet = torch.Tensor(num,unpack(self.opt.inputSize));
     local depthSet = torch.Tensor(num,unpack(self.opt.outputSize));
     local predSet = tprch.Tensor(num,unpack(self.opt.outputSize));
@@ -279,6 +280,7 @@ function Trainer:getPredictResult(testLoader,num,dataloader){
         paths.mkdir(paths.concat('result','test'))
     end
     torch.save(path,res)
-}
+    return res
+end
 
 return M.Trainer
