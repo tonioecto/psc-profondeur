@@ -33,8 +33,8 @@ end
 
 
 function M.Relerror(predicted, groundtruth)
-    print(predicted:size())
-    print(groundtruth:size())
+    --print(predicted:size())
+    --print(groundtruth:size())
     local err = 0
     local Tsize = predicted:size(1)*predicted:size(2)
     Tsize = Tsize * predicted:size(3)
@@ -42,10 +42,11 @@ function M.Relerror(predicted, groundtruth)
         local dis = torch.abs(
             predicted[i] - groundtruth[i]
             )
-        dis:cdiv(groundtruth[i])
         print(dis)
+        dis:cdiv(groundtruth[i])
+        --print(dis)
         err = err + torch.sum(dis)
-        print(err)
+        --print(err)
     end
     err = err / (Tsize * 1.0)
     return err
