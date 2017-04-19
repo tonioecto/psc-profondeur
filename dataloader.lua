@@ -138,7 +138,7 @@ function DataLoader:loadDataset(startIndex, endIndex, flag)
     return datasetSample
 end
 
---create mini batch after offline transformation preprocess 
+--create mini batch after offline transformation preprocess
 --for every source image and depth
 function DataLoader:miniBatchload(dataset)
 
@@ -206,6 +206,23 @@ function DataLoader:normalise(data, coef)
 
     return data
 end
+
+function DataLoader:normaliseImage(image)
+    local mean = self.normInfo.imgMean
+    for i=1, 3 do -- over each image channel
+        image[{ {}, {i}, {}, {}  }]:add(-mean[i]) -- mean subtraction
+        image[{ {}, {i}, {}, {}  }]:div(stdv[i]) -- std scaling
+    end
+
+    return image
+end
+
+function DataLoader:denormaliseDepth(depth,coef)
+    return depth:mul(coef)
+    return depth
+end
+
+
 
 -- denormalise data
 function DataLoader:denormalise(data, coef)
