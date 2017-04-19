@@ -61,7 +61,6 @@ function M.Relerror(predicted, groundtruth)
         local dis = torch.abs(
             p - gt
             )
-        print(dis)
         dis:cdiv(gt)
         print(dis)
         err = err + torch.sum(dis)
