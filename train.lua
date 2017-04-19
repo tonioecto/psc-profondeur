@@ -272,17 +272,14 @@ function Trainer:getPredictResult(testLoader,num,dataloader)
     setmetatable(res,
     {__index = function(t, i)
         return {t.image[i], t.groundTruth[i],t.pred[i]}
-    end}
+    end})
 
     path = paths.concat('result','test','testEvaluate'..num..'.t7')
     if not paths.dirp(paths.concat('result','test')) then
         paths.mkdir(paths.concat('result','test'))
     end
     torch.save(path,res)
-<<<<<<< HEAD
     return res
-=======
->>>>>>> d5e6de6b24dca6b717b9fce3ad2e3562e6e63e0b
 end
 
 return M.Trainer
