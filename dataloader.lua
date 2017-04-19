@@ -82,13 +82,10 @@ end
 
 function DataLoader.createTest(opt)
     -- The train and val loader
-    local info = 
-    for i, split in ipairs{'train', 'val'} do
-        local dataset = datasets.create(opt, split, info)
-        loaders[i] = M.DataLoader(dataset, opt, split)
-    end
-
-    return table.unpack(loaders)
+    local info = datasets.getTestInfo(opt)
+    local dataset = datasets.create(opt, split, info)
+    local loader = M.DataLoader(dataset, opt, split)
+    return loader
 end
 
 --after the transformation offline
