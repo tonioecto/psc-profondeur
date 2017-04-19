@@ -243,7 +243,7 @@ function Trainer:learningRate(epoch)
     -- Training schedule recipe
     local decay = math.floor((epoch - 1) / 5)
 
-    return self.opt.LR * math.pow(0.7, decay)
+    return self.opt.LR * math.pow(0.6, decay)
 end
 
 return M.Trainer
