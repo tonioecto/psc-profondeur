@@ -73,6 +73,6 @@ net:evaluate()
     trainer:predict(num, pair, dataloader)
 end]]
 
-local res = trainer:getPredictResult(testloader,100)
+local res = trainer:getPredictResult(testloader,500)
 local Evaluate = require 'evaluate.lua'
 local rel = Evaluate.errEvaluate(res.pred,res.groundTruth)
