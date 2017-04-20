@@ -98,15 +98,20 @@ function M.errEvaluate(predicted,groundtruth)
     local threshErr2 = 0
     local threshErr3 = 0
     local Tsize = 0
+    local num = predicted:size(2)*predicted:size(3)
     for i =1, predicted:size(1),1 do
         local p, gt, nvalid = mask(predicted[i],groundtruth[i])
+        local nInvalid = num - nvalid
         relErr = relErr + Relerror(p,gt)
         rmsErr = rmsErr + Rmserror(p,gt)
         rmLogErr = rmLogErr + Rmslogerr(p,gt)
         logErr = logErr + Logerr(p,gt)
         threshErr1 = threshErr1 + Thresherr(p,gt,1)
+        threshErr1 = threshErr1 - nInvalid
         threshErr2 = threshErr2 + Thresherr(p,gt,2)
+        threshErr2 = threshErr2 - nInvalid
         threshErr3 = threshErr3 + Thresherr(p,gt,3)
+        threshErr3 = threshErr3 - nInvalid
         Tsize = Tsize + nvalid
     end
     Tsize = Tsize * 1.0
