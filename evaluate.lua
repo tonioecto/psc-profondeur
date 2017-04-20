@@ -62,7 +62,7 @@ local function Rmslogerr(p,gt)
   local truth = torch.log(gt)
   truth:div(term)
   local dis = torch.dist(pre,truth)
-  return dis = dis * dis
+  return dis * dis
 end
 
 local function Logerr(p,gt)
