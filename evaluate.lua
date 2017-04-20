@@ -88,7 +88,7 @@ local function Thresherr(p,gt,i)
     --return err*100
 end
 
-function M.errEvaluate(predicted,groudtruth)
+function M.errEvaluate(predicted,groundtruth)
     local relErr = 0
     local rmsErr = 0
     local rmLogErr = 0
