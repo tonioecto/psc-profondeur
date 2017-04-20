@@ -18,8 +18,8 @@ local function mask(prediction, groundtruth)
     local l = torch.eq(groundtruth, 0)
     local m = l + g
     local mInverse = 1 - (l+g)
-    prediction:maskedFill(m, -1)
-    groundtruth:maskedFill(m, -1)
+    prediction:maskedFill(m, 1)
+    groundtruth:maskedFill(m, 1)
     local nValid = torch.sum(mInverse)
     return prediction, groundtruth, nValid
 end
