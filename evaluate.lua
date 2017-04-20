@@ -66,6 +66,7 @@ local function Rmslogerr(p,gt)
 end
 
 local function Logerr(p,gt)
+    local term = math.log(10)
     local pre = torch.log(p)
     pre:div(term)
     local truth = torch.log(gt)
