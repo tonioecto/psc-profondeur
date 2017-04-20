@@ -50,6 +50,11 @@ local function Relerror(p, gt)
     return torch.sum(dis)
 end
 
+local function Absoluerror(p,gt)
+   local dis = torch.abs(p-gt)
+   return torch.sum(dis)
+end
+
 local function Rmserror(p,gt)
     local dis = torch.dist(p,gt)
     return dis * dis
@@ -90,6 +95,7 @@ local function Thresherr(p,gt,i)
 end
 
 function M.errEvaluate(predicted,groundtruth)
+    local absErr = 0.0
     local relErr = 0.0
     local rmsErr = 0.0
     local rmLogErr = 0.0
@@ -102,6 +108,7 @@ function M.errEvaluate(predicted,groundtruth)
     for i =1, predicted:size(1),1 do
         local p, gt, nvalid = mask(predicted[i],groundtruth[i])
         local nInvalid = num - nvalid
+        absErr = absErr + 1.0*Absoluerror(p,gt)
         relErr = relErr + 1.0*Relerror(p,gt)
         rmsErr = rmsErr + 1.0*Rmserror(p,gt)
         rmLogErr = rmLogErr + 1.0*Rmslogerr(p,gt)
@@ -115,6 +122,9 @@ function M.errEvaluate(predicted,groundtruth)
         Tsize = Tsize + nvalid*1.0
     end
     Tsize = Tsize * 1.0
+
+    absErr = absErr / Tsize
+
     relErr = relErr / Tsize
 
     rmsErr = rmsErr / Tsize
@@ -134,6 +144,7 @@ function M.errEvaluate(predicted,groundtruth)
     threshErr3 = threshErr3/Tsize
     threshErr3 = threshErr3 * 100
 
+    print('Mean Absolute Error : '..absErr)
     print("Mean Absolute Relative Error : "..relErr)
     print('Root Mean Squared Error (rms) : '..rmsErr)
     print('Root Mean Squared Log-Error(rms(log)) : '..rmLogErr)
