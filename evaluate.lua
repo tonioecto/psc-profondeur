@@ -90,29 +90,29 @@ local function Thresherr(p,gt,i)
 end
 
 function M.errEvaluate(predicted,groundtruth)
-    local relErr = 0
-    local rmsErr = 0
-    local rmLogErr = 0
-    local logErr = 0
-    local threshErr1 = 0
-    local threshErr2 = 0
-    local threshErr3 = 0
-    local Tsize = 0
+    local relErr = 0.0
+    local rmsErr = 0.0
+    local rmLogErr = 0.0
+    local logErr = 0.0
+    local threshErr1 = 0.0
+    local threshErr2 = 0.0
+    local threshErr3 = 0.0
+    local Tsize = 0.0
     local num = predicted:size(2)*predicted:size(3)
     for i =1, predicted:size(1),1 do
         local p, gt, nvalid = mask(predicted[i],groundtruth[i])
         local nInvalid = num - nvalid
-        relErr = relErr + Relerror(p,gt)
-        rmsErr = rmsErr + Rmserror(p,gt)
-        rmLogErr = rmLogErr + Rmslogerr(p,gt)
-        logErr = logErr + Logerr(p,gt)
+        relErr = relErr + 1.0*Relerror(p,gt)
+        rmsErr = rmsErr + 1.0*Rmserror(p,gt)
+        rmLogErr = rmLogErr + 1.0*Rmslogerr(p,gt)
+        logErr = logErr + 1.0*Logerr(p,gt)
         threshErr1 = threshErr1 + Thresherr(p,gt,1)
         threshErr1 = threshErr1 - nInvalid
         threshErr2 = threshErr2 + Thresherr(p,gt,2)
         threshErr2 = threshErr2 - nInvalid
         threshErr3 = threshErr3 + Thresherr(p,gt,3)
         threshErr3 = threshErr3 - nInvalid
-        Tsize = Tsize + nvalid
+        Tsize = Tsize + nvalid*1.0
     end
     Tsize = Tsize * 1.0
     relErr = relErr / Tsize
