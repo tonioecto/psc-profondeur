@@ -111,8 +111,8 @@ function M.errEvaluate(predicted,groundtruth)
         absErr = absErr + 1.0*Absoluerror(p,gt)
         relErr = relErr + 1.0*Relerror(p,gt)
         rmsErr = rmsErr + 1.0*Rmserror(p,gt)
-        rmLogErr = rmLogErr + 1.0*Rmslogerr(p,gt)
-        logErr = logErr + 1.0*Logerr(p,gt)
+        --rmLogErr = rmLogErr + 1.0*Rmslogerr(p,gt)
+        --logErr = logErr + 1.0*Logerr(p,gt)
         threshErr1 = threshErr1 + Thresherr(p,gt,1)
         threshErr1 = threshErr1 - nInvalid
         threshErr2 = threshErr2 + Thresherr(p,gt,2)
@@ -130,10 +130,10 @@ function M.errEvaluate(predicted,groundtruth)
     rmsErr = rmsErr / Tsize
     rmsErr = math.sqrt(rmsErr)
 
-    rmLogErr = rmLogErr / Tsize
-    rmLogErr = math.sqrt(rmLogErr)
+    --rmLogErr = rmLogErr / Tsize
+    --rmLogErr = math.sqrt(rmLogErr)
 
-    logErr = logErr / Tsize
+    --logErr = logErr / Tsize
 
     threshErr1 = threshErr1/Tsize
     threshErr1 = threshErr1 * 100
@@ -147,8 +147,8 @@ function M.errEvaluate(predicted,groundtruth)
     print('Mean Absolute Error : '..absErr)
     print("Mean Absolute Relative Error : "..relErr)
     print('Root Mean Squared Error (rms) : '..rmsErr)
-    print('Root Mean Squared Log-Error(rms(log)) : '..rmLogErr)
-    print('Mean log10 Error(log10) : '..logErr)
+    --print('Root Mean Squared Log-Error(rms(log)) : '..rmLogErr)
+    --print('Mean log10 Error(log10) : '..logErr)
     print('Thresh err 1 : '..threshErr1)
     print('Thresh err 2 : '..threshErr2)
     print('Thresh err 3: '..threshErr3)

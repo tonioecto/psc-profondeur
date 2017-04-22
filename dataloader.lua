@@ -206,6 +206,7 @@ end
 
 function DataLoader:normaliseImage(image)
     local mean = self.normInfo.imgMean
+    local stdv  = self.normInfo.imgStd
     for i=1, 3 do -- over each image channel
         image[{ {}, {i}, {}, {}  }]:add(-mean[i]) -- mean subtraction
         image[{ {}, {i}, {}, {}  }]:div(stdv[i]) -- std scaling
@@ -213,6 +214,17 @@ function DataLoader:normaliseImage(image)
 
     return image
 end
+
+function DataLoader:denormaliseImage(image)
+    local mean = self.normInfo.imgMean
+    local stdv  = self.normInfo.imgStd
+    for i=1, 3 do -- over each image channel
+        image[{ {}, {i}, {}, {}  }]:add(mean[i]) -- mean subtraction
+        image[{ {}, {i}, {}, {}  }]:mul(stdv[i]) -- std scaling
+    end
+    return image
+end
+
 
 function DataLoader:denormaliseDepth(depth,coef)
     return depth:mul(coef)
