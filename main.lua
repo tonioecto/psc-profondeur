@@ -101,10 +101,6 @@ for epoch = opt.epochNumber, opt.nEpochs+opt.epochNumber, 1 do
     -- save latest model
     checkpoints.saveCurrent(epoch, net, trainer.optimState, bestModel, opt, info)
     
-    if opt.criterion == 'hu' then
-        criterion:setThreshold()
-    end
-    
     -- collect rubbish
     collectgarbage()
 end
