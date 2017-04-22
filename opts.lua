@@ -35,7 +35,7 @@ function M.parse(arg)
     --------- Optimization options ----------------------
     cmd:option('-LR',              0.005,           'initial learning rate')
     cmd:option('-momentum',        0.9,             'momentum')
-    cmd:option('-weightDecay',     0.0003,            'weight decay')
+    cmd:option('-weightDecay',     0.0001,            'weight decay')
     --------- Dataset options ----------------------
     cmd:option('-dataset',         'make3d',        'dataset to train, make3d or nyu')
     --------- Visulization options ----------------------

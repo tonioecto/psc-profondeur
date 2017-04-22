@@ -18,7 +18,7 @@ local opt = opts.parse(arg)
 
 print '==> load dataset'
 -- Data loading
-datasetInit.init(opt, {'train', 'val'})
+datasetInit.init(opt, {'train', 'val', 'test'})
 local info = datasetInit.getInfo(opt)
 --local dataloader, valLoader = DataLoader.create(opt, info)
 local testloader = DataLoader.createTest(opt)
@@ -77,6 +77,6 @@ net:evaluate()
     trainer:predict(num, pair, dataloader)
 end]]
 
-local res = trainer:getPredictResult(testloader,100)
+local res = trainer:getPredictResult(testloader, 500)
 local Evaluate = require 'evaluate.lua'
 local rel = Evaluate.errEvaluate(res.pred,res.groundTruth)
