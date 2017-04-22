@@ -71,6 +71,10 @@ function M.parse(arg)
         cmd:error('unknown dataset: '..opt.dataset)
     end
 
+    if opt.criterion == 'hu' then
+	opt.LR = 0.01
+    end
+
     -- Defaut dataset options
     opt.data = 'data'
     opt.format = 't7'
