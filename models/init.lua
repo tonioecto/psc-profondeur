@@ -24,9 +24,9 @@ function M.setup(opt, checkpoint)
     net = net:cuda()
 
     -- define criterion
-    if opt.criterion = 'l2' then
+    if opt.criterion == 'l2' then
         criterion = nn.MaskMSECriterion(1, 0, true)
-    else if opt.criterion = 'hu' then
+    else if opt.criterion == 'hu' then
         criterion = nn.MaskHuberCriterion(0, 1, 1)
     else
         print("not valid criterion option")
