@@ -61,6 +61,11 @@ function MaskHuberCriterion:updateGradInput(input, target)
   -- mask invalid pixels
   self.gradInput:maskedFill(self.m, 0)
 
+  local temp = self.c
+  self.c = self.delta
+
+  print('=> change huber c from : '..temp..'  to  '..self.c)
+
   return self.gradInput
 end
 
@@ -68,10 +73,6 @@ function MaskHuberCriterion:mask(target)
     local g = torch.ge(target, self.highMask)
     local l = torch.eq(target, self.lowMask)
     return l + g, 1 - (l + g)
-end
-
-function MaskHuberCriterion:setThreshold(t)
-  self.c = self.delta
 end
 
 return nn.MaskHuberCriterion
