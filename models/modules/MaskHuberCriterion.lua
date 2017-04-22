@@ -60,6 +60,7 @@ function MaskHuberCriterion:updateGradInput(input, target)
   self.gradInput = self.alpha:sign():cmul(self.absAlpha:apply(g(self.c)))
   -- mask invalid pixels
   self.gradInput:maskedFill(self.m, 0)
+  self.gradInput = self.gradInput / self.nValid
 
   local temp = self.c
   self.c = self.delta
