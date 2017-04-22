@@ -22,18 +22,20 @@ function M.plotTrainLoss(lossFile, startEpoch, endEpoch)
     end
     
     for epoch = startEpoch, endEpoch, 1 do
+        temp = loss[epoch].lossTrace:reshape(20, 32)
         if lossTrace == nil then
-            lossTrace = loss[epoch].lossTrace
+            lossTrace = temp[1]
         else
-            lossTrace = torch.cat(lossTrace, loss[epoch].lossTrace)
+            lossTrace = torch.cat(lossTrace, temp[1])
         end
     end
 
     print(('==> print figure of training loss evolution from epoch %d to %d'):format(startEpoch, endEpoch))
     --gnuplot.epsfigure(paths.concat(opt.lossFile, 'training-loss-'..startEpoch..'-'..endEpoch..'.eps'))
     gnuplot.pdffigure(paths.concat('loss_track', 'training-loss-'..startEpoch..'-'..endEpoch..'.pdf'))
-    gnuplot.xlabel('epoch-batch')
-    gnuplot.ylabel('batch-loss')
+    gnuplot.xlabel('batch (every 40 mini-batches)')
+    gnuplot.ylabel('loss')
+    gnuplot.title('Training mini-batch loss')
     gnuplot.plot(lossTrace, '-')
     gnuplot.plotflush()
 

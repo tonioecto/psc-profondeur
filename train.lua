@@ -99,7 +99,7 @@ function Trainer:train(epoch, dataloader, lossTrace, frequence)
             print((' | Epoch: [%d][%d/%d]    Time %.3f  Data %.3f  Err %1.4f '):format(
             epoch, N, trainSize, timer:time().real, dataTime, loss))
 
-            print('Change huber c to : '..self.criterion.c)
+            --print('Change huber c to : '..self.criterion.c)
 
             -- check that the storage didn't get changed due to an unfortunate getParameters call
             assert(self.params:storage() == self.model:parameters()[1]:storage())
