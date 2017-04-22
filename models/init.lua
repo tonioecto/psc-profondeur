@@ -13,7 +13,7 @@ local M = {}
 
 function M.setup(opt, checkpoint)
 
-    if (checkpoint == nil) then
+    if checkpoint == nil then
         return M.create()
     end
 
@@ -26,7 +26,7 @@ function M.setup(opt, checkpoint)
     -- define criterion
     if opt.criterion == 'l2' then
         criterion = nn.MaskMSECriterion(1, 0, true)
-    else if opt.criterion == 'hu' then
+    elseif opt.criterion == 'hu' then
         criterion = nn.MaskHuberCriterion(0, 1, 1)
     else
         print("not valid criterion option")
