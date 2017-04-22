@@ -14,7 +14,7 @@ local M = {}
 function M.setup(opt, checkpoint)
 
     if checkpoint == nil then
-        return M.create()
+        return M.create(opt)
     end
 
     -- load latest models
@@ -37,7 +37,7 @@ function M.setup(opt, checkpoint)
     return net, criterion
 end
 
-function M.create()
+function M.create(opt)
 
     -- input size 3x228x304
     -- First step: load modified pre-trained model resnet-50
