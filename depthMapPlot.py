@@ -9,12 +9,14 @@ import torchfile
 
 result = torchfile.load('result/test/testEvaluate100.t7');
 size  = result[b'image'].shape[0];
+colormap = 'gist_ncar'
+showNum = 2
 #print(result[b'image'].shape[0]);
 
 
 perm = np.random.permutation(size);
 
-for i in range(5):
+for i in range(showNum):
     plt.figure(i)
     index = perm[i];
     image = result[b'image'][index];
@@ -43,8 +45,8 @@ for i in range(5):
     ax1 = plt.subplot(gs[0]);
     ax2 = plt.subplot(gs[1]);
     ax3 = plt.subplot(gs[2]);
-    ax2.imshow(groundTruth,cmap='hsv',interpolation='none');
-    ax3.imshow(pred,cmap='hsv',interpolation='none');
+    ax2.imshow(groundTruth,cmap=colormap,interpolation='none');
+    ax3.imshow(pred,cmap=colormap,interpolation='none');
     ax1.imshow(image);
 
 plt.show();
