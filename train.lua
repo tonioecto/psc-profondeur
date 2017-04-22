@@ -258,7 +258,7 @@ function Trainer:getPredictResult(testLoader,num)
     print('=> begin to compute evaluation errors.')
     for i=1,num,1 do
         print('compute sample index '..i)
-        imageSet[i] = testSample.image[i];
+        imageSet[i] = testLoader:denormaliseImage(testSample.image[i]);
         --depthSet[i] = testLoader:denormaliseDepth(testSample.depth[i],70);
         depthSet[i] = testSample.depth[i];
         --imageData = testLoader:normaliseImage(imageSet[i])
