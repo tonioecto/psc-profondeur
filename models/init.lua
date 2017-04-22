@@ -25,8 +25,10 @@ function M.setup(opt, checkpoint)
 
     -- define criterion
     if opt.criterion == 'l2' then
+        print("=> create mask l2 criterion.")
         criterion = nn.MaskMSECriterion(1, 0, true)
     elseif opt.criterion == 'hu' then
+        print("=> create mask reverse huber criterion.")
         criterion = nn.MaskHuberCriterion(0, 1, 1)
     else
         print("not valid criterion option")
