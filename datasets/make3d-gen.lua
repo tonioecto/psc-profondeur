@@ -117,8 +117,8 @@ function M.augmentation(imageDirOrigin, depthDirOrigin, opt, split, trainDataPor
         -- size of tensor of the load image: 3x2272x1704
         local img = image.loadJPG(imagePathOrigin[i])
         img = imageScale(img)
-        
-        -- size of tensor of the depth map: 
+
+        -- size of tensor of the depth map:
         local depth = torch.load(depthPathOrigin[i])
         depth = depth:select(3, 4)
         depth = depthScale(depth)
@@ -149,7 +149,7 @@ function M.augOneMatch(trans)
         depth = depthScale(depth)
         return trans(img, depth)
     end
-    
+
 end
 
 return M

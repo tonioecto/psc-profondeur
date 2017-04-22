@@ -13,7 +13,7 @@ end
 
 -- Scales the smaller edge to size
 function M.Scale(width, height, interpolation)
-    interpolation = interpolation or 'bicubic'
+    interpolation = interpolation or 'bilinear'
     return function(input)
         return image.scale(input, width, height, interpolation)
     end
@@ -35,8 +35,8 @@ function M.RandomScale(minRatio, maxRatio)
         -- divide depth by the ratio
         depth = depth / ratio
 
-        return image.scale(img, targetW, targetH, 'bicubic'),
-        image.scale(depth, targetWDepth, targetHDepth, 'bicubic')
+        return image.scale(img, targetW, targetH, 'bilinear'),
+        image.scale(depth, targetWDepth, targetHDepth, 'bilinear')
     end
 end
 
