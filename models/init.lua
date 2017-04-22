@@ -3,6 +3,7 @@ require 'cudnn'
 require 'cutorch'
 -- require 'cunn'
 require 'models/modules/MaskMSECriterion'
+require 'models/modules/MaskHuberCriterion'
 
 local model = require '/models/model'
 local upProjection = model.upProjection
@@ -23,10 +24,15 @@ function M.setup(opt, checkpoint)
     net = net:cuda()
 
     -- define criterion
-    local criterion = nn.MaskMSECriterion(1, 0, true)
+    if opt.criterion = 'l2' then
+        criterion = nn.MaskMSECriterion(1, 0, true)
+    else if opt.criterion = 'hu' then
+        criterion = nn.MaskHuberCriterion(0, 1, 1)
+    else
+        print("not valid criterion option")
+    end
     criterion = criterion:cuda()
     return net, criterion
-
 end
 
 function M.create()

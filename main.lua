@@ -100,6 +100,11 @@ for epoch = opt.epochNumber, opt.nEpochs+opt.epochNumber, 1 do
     trainer:saveLoss(epoch, valErr, lossTrace)
     -- save latest model
     checkpoints.saveCurrent(epoch, net, trainer.optimState, bestModel, opt, info)
+    
+    if opt.criterion == 'hu' then
+        criterion:setThreshold()
+    end
+    
     -- collect rubbish
     collectgarbage()
 end

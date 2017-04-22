@@ -30,6 +30,7 @@ function M.parse(arg)
     cmd:option('-sampleSize',      1000,            'Number of datas to load to memory')
     cmd:option('-manualSeed',      2000,            'Manually set RNG seed')
     cmd:option('-nThreads',        10,              'Number of threads')
+    cmd:option('-criterion',        'l2',          'loss function')
     ------------- Checkpointing options ---------------
     cmd:option('-resume',          'none',          'Resume from the latest checkpoint in this directory')
     --------- Optimization options ----------------------
@@ -45,6 +46,10 @@ function M.parse(arg)
     local opt = cmd:parse(arg or {})
 
     opt.testOnly = opt.testOnly ~= 'false'
+
+    if opt.criterion ~= 'l2' then
+        opt.criterion = 'hu'
+    end
 
     opt.plot = opt.plot == 'true'
 
