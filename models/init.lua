@@ -80,7 +80,16 @@ function M.create()
     net = net:cuda()
 
     -- define criterion
-    local criterion = nn.MaskMSECriterion(1, 0, true)
+    local criterion
+    if opt.criterion == 'l2' then
+        print("=> create mask l2 criterion.")
+        criterion = nn.MaskMSECriterion(1, 0, true)
+    elseif opt.criterion == 'hu' then
+        print("=> create mask reverse huber criterion.")
+        criterion = nn.MaskHuberCriterion(0, 1, 1)
+    else
+        print("not valid criterion option")
+    end
     criterion = criterion:cuda()
 
     return net, criterion
