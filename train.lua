@@ -259,11 +259,13 @@ function Trainer:getPredictResult(testLoader,num)
     for i=1,num,1 do
         print('compute sample index '..i)
         imageSet[i] = testSample.image[i];
-        depthSet[i] = testLoader:denormaliseDepth(testSample.depth[i],70);
+        --depthSet[i] = testLoader:denormaliseDepth(testSample.depth[i],70);
+        depthSet[i] = testSample.depth[i];
         --imageData = testLoader:normaliseImage(imageSet[i])
         imageData = testSample.image[i];
         predData = self.model:forward(imageData:cuda()):float();
-        predSet[i] = testLoader:denormaliseDepth(predData,70);
+        predSet[i] = predData;
+        --predSet[i] = testLoader:denormaliseDepth(predData,70);
     end
 
     local res = {
