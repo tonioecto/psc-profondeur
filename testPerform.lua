@@ -67,7 +67,7 @@ local perms = torch.randperm(testloader.dataset:size())
 testloader:loadPerm(perms)
 
 local perms1 = torch.randperm(valLoader.dataset:size())
-valLoader:loadPerm(perms)
+valLoader:loadPerm(perms1)
 
 net:evaluate()
 --[[for num = 1, opt.exampleNum, 1 do
@@ -80,9 +80,9 @@ net:evaluate()
     trainer:predict(num, pair, dataloader)
 end]]
 
-local res = trainer:getPredictResult(testloader,'test',100)
+--local res = trainer:getPredictResult(testloader,'test',100)
 local Evaluate = require 'evaluate.lua'
-Evaluate.errEvaluate(res.pred,res.groundTruth)
+--Evaluate.errEvaluate(res.pred,res.groundTruth)
 
 local res1 = trainer:getPredictResult(valLoader,'val',100)
 Evaluate.errEvaluate(res1.pred,res1.groundTruth)
