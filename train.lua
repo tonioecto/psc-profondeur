@@ -246,7 +246,7 @@ function Trainer:learningRate(epoch)
     return self.opt.LR * math.pow(0.5, decay)
 end
 
-function Trainer:getPredictResult(testLoader,num)
+function Trainer:getPredictResult(testLoader,loader,num)
     local imageSet = torch.Tensor(num,unpack(self.opt.inputSize));
     local depthSet = torch.Tensor(num,unpack(self.opt.outputSize));
     local predSet = torch.Tensor(num,unpack(self.opt.outputSize));
@@ -278,8 +278,14 @@ function Trainer:getPredictResult(testLoader,num)
     {__index = function(t, i)
         return {t.image[i], t.groundTruth[i],t.pred[i]}
     end})
+    if loader == 'test' then
+        path = paths.concat('result','test','testEvaluate'..num..'.t7')
+    elseif loader == 'val' then
+        path = paths.concat('result','test','valEvaluate'..num..'.t7')
+    elseif loader == 'train' then
+        path = paths.concat('result','test','trainEvaluate'..num..'.t7')
+    end
 
-    path = paths.concat('result','test','testEvaluate'..num..'.t7')
     if not paths.dirp(paths.concat('result','test')) then
         paths.mkdir(paths.concat('result','test'))
     end

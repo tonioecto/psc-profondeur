@@ -77,6 +77,8 @@ net:evaluate()
     trainer:predict(num, pair, dataloader)
 end]]
 
-local res = trainer:getPredictResult(testloader, 500)
+<<<<<<< HEAD
+local res = trainer:getPredictResult(testloader,'test',100)
+>>>>>>> e59b454cbd6c75b175ff73b0fd7748baeb320387
 local Evaluate = require 'evaluate.lua'
 local rel = Evaluate.errEvaluate(res.pred,res.groundTruth)
