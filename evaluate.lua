@@ -119,7 +119,6 @@ function M.errEvaluate(predicted,groundtruth)
         threshErr2 = threshErr2 - nInvalid
         threshErr3 = threshErr3 + Thresherr(p,gt,3)
         threshErr3 = threshErr3 - nInvalid
-        print("=> number of pixel valid"..nvalid)
         Tsize = Tsize + nvalid*1.0
     end
     Tsize = Tsize * 1.0
