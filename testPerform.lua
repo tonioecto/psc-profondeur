@@ -63,8 +63,8 @@ end
 
 -- create Trainer class
 local trainer = Trainer(net, criterion, optimState, opt)
---local perms = torch.randperm(dataloader.dataset:size())
---dataloader:loadPerm(perms)
+local perms = torch.randperm(testloader.dataset:size())
+testloader:loadPerm(perms)
 
 net:evaluate()
 --[[for num = 1, opt.exampleNum, 1 do
