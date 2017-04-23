@@ -246,7 +246,7 @@ function Trainer:learningRate(epoch)
     return self.opt.LR * math.pow(0.5, decay)
 end
 
-local function maskFille(p,gr)
+local function maskedFill(p,gr)
     local g = torch.ge(gr, 70)
     local l = torch.le(gr, 0)
     p:maskedFill(g,70)
