@@ -84,5 +84,5 @@ end]]
 local Evaluate = require 'evaluate.lua'
 --Evaluate.errEvaluate(res.pred,res.groundTruth)
 
-local res1 = trainer:getPredictResult(valLoader,'val',100)
+local res1 = trainer:getPredictResult(valLoader,'val',1000)
 Evaluate.errEvaluate(res1.pred,res1.groundTruth)
