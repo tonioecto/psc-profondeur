@@ -7,7 +7,7 @@ import torchfile
 #depth = np.random.random((128,64));
 #np.savetxt('depthTest.txt',depth);
 
-result = torchfile.load('result/test/valEvaluate100.t7');
+result = torchfile.load('result/test/trainEvaluate100.t7');
 size  = result[b'image'].shape[0];
 colormap = 'gist_rainbow'
 showNum = 10

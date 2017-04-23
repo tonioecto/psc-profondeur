@@ -246,6 +246,17 @@ function Trainer:learningRate(epoch)
     return self.opt.LR * math.pow(0.5, decay)
 end
 
+local function maskFille(p,gr)
+    local g = torch.ge(gr, 70)
+    local l = torch.le(gr, 0)
+    p:maskedFill(g,70)
+    gr:maskedFill(g,70)
+
+    p:maskedFill(l,0)
+    gr:maskedFill(l,0)
+    return p,gr
+end
+
 function Trainer:getPredictResult(testLoader,loader,num)
     local imageSet = torch.Tensor(num,unpack(self.opt.inputSize));
     local depthSet = torch.Tensor(num,unpack(self.opt.outputSize));
@@ -259,13 +270,14 @@ function Trainer:getPredictResult(testLoader,loader,num)
     for i=1,num,1 do
         print('compute sample index '..i)
         imageSet[i] = testLoader:denormaliseImage(testSample.image[i]);
-        depthSet[i] = testLoader:denormaliseDepth(testSample.depth[i],70);
+        gr = testLoader:denormaliseDepth(testSample.depth[i],70);
         --depthSet[i] = testSample.depth[i];
         --imageData = testLoader:normaliseImage(imageSet[i])
         imageData = testSample.image[i];
-        predData = self.model:forward(imageData:cuda()):float();
+        pred = self.model:forward(imageData:cuda()):float();
         --predSet[i] = predData;
-        predSet[i] = testLoader:denormaliseDepth(predData,70);
+        pred= testLoader:denormaliseDepth(pred,70);
+        predSet[i],depthSet[i] = maskedFill(pred,gr);
     end
 
     local res = {
