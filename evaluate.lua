@@ -15,7 +15,7 @@ local M = {}
 -- lowmask = 0
 local function mask(prediction, groundtruth)
     local g = torch.ge(groundtruth, 70)
-    local l = torch.eq(groundtruth, 0)
+    local l = torch.le(groundtruth, 0)
     local m = l + g
     local mInverse = 1 - (l+g)
     prediction:maskedFill(m, 1)
