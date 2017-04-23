@@ -20,10 +20,10 @@ print '==> load dataset'
 -- Data loading
 datasetInit.init(opt, {'train', 'val'})
 local info = datasetInit.getInfo(opt)
---local dataloader, valLoader = DataLoader.create(opt, info)
+local dataloader, valLoader = DataLoader.create(opt, info)
 local testloader = DataLoader.createTest(opt)
 
--- Load previous checkpoint, if it exists
+--Load previous checkpoint, if it exists
 local checkpoint, optimState, normInfo = checkpoints.latest(opt)
 
 if normInfo == nil then
@@ -35,8 +35,8 @@ if normInfo == nil then
     torch.save(paths.concat(dir, 'norm.t7'), normInfo)
 end
 
---dataloader:loadNormInfo(normInfo)
---valLoader:loadNormInfo(normInfo)
+dataloader:loadNormInfo(normInfo)
+valLoader:loadNormInfo(normInfo)
 testloader:loadNormInfo(normInfo)
 
 -- Create model
@@ -66,6 +66,9 @@ local trainer = Trainer(net, criterion, optimState, opt)
 local perms = torch.randperm(testloader.dataset:size())
 testloader:loadPerm(perms)
 
+local perms1 = torch.randperm(valLoader.dataset:size())
+valLoader:loadPerm(perms)
+
 net:evaluate()
 --[[for num = 1, opt.exampleNum, 1 do
 
@@ -79,4 +82,7 @@ end]]
 
 local res = trainer:getPredictResult(testloader,'test',100)
 local Evaluate = require 'evaluate.lua'
-local rel = Evaluate.errEvaluate(res.pred,res.groundTruth)
+Evaluate.errEvaluate(res.pred,res.groundTruth)
+
+local res1 = trainer:getPredictResult(valLoader,'val',100)
+Evaluate.errEvaluate(res1.pred,res1.groundTruth)
