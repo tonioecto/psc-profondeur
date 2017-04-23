@@ -219,8 +219,8 @@ function DataLoader:denormaliseImage(image)
     local mean = self.normInfo.imgMean
     local stdv  = self.normInfo.imgStd
     for i=1, 3 do -- over each image channel
-        image[{ {}, {i}, {}, {}  }]:add(mean[i]) -- mean subtraction
         image[{ {}, {i}, {}, {}  }]:mul(stdv[i]) -- std scaling
+        image[{ {}, {i}, {}, {}  }]:add(mean[i]) -- mean subtraction
     end
     return image
 end
