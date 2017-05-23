@@ -322,6 +322,7 @@ function DataLoader:denormaliseSingle(data, coef)
     end
     return data
 end
+end
 
 -----------------------Multithreads part-------------------------
 
