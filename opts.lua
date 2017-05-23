@@ -93,7 +93,7 @@ function M.parse(arg)
         opt.imageOrigin = 'images_nyu'
         opt.testDepth = ''
         opt.testImage = ''
-        opt.incre = 40
+        opt.incre = 15
     else
         cmd:error('unknown dataset: '..opt.dataset)
     end
