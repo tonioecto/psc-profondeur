@@ -326,6 +326,7 @@ end
 -----------------------Multithreads part-------------------------
 
 -- multi threads solution to get dataset batchs for start to end
+--[[
 function DataLoader:run(starIndex, endIndexss)
     local threads = self.threads
     local size, batchSize = self.__size, self.batchSize
@@ -390,5 +391,6 @@ function DataLoader:run(starIndex, endIndexss)
 
     return loop
 end
+--]]
 
 return M.DataLoader
