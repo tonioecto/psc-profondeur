@@ -180,9 +180,17 @@ function DataLoader:computeNormInfo()
         print('Channel ' .. i .. ', Standard Deviation: ' .. imgStd[i])
     end
 
+    depthMean = data.depth:mean() -- mean estimation
+    print('Depth Mean: ' .. depthMean)
+
+    depthStd = data.depth:std() -- std estimation
+    print('Depth Standard Deviation: ' .. depthStd);
+
     local normInfo = {}
     normInfo.imgMean = imgMean
     normInfo.imgStd = imgStd
+    normInfo.depthMean = depthMean
+    normInfo.depthStd = depthStd
 
     return normInfo
 end
@@ -199,7 +207,17 @@ function DataLoader:normalise(data, coef)
         data.image[{ {}, {i}, {}, {}  }]:div(stdv[i]) -- std scaling
     end
 
-    data.depth:div(coef)
+    if self.opt.dataset == 'make3d' then
+        data.depth:div(coef)
+    else if self.opt.dataset == 'nyu' then
+        local mean = self.normInfo.depthMean
+        local stdv  = self.normInfo.depthStd
+        data.depth:div(stdv)
+        data.depth:add(-mean)
+    else
+        print("Invalid dataset!\n");
+        os.exit()
+    end
 
     return data
 end
@@ -215,7 +233,17 @@ function DataLoader:normaliseImage(image)
 end
 
 function DataLoader:denormaliseDepth(depth,coef)
-    return depth:mul(coef)
+    if self.opt.dataset == 'make3d' then
+        return depth:mul(coef)
+    else if self.opt.dataset == 'nyu' then
+        local mean = self.normInfo.depthMean
+        local stdv  = self.normInfo.depthStd
+        depth:mul(stdv)
+        depth:add(mean)
+    else
+        print("Invalid dataset!\n");
+        os.exit()
+    end
 end
 
 
@@ -232,7 +260,17 @@ function DataLoader:denormalise(data, coef)
         data.image[{ {}, {i}, {}, {}  }]:mul(stdv[i]) -- std multiplication
     end
 
-    data.depth:mul(coef)
+    if self.opt.dataset == 'make3d' then
+        return data.depth:mul(coef)
+    else if self.opt.dataset == 'nyu' then
+        local mean = self.normInfo.depthMean
+        local stdv  = self.normInfo.depthStd
+        data.depth:mul(stdv)
+        data.depth:add(mean)
+    else
+        print("Invalid dataset!\n");
+        os.exit()
+    end
     return data
 end
 
@@ -246,7 +284,17 @@ function DataLoader:normaliseSingle(data, coef)
         data.image[{ {i}, {}, {}  }]:div(stdv[i]) -- std scaling
     end
 
-    data.depth:div(coef)
+    if self.opt.dataset == 'make3d' then
+        return depth:mul(coef)
+    else if self.opt.dataset == 'nyu' then
+        local mean = self.normInfo.depthMean
+        local stdv  = self.normInfo.depthStd
+        depth:div(stdv)
+        depth:add(-mean)
+    else
+        print("Invalid dataset!\n");
+        os.exit()
+    end
 
     return data
 end
@@ -261,7 +309,17 @@ function DataLoader:denormaliseSingle(data, coef)
         data.image[{ {i}, {}, {}  }]:mul(stdv[i]) -- std multiplication
     end
 
-    data.depth:mul(coef)
+    if self.opt.dataset == 'make3d' then
+        return data.depth:mul(coef)
+    else if self.opt.dataset == 'nyu' then
+        local mean = self.normInfo.depthMean
+        local stdv  = self.normInfo.depthStd
+        data.depth:mul(stdv)
+        data.depth:add(mean)
+    else
+        print("Invalid dataset!\n");
+        os.exit()
+    end
     return data
 end
 

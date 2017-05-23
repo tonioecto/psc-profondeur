@@ -1,13 +1,13 @@
 --We import necessairy packages
 
-require 'nn'
-require 'image'
-require 'paths'
-require 'os'
-require 'math'
-require 'xlua'
-require 'cudnn'
-require 'cutorch'
+--require 'nn'
+--require 'image'
+--require 'paths'
+--require 'os'
+--require 'math'
+--require 'xlua'
+--require 'cudnn'
+--require 'cutorch'
 --require 'cunn'
 
 local M = { }
@@ -50,6 +50,9 @@ function M.parse(arg)
     if opt.criterion ~= 'l2' then
         opt.criterion = 'hu'
     end
+    if opt.dataset == 'nyu' then
+        opt.criterion = 'l2_no_mask'
+    end
 
     opt.plot = opt.plot == 'true'
 
@@ -75,11 +78,21 @@ function M.parse(arg)
     opt.data = 'data'
     opt.format = 't7'
     opt.depthRotation = 'true'
-    opt.depthOrigin = 'Train400Depth_t7'
-    opt.imageOrigin = 'Train400Image'
-    opt.testDepth = 'Test134Depth_t7'
-    opt.testImage = 'Test134Image'
-    opt.incre = 40
+    if opt.dataset == 'make3d' then
+        opt.depthOrigin = 'Train400Depth_t7'
+        opt.imageOrigin = 'Train400Image'
+        opt.testDepth = 'Test134Depth_t7'
+        opt.testImage = 'Test134Image'
+        opt.incre = 40
+    elseif opt.dataset == 'nyu' then
+        opt.depthOrigin = ''
+        opt.imageOrigin = ''
+        opt.testDepth = 'depths'
+        opt.testImage = ''
+        opt.incre = 40
+    else
+        cmd:error('unknown dataset: '..opt.dataset)
+    end
 
     -- Defaut val and train repartition
     opt.trainDataPortion = 0.8

@@ -11,24 +11,30 @@ function M.convertMatTensor(opt, path)
     local loadPath = paths.concat(opt.data, path)
     local savePath = paths.concat(opt.data, path..'_t7')    -- create new directory to store generated files
 
+    print(loadPath)
+    print(savePath)
+
     paths.mkdir(savePath)
 
     --local tmp
     local fileToLoad
     local fileToSave
-    for file in paths.files(loadPath) do
+    for _,file in ipairs(paths.dir(loadPath)) do
+        print(file)
         if file:find(".*(mat)$") then
             fileToLoad = paths.concat(loadPath, file)
             fileToSave = paths.concat(savePath, file:match('(.*).mat$')..".t7")
-            local tmp = matio.load(fileToLoad,opt.depthName)
-            if opt.depthName=='Position3DGrid' then
-                tmp = tmp:select(3,4)
-            end
-            if opt.depthRotation then
-                tmp = image.scale(tmp,192,256,'bicubic')
-                tmp = image.hflip(tmp)
-                tmp = tmp:transpose(1,2)
-            end
+            print(fileToLoad)
+            --local tmp = matio.load(fileToLoad,opt.depthName)
+            local tmp = matio.load(fileToLoad, 'depthMap')
+            --if opt.depthName=='Position3DGrid' then
+            --    tmp = tmp:select(3,4)
+            --end
+            --if opt.depthRotation then
+            --    tmp = image.scale(tmp,192,256,'bicubic')
+            --    tmp = image.hflip(tmp)
+            --    tmp = tmp:transpose(1,2)
+            --end
             torch.save(fileToSave,tmp)
         end
     end

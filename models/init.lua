@@ -87,6 +87,9 @@ function M.create(opt)
     elseif opt.criterion == 'hu' then
         print("=> create mask reverse huber criterion.")
         criterion = nn.MaskHuberCriterion(0, 1, 1)
+    elseif opt.criterion == 'l2_no_mask' then
+        print("=> create normal l2 norm for NYU dataset")
+        criterion = nn.MSECriterion()
     else
         print("not valid criterion option")
     end
