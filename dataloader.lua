@@ -209,7 +209,7 @@ function DataLoader:normalise(data, coef)
 
     if self.opt.dataset == 'make3d' then
         data.depth:div(coef)
-    else if self.opt.dataset == 'nyu' then
+    elseif self.opt.dataset == 'nyu' then
         local mean = self.normInfo.depthMean
         local stdv  = self.normInfo.depthStd
         data.depth:div(stdv)
@@ -235,7 +235,7 @@ end
 function DataLoader:denormaliseDepth(depth,coef)
     if self.opt.dataset == 'make3d' then
         return depth:mul(coef)
-    else if self.opt.dataset == 'nyu' then
+    elseif self.opt.dataset == 'nyu' then
         local mean = self.normInfo.depthMean
         local stdv  = self.normInfo.depthStd
         depth:mul(stdv)
@@ -262,7 +262,7 @@ function DataLoader:denormalise(data, coef)
 
     if self.opt.dataset == 'make3d' then
         return data.depth:mul(coef)
-    else if self.opt.dataset == 'nyu' then
+    elseif self.opt.dataset == 'nyu' then
         local mean = self.normInfo.depthMean
         local stdv  = self.normInfo.depthStd
         data.depth:mul(stdv)
@@ -286,7 +286,7 @@ function DataLoader:normaliseSingle(data, coef)
 
     if self.opt.dataset == 'make3d' then
         return depth:mul(coef)
-    else if self.opt.dataset == 'nyu' then
+    elseif self.opt.dataset == 'nyu' then
         local mean = self.normInfo.depthMean
         local stdv  = self.normInfo.depthStd
         depth:div(stdv)
@@ -311,7 +311,7 @@ function DataLoader:denormaliseSingle(data, coef)
 
     if self.opt.dataset == 'make3d' then
         return data.depth:mul(coef)
-    else if self.opt.dataset == 'nyu' then
+    elseif self.opt.dataset == 'nyu' then
         local mean = self.normInfo.depthMean
         local stdv  = self.normInfo.depthStd
         data.depth:mul(stdv)
@@ -321,7 +321,6 @@ function DataLoader:denormaliseSingle(data, coef)
         os.exit()
     end
     return data
-end
 end
 
 -----------------------Multithreads part-------------------------
