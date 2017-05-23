@@ -15,7 +15,7 @@ local function findImageDepthMatches(imageDir, depthDir)
     -- Generate a list of all the images and their depths
     for _,img in ipairs(dirsImage) do
         if not (img:find('.jpg') == nil) then
-            local basename = img:match('image(.*).jpg$')
+            local basename = img:match('img(.*).jpg$')
             -- create possible corresponding depth name
             local depth = {
                 'image'..basename..'.t7',
