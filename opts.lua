@@ -1,14 +1,14 @@
 --We import necessairy packages
 
---require 'nn'
---require 'image'
---require 'paths'
---require 'os'
---require 'math'
---require 'xlua'
---require 'cudnn'
---require 'cutorch'
---require 'cunn'
+require 'nn'
+require 'image'
+require 'paths'
+require 'os'
+require 'math'
+require 'xlua'
+require 'cudnn'
+require 'cutorch'
+require 'cunn'
 
 local M = { }
 
