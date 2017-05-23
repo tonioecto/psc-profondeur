@@ -106,8 +106,15 @@ function M.parse(arg)
     opt.lossFile = 'loss_track'
 
     -- Default input and output size informations
-    opt.inputSize = {3, 230, 173}
-    opt.outputSize = {128, 96}
+    if opt.dataset == 'make3d' then
+        opt.inputSize = {3, 230, 173}
+        opt.outputSize = {128, 96}
+    elseif opt.dataset == 'nyu' then
+        opt.inputSize = {3, 304, 228}
+        opt.outputSize = {160, 128}
+    else
+        cmd:error('unknown dataset: '..opt.dataset)
+    end
 
     opt.exampleNum = 100
 
