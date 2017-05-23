@@ -1,7 +1,7 @@
 local image = require 'image'
 local paths = require 'paths'
 local T = require 'datasets/transforms'
-local G = require 'datasets/make3d-gen'
+local G = require 'datasets/nyu-gen'
 local ffi = require 'ffi'
 
 local M = {}
