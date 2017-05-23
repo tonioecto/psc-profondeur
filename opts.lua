@@ -89,9 +89,9 @@ function M.parse(arg)
         opt.testImage = 'Test134Image'
         opt.incre = 40
     elseif opt.dataset == 'nyu' then
-        opt.depthOrigin = ''
-        opt.imageOrigin = ''
-        opt.testDepth = 'depths'
+        opt.depthOrigin = 'depths_nyu'
+        opt.imageOrigin = 'images_nyu'
+        opt.testDepth = ''
         opt.testImage = ''
         opt.incre = 40
     else
