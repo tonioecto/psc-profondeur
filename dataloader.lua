@@ -172,7 +172,7 @@ function DataLoader:computeNormInfo()
 
     imgMean = {} -- store the mean, to normalize the test set in the future
     imgStd  = {} -- store the standard-deviation for the future
-    for i=1,3 do -- over each image channel
+    for i=1,3,1 do -- over each image channel
         imgMean[i] = data.image[{ {}, {i}, {}, {}  }]:mean() -- mean estimation
         print('Channel ' .. i .. ', Mean: ' .. imgMean[i])
 
@@ -202,7 +202,7 @@ function DataLoader:normalise(data, coef)
 
     local mean = self.normInfo.imgMean
     local stdv  = self.normInfo.imgStd
-    for i=1, 3 do -- over each image channel
+    for i=1, 3, 1 do -- over each image channel
         data.image[{ {}, {i}, {}, {}  }]:add(-mean[i]) -- mean subtraction
         data.image[{ {}, {i}, {}, {}  }]:div(stdv[i]) -- std scaling
     end
