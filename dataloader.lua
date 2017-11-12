@@ -4,16 +4,10 @@ require 'os'
 require 'math'
 require 'xlua'
 
-local datasets = require 'datasets/init'
-local Threads = require 'threads'
-Threads.serialization('threads.sharedserialize')
-
 local unpack = unpack or table.unpack
 local M = {}
 local DataLoader = torch.class('resnetUnPooling.DataLoader', M)
 
-local Threads = require 'threads'
-Threads.serialization('threads.sharedserialize')
 
 function DataLoader:__init(dataset, opt, split)
 
@@ -33,15 +27,11 @@ function DataLoader:__init(dataset, opt, split)
         if manualSeed ~= 0 then
             torch.manualSeed(manualSeed + idx)
         end
-        torch.setnumthreads(1)
         _G.dataset = dataset
         _G.preprocess = dataset:preprocessOnline()
         return dataset:size()
     end
 
-    -- initialize threads
-    local threads, size = Threads(opt.nThreads, init, main)
-    self.threads = threads
     self.__size = dataset:size()
     self.batchSize = opt.batchSize
     local function getCPUType(tensorType)
@@ -275,74 +265,6 @@ function DataLoader:denormaliseSingle(data, coef)
 
     data.depth:mul(coef)
     return data
-end
-
------------------------Multithreads part-------------------------
-
--- multi threads solution to get dataset batchs for start to end
-function DataLoader:run(starIndex, endIndexss)
-    local threads = self.threads
-    local size, batchSize = self.__size, self.batchSize
-    local perm = self.perms
-
-    local idx, sample = startIndex, nil
-    local function enqueue()
-        while idx <= endIndex and threads:acceptsjob() do
-            local indices = perm:narrow(1, idx, math.min(batchSize, endIndex - idx + 1))
-
-            threads:addjob(
-            function(indices, cpuType)
-                -- final batch size
-                local sz = indices:size(1)
-                local images, depths
-                local imageSize, depthSize
-                for i, idx in ipairs(indices:totable()) do
-                    local sample = _G.dataset:get(idx)
-                    local input, output = _G.preprocess(sample.image, sample.depth)
-                    if not images then
-                        imageSize = input:size():totable()
-                        images = torch[cpuType](sz, table.unpack(imageSize))
-                    end
-                    if not depths then
-                        depthSize = output:size():totable()
-                        depths = torch[cpuType](sz, table.unpack(depthSize))
-                    end
-                    images[i]:copy(input)
-                    depths[i]:copy(output)
-                end
-                collectgarbage()
-                return {
-                    image = images,
-                    depth = depths,
-                }
-            end,
-            function(_sample_)
-                sample = _sample_
-            end,
-            indices,
-            self.cpuType
-            )
-
-            idx = idx + batchSize
-        end
-    end
-
-    local n = 0
-    local function loop()
-        enqueue()
-        if not threads:hasjob() then
-            return nil
-        end
-        threads:dojob()
-        if threads:haserror() then
-            threads:synchronize()
-        end
-        enqueue()
-        n = n + 1
-        return n, sample
-    end
-
-    return loop
 end
 
 return M.DataLoader
